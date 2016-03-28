@@ -18,9 +18,9 @@ package onl.area51.departureboards;
 import java.io.IOException;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
+import onl.area51.httpd.action.ActionRegistry;
 import onl.area51.httpd.HttpRequestHandlerBuilder;
-import onl.area51.httpd.HttpServerBuilder;
-import onl.area51.httpd.action.ActionBuilder;
+import onl.area51.httpd.action.Actions;
 
 /**
  * Deploys the / action which simply displays the home page
@@ -31,18 +31,18 @@ import onl.area51.httpd.action.ActionBuilder;
 public class HomeAction
 {
 
-    void deploy( @Observes HttpServerBuilder builder )
+    void deploy( @Observes ActionRegistry builder )
             throws IOException
     {
-        builder.registerHandler( "/",
+        builder.registerHandler("/",
                                  HttpRequestHandlerBuilder.create()
                                  .log()
                                  .method( "GET" )
-                                 .add( LayoutBuilder.builder()
+                                 .add(LayoutBuilder.builder()
                                          .setTitle( "Departure Boards" )
                                          .setBanner( Banner.HOME )
                                          .setFooter( StandardTiles.FOOTER )
-                                         .setBody( ActionBuilder.resourceAction( HomeAction.class, "/home.html" ) )
+                                         .setBody(Actions.resourceAction( HomeAction.class, "/home.html" ) )
                                          .build()
                                  )
                                  .end()

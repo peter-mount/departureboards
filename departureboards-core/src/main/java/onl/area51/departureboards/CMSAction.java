@@ -16,35 +16,24 @@
 package onl.area51.departureboards;
 
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import onl.area51.httpd.action.ActionRegistry;
-import onl.area51.httpd.HttpRequestHandlerBuilder;
 import onl.area51.httpd.action.Action;
 import onl.area51.httpd.action.Request;
 import org.apache.http.HttpException;
 
 /**
- *
+ * Prototype action for accessing CMS Content
+ * 
  * @author peter
  */
 @ApplicationScoped
-public class SearchAction
+public class CMSAction
         implements Action
 {
-
-    void deploy( @Observes ActionRegistry builder )
-    {
-        builder.registerHandler( "/search",
-                                 HttpRequestHandlerBuilder.create()
-                                 .log()
-                                 .method( "GET" )
-                                 .add( this )
-                                 .end()
-                                 .build()
-        );
+    void deploy(@Observes ActionRegistry builder) {
+        
     }
 
     @Override
@@ -52,9 +41,7 @@ public class SearchAction
             throws HttpException,
                    IOException
     {
-        String term = request.getParam( "term");
-        
-        Logger.getGlobal().log( Level.INFO, term );
+        throw new UnsupportedOperationException( "Not supported yet." ); //To change body of generated methods, choose Tools | Templates.
     }
-
+    
 }

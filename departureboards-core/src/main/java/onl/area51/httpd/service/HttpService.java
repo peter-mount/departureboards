@@ -30,10 +30,12 @@ import onl.area51.httpd.HttpRequestHandlerBuilder;
 import org.apache.http.config.SocketConfig;
 import onl.area51.httpd.HttpServer;
 import onl.area51.httpd.HttpServerBuilder;
+import onl.area51.httpd.action.Action;
 import onl.area51.kernel.CommandArguments;
 import uk.trainwatch.util.config.Configuration;
 import uk.trainwatch.util.config.ConfigurationService;
-import onl.area51.httpd.action.ActionBuilder;
+import org.apache.http.HttpStatus;
+import onl.area51.httpd.action.Actions;
 
 @ApplicationScoped
 public class HttpService
@@ -69,7 +71,7 @@ public class HttpService
 
         LOG.log( Level.INFO, () -> "Creating http server " + serverInfo + " on port " + port );
 
-        server = HttpServerBuilder.builder()
+        HttpServerBuilder serverBuilder = HttpServerBuilder.builder()
                 // HTTP Server config
                 .setSocketConfig( SocketConfig.custom()
                         .setSoTimeout( httpdConfig.getInt( "socket.soTimeout", 15000 ) )
@@ -79,19 +81,17 @@ public class HttpService
                 .setServerInfo( serverInfo )
                 .setSslContext( null )
                 .setExceptionLogger( ex -> LOG.log( Level.SEVERE, null, ex ) )
-                .shutdown( httpdConfig.getLong( "shutdown.time", 5L ), httpdConfig.getEnum( "shutdown.unit", TimeUnit.class, TimeUnit.SECONDS ) )
-                // Notify any observers so they can register their handlers
-                .notify( CDI.current().getBeanManager()::fireEvent )
-                // All other content from jar resources if it exists
-                .registerHandler( "/*",
-                                  HttpRequestHandlerBuilder.create()
-                                  .log()
-                                  .method( "GET" )
-                                  .add( ActionBuilder.resourceAction( HttpService.class ) )
-                                  .end()
-                                  .build() )
-                // Finally build the server
-                .build();
+                .shutdown( httpdConfig.getLong( "shutdown.time", 5L ), httpdConfig.getEnum( "shutdown.unit", TimeUnit.class, TimeUnit.SECONDS ) );
+
+        // Default global action is to serve resources
+        Actions.registerClassResourceHandler( serverBuilder, HttpService.class );
+
+        serverBuilder.notify( CDI.current().getBeanManager()::fireEvent );
+
+        // Add global error handlers. As these are at the end, earlier ones take precedence
+        Actions.registerErrorHandlers( serverBuilder );
+
+        server = serverBuilder.build();
 
         LOG.log( Level.INFO, () -> "Starting http server " + serverInfo + " on port " + port );
 
