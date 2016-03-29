@@ -16,9 +16,6 @@
 package onl.area51.departureboards;
 
 import java.io.IOException;
-import java.net.URI;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
 import java.time.Duration;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
@@ -33,7 +30,6 @@ import onl.area51.httpd.action.Actions;
 import onl.area51.httpd.action.Request;
 import org.apache.http.HttpException;
 import org.apache.http.HttpStatus;
-import uk.trainwatch.util.MapBuilder;
 
 /**
  *
@@ -52,14 +48,8 @@ public class DisplayAction
     void deploy( @Observes ActionRegistry builder )
             throws IOException
     {
-        try( FileSystem fs = FileSystems.newFileSystem( URI.create( "cache://ref" ),
-                                                        MapBuilder.<String, Object>builder()
-                                                        .add( "fileSystemType", "cache" )
-                                                        .add( "fileSystemWrapper", "http" )
-                                                        .add( "remoteUrl", "http://fileserver/ref" )
-                                                        .build() ) ) {
-            departureBoards.loadTimeTable( fs.getPath( "timetable.xml.gz" ) );
-        }
+        departureBoards.loadReference();
+        departureBoards.loadTimeTable();
 
         Duration HOUR = Duration.ofHours( 1 );
         Duration DAY = Duration.ofDays( 1 );

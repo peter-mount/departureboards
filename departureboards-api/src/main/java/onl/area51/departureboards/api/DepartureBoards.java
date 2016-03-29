@@ -6,7 +6,6 @@
 package onl.area51.departureboards.api;
 
 import java.io.IOException;
-import java.nio.file.Path;
 import javax.json.JsonObject;
 
 /**
@@ -18,7 +17,10 @@ public interface DepartureBoards
 
     JsonObject departureBoards( String crs )
             throws IOException;
-    
-    void loadTimeTable( Path path )
+
+    void loadTimeTable()
+            throws IOException;
+
+    void loadReference()
             throws IOException;
 }
