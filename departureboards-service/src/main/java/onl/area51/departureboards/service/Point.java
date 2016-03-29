@@ -86,6 +86,17 @@ public class Point
 
     public JsonObjectBuilder toJson()
     {
+        JsonObjectBuilder b = toJsonImpl()
+                .add( "origin", journey.getOrigin().toJsonImpl() )
+                .add( "dest", journey.getDestination().toJsonImpl() );
+        add( b, "toc", journey.getToc() );
+        add( b, "headcode", journey.getTrainId() );
+        add( b, "cat", journey.getTrainCat() );
+        return b;
+    }
+
+    public JsonObjectBuilder toJsonImpl()
+    {
         JsonObjectBuilder b = Json.createObjectBuilder();
         add( b, "tpl", tpl );
         add( b, "plat", plat );
@@ -106,10 +117,23 @@ public class Point
                 .add( "ontime", isOntime() );
     }
 
+    public boolean isWithin( LocalTime s, LocalTime e )
+    {
+        LocalTime t = getTime();
+        if( s.isBefore( e ) ) {
+            // s<e so normal time
+            return t.isAfter( s ) && t.isBefore( e );
+        }
+        else {
+            // s>e then we have midnight to account for
+            return t.isBefore( s ) || t.isAfter( e );
+        }
+    }
+
     public JsonObjectBuilder toCPJson()
     {
         JsonObjectBuilder b = Json.createObjectBuilder();
-        add(b, "tpl", tpl );
+        add( b, "tpl", tpl );
         add( b, "time", getTime() );
         return b;
     }

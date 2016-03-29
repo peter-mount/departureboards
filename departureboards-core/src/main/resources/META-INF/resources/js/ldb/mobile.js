@@ -148,6 +148,11 @@ var LDB = (function () {
             LDB.reload();
     };
 
+    var locname = function (v, tpl) {
+        var l = v[tpl];
+        return l ? l.loc ? l.loc : tpl : tpl;
+    }
+
     var success = function (v) {
         UI.hideLoader();
         //reloadIn(30000);
@@ -201,7 +206,7 @@ var LDB = (function () {
             } else if (dep.pass) {
                 d1.append("Does not stop here");
             } else if (dep.dest) {
-                d1.append(dep.dest);
+                d1.append(locname(v.locref, dep.dest.tpl));
                 // via here
             } else {
                 d1.append("Check front of train");
@@ -216,44 +221,52 @@ var LDB = (function () {
                         .append($('<div></div>').addClass("ldbLate").append(dep.latereason));
             }
 
-            if (dep.term) {
+            if (dep.term && dep.origin) {
                 d = $('<div></div>').addClass("ldb-entbot").appendTo(row);
                 d1 = $('<div></div>').addClass("ldbLate").appendTo(d);
                 d1.append("This was the ")
                         .append(dep.toc)
-                        .append(dep.originTime)
+                        .append(" ")
+                        .append(dep.origin.time)
                         .append(" service from ")
-                        .append(dep.origin);
+                        .append(locname(v.locref, dep.origin.tpl));
                 // via here
             }
 
             // associations
 
             // calling points
-            if (dep.calling) {
+            if (dep.calling && !dep.term) {
                 d = $('<div></div>').addClass("ldb-entbot").appendTo(row);
                 d.append($('<span></span>').addClass("ldbHeader").append("Calling at: "));
                 $.each(dep.calling, function (i, cp) {
-                    $('<span></span>').appendTo(d).append(cp.tpl).append("&nbsp;(").append(cp.time).append(") ");
+                    $('<span></span>').appendTo(d).append(locname(v.locref, cp.tpl)).append("&nbsp;(").append(cp.time).append(") ");
                 });
             }
 
             d = $('<div></div>').addClass("ldb-entbot").appendTo(row);
+
             if (dep.length > 0) {
                 d.append($('<span></span>')
-                        .append("Formed&nbsp;of&nbsp").append(dep.length).append("&nbsp;coaches."));
+                        .append("Formed&nbsp;of&nbsp;").append(dep.length).append("&nbsp;coaches.&nbsp;"));
             }
 
             if (dep.toc) {
-                d.append($('<span></span>').append(dep.toc).append("&nbsp;service."));
+                d.append($('<span></span>').addClass("ldbHeader").append("Operator:&nbsp;"))
+                d.append($('<span></span>').append(dep.toc).append("&nbsp;"));
+            }
+            if (dep.headcode) {
+                d.append($('<span></span>').addClass("ldbHeader").append("HeadCode:&nbsp;"))
+                        .append($('<span></span>').append(dep.headcode).append("&nbsp;"));
             }
 
             if (dep.lastreport) {
                 d.append($('<span></span>').addClass("ldbHeader").append("Last report:"))
                         .append($('<span></span>').addClass("ldbDest")
-                                .append(dep.lastreport.tpl)
+                                .append(locname(v.locref, dep.lastreport.tpl))
                                 .append(' ')
-                                .append(dep.lastreport.time));
+                                .append(dep.lastreport.time)
+                                .append("&nbsp;"));
             }
 
             // Finish off

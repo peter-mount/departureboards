@@ -17,12 +17,14 @@ package onl.area51.departureboards.service;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -30,11 +32,12 @@ import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.json.Json;
-import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.xml.stream.XMLInputFactory;
@@ -43,6 +46,7 @@ import javax.xml.stream.XMLStreamReader;
 import onl.area51.departureboards.api.DepartureBoards;
 import uk.trainwatch.nre.darwin.reference.DarwinReferenceManager;
 import uk.trainwatch.nrod.location.TrainLocation;
+import uk.trainwatch.util.Functions;
 import uk.trainwatch.util.JsonUtils;
 import uk.trainwatch.util.TimeUtils;
 
@@ -71,44 +75,78 @@ public class DepartureBoardsService
             return null;
         }
 
-        TrainLocation loc = darwinReferenceManager.getLocationRefFromCrs( crs.toUpperCase() );
-        if( loc == null ) {
+        // A CRS can map to multiple locations (tiplocs)
+        List<TrainLocation> locs = darwinReferenceManager.getLocationRefsFromCrs( crs.toUpperCase() );
+        if( locs == null || locs.isEmpty() ) {
             return null;
         }
+
+        // Use first location for the main fields
+        TrainLocation loc = locs.get( 0 );
+
+        LocalTime now = LocalTime.now( TimeUtils.LONDON );
+        LocalTime st = now.minus( 1, ChronoUnit.MINUTES );
+        LocalTime et = now.plus( 1, ChronoUnit.HOURS );
+
+        // Calling points for each tiploc at this station
+        Set<Point> set = locs.stream()
+                .map( l -> stations.get( l.getTiploc() ) )
+                .filter( Objects::nonNull )
+                .flatMap( Collection::stream )
+                .collect( Collectors.toCollection( () -> new TreeSet<>( ( a, b ) -> a.getTime().compareTo( b.getTime() ) ) ) );
 
         JsonObjectBuilder ob = Json.createObjectBuilder()
                 .add( "crs", loc.getCrs() )
                 .add( "location", loc.getLocation() )
                 .add( "nr", loc.isMainline() )
-                .add( "dlr", loc.isDlr() )
-                .add( "tfl", loc.isTfl() );
+                // The departures
+                .add( "departures",
+                      set.stream()
+                      .filter( p -> p.isWithin( st, et ) )
+                      .map( p -> {
+                          return p.toJson()
+                                  // Only stopping calling points
+                                  .add( "calling",
+                                        p.getCallingPoints()
+                                        .stream()
+                                        .filter( cp -> cp.getType().isStop() )
+                                        .map( Point::toCPJson )
+                                        .collect( JsonUtils.collectJsonArray() ) );
+                      } )
+                      .collect( JsonUtils.collectJsonArray() )
+                )
+                // Add tiploc xref table
+                .add( "locref",
+                      set.stream()
+                      // Limit to just stops and within range
+                      .filter( p -> p.getType().isStop() && p.isWithin( st, et ) )
+                      // Expand to point, origin, destination, lastReport etc
+                      .flatMap( p -> Stream.concat( Stream.of( p,
+                                                               // lastReport also here
+                                                               p.getJourney().getOrigin(),
+                                                               p.getJourney().getDestination() ),
+                                                    // Also calling points in range
+                                                    p.getCallingPoints()
+                                                    .stream()
+                                                    .filter( cp -> cp.isWithin( st, et ) )
+                      ) )
+                      // Incase origin, dest, lastreport are null
+                      .filter( Objects::nonNull )
+                      // Now form a unique stream of tiplocs
+                      .map( Point::getTpl )
+                      .sorted()
+                      .distinct()
+                      // Map to TrainLocation (default to tpl if new/unknown)
+                      .map( Functions.applyWithDefault( darwinReferenceManager::getLocationRefFromTiploc, tpl -> new TrainLocation( tpl, "", tpl ) ) )
+                      // Form the JsonObject
+                      .collect( JsonUtils.collectJsonObject( TrainLocation::getTiploc,
+                                                             l -> Json.createObjectBuilder()
+                                                             .add( "crs", l.getCrs() )
+                                                             .add( "loc", l.getLocation() )
+                      ) )
+                );
 
-        JsonArrayBuilder ab = Json.createArrayBuilder();
-
-        Set<Point> set = stations.get( loc.getTiploc() );
-        if( set != null ) {
-            LocalTime now = LocalTime.now( TimeUtils.LONDON );
-            LocalTime st = now.minus( 5, ChronoUnit.MINUTES );
-            LocalTime et = now.plus( 1, ChronoUnit.HOURS );
-
-            set.stream()
-                    .filter( p -> p.getTime().isAfter( st ) )
-                    .filter( p -> p.getTime().isBefore( et ) )
-                    .map( p -> {
-                        return p.toJson()
-                                // Only stopping calling points
-                                .add( "calling",
-                                      p.getCallingPoints()
-                                      .stream()
-                                      .filter( cp -> cp.getType().isStop() )
-                                      .map( Point::toCPJson )
-                                      .collect( JsonUtils.collectJsonArray() ) );
-                    } )
-                    .forEach( ab::add );
-        }
-
-        return ob.add( "departures", ab )
-                .build();
+        return ob.build();
     }
 
     @Override
