@@ -15,6 +15,7 @@
  */
 package onl.area51.departureboards;
 
+import java.util.function.UnaryOperator;
 import onl.area51.httpd.action.Action;
 import onl.area51.httpd.tiles.TileBuilders;
 
@@ -26,6 +27,8 @@ public interface LayoutBuilder
 {
 
     LayoutBuilder setTitle( String title );
+
+    LayoutBuilder setTitleTransform( UnaryOperator titleTransform );
 
     LayoutBuilder setBanner( Action banner );
 
@@ -46,10 +49,19 @@ public interface LayoutBuilder
             private String title;
             private Action body, banner, header, footer, cookie;
 
+            private UnaryOperator titleTransform = UnaryOperator.identity();
+
             @Override
             public LayoutBuilder setTitle( String title )
             {
                 this.title = title;
+                return this;
+            }
+
+            @Override
+            public LayoutBuilder setTitleTransform( UnaryOperator titleTransform )
+            {
+                this.titleTransform = titleTransform;
                 return this;
             }
 
@@ -93,6 +105,7 @@ public interface LayoutBuilder
             {
                 return TileBuilders.layoutMainBuilder()
                         .setTitle( title )
+                        .setTitleTransform( titleTransform )
                         .setHeader( StandardTiles.HTML_HEADER )
                         .setBody( r -> r.getResponse()
                                 .div()
@@ -126,7 +139,7 @@ public interface LayoutBuilder
                                 .exec( cookie )
                                 .end()
                                 // Loading div, must not be shortened
-                                .begin( "div", true)
+                                .begin( "div", true )
                                 .id( "loading" )
                                 .end()
                         )

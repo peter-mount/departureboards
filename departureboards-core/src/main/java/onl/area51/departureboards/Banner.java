@@ -16,6 +16,7 @@
 package onl.area51.departureboards;
 
 import java.io.IOException;
+import javax.json.JsonObject;
 import onl.area51.httpd.action.Action;
 import onl.area51.httpd.action.Request;
 import org.apache.http.HttpException;
@@ -45,8 +46,23 @@ public enum Banner
                     ._class( "ldbLoc" )
                     .h1()
                     .write( "Realtime Departure Boards" )
-                    .end()
                     .end();
+        }
+    },
+    STATION
+    {
+
+        @Override
+        public void apply( Request request )
+                throws HttpException,
+                       IOException
+        {
+            request.getResponse()
+                    .a( "/" )
+                    ._class( "ldbbutton" )
+                    .write( "Choose Another Station" )
+                    .end()
+                    .exec( Banner::commonButtons );
         }
     };
 

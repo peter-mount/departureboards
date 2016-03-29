@@ -22,8 +22,10 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.json.Json;
 import javax.json.JsonArray;
+import javax.json.JsonObject;
 import onl.area51.departureboards.api.StationSearch;
 import uk.trainwatch.nre.darwin.reference.DarwinReferenceManager;
+import uk.trainwatch.nrod.location.TrainLocation;
 import uk.trainwatch.util.JsonUtils;
 
 /**
@@ -52,6 +54,19 @@ public class StationSearchService
                 )
                 .collect( JsonUtils.collectJsonArray() )
                 .build();
+    }
+
+    @Override
+    public JsonObject lookupCrs( String crs )
+            throws IOException
+    {
+        TrainLocation loc = darwinReferenceManager.getLocationRefFromCrs( crs );
+
+        if( loc != null ) {
+            return loc.toJson().build();
+        }
+
+        return null;
     }
 
 }

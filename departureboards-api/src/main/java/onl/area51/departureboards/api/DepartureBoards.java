@@ -6,19 +6,19 @@
 package onl.area51.departureboards.api;
 
 import java.io.IOException;
-import javax.json.JsonArray;
+import java.nio.file.Path;
 import javax.json.JsonObject;
 
 /**
  *
  * @author peter
  */
-public interface StationSearch
+public interface DepartureBoards
 {
 
-    JsonArray search( String term )
+    JsonObject departureBoards( String crs )
             throws IOException;
-
-    JsonObject lookupCrs( String crs )
+    
+    void loadTimeTable( Path path )
             throws IOException;
 }
