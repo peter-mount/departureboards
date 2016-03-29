@@ -15,46 +15,33 @@
  */
 package onl.area51.departureboards;
 
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
+import onl.area51.departureboards.api.StationSearch;
 import onl.area51.httpd.action.ActionRegistry;
 import onl.area51.httpd.HttpRequestHandlerBuilder;
-import onl.area51.httpd.action.Action;
-import onl.area51.httpd.action.Request;
-import org.apache.http.HttpException;
+import onl.area51.httpd.action.Actions;
+import onl.area51.departureboards.api.JsonEntity;
 
 /**
+ * Exposes the {@link StationSearch} API to JQuery on the home page which allows the user to search for a station.
  *
  * @author peter
  */
-@ApplicationScoped
+@Dependent
 public class SearchAction
-        implements Action
 {
 
-    void deploy( @Observes ActionRegistry builder )
+    void deploy( @Observes ActionRegistry builder, StationSearch stationSearch )
     {
         builder.registerHandler( "/search",
                                  HttpRequestHandlerBuilder.create()
                                  .log()
                                  .method( "GET" )
-                                 .add( this )
+                                 .add( r -> Actions.sendOk( r, new JsonEntity( stationSearch.search( r.getParam( "term" ) ) ) ) )
                                  .end()
                                  .build()
         );
-    }
-
-    @Override
-    public void apply( Request request )
-            throws HttpException,
-                   IOException
-    {
-        String term = request.getParam( "term");
-        
-        Logger.getGlobal().log( Level.INFO, term );
     }
 
 }

@@ -13,6 +13,8 @@
     <modules>
         <module>departureboards-core</module>
         <module>docker</module>
+        <module>departureboards-api</module>
+        <module>departureboards-service</module>
     </modules>
     
     <properties>

@@ -26,15 +26,12 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
-import onl.area51.httpd.HttpRequestHandlerBuilder;
 import org.apache.http.config.SocketConfig;
 import onl.area51.httpd.HttpServer;
 import onl.area51.httpd.HttpServerBuilder;
-import onl.area51.httpd.action.Action;
 import onl.area51.kernel.CommandArguments;
 import uk.trainwatch.util.config.Configuration;
 import uk.trainwatch.util.config.ConfigurationService;
-import org.apache.http.HttpStatus;
 import onl.area51.httpd.action.Actions;
 
 @ApplicationScoped
