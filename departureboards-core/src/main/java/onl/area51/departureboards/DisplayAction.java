@@ -146,15 +146,15 @@ public class DisplayAction
                 .div().id( "board" ).end()
                 .div().id( "message" ).end()
                 .script()
-                .write( "var ldb, ui;" )
-                .write( "$(document).ready(function () {" )
-                .write( "setTimeout(function () {" )
-                .write( "if (!ui) ui = new UI();" )
+                .write( "\nvar ldb, ui;\n" )
+                .write( "$(document).ready(function () {\n" )
+                .write( "setTimeout(function () {\n" )
+                .write( "if (!ui) ui = new UI();\n" )
                 .write( "if (!ldb) ldb = new LDB('" )
                 .write( crs )
-                .write( "');" )
-                .write( "}, 250);" )
-                .write( "});" )
+                .write( "');\n" )
+                .write( "}, 250);\n" )
+                .write( "});\n" )
                 .end();
     }
 

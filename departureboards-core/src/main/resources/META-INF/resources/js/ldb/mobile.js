@@ -150,8 +150,119 @@ var LDB = (function () {
 
     var success = function (v) {
         UI.hideLoader();
-        reloadIn(60000);
-        LDB.board.empty().append(v);
+        //reloadIn(30000);
+        //LDB.board.empty().append(v);
+        LDB.board.empty();
+
+        var d = $('<div></div>').addClass("ldbWrapper").appendTo(LDB.board);
+
+        var tab = $('<table></table>').addClass("ldbTable").appendTo(d);
+
+        // station messages here
+
+        // Departure details
+        $.each(v.departures, function (i, dep) {
+            console.log(dep);
+            var row = $('<div></div>').addClass("row").appendTo(tab);
+            d = $('<div></div>').addClass("ldb-enttop").appendTo(row);
+
+            var d1 = $('<div></div>').addClass("ldbCol").addClass("ldbForecast").appendTo(d);
+            if (dep.canc) {
+                d1.addClass("ldbCancelled").append("Cancelled");
+            } else if (dep.delayed) {
+                d1.addClass("ldbLate").append("Delayed");
+            } else if (dep.arrived) {
+                d1.addClass("ldbOntime").append("Arrived");
+            } else if (dep.ontime) {
+                d1.addClass("ldbOntime").append("On&nbsp;Time");
+            } else if (dep.time) {
+                d1.append(dep.time);
+            } else {
+                d1.append("N/A");
+            }
+
+            d1 = $('<div></div>').addClass("ldbCol").addClass("ldbSched").appendTo(d);
+            if (dep.timetable) {
+                d1.append(dep.timetable);
+            } else {
+                d1.append("&nbsp;");
+            }
+
+            d1 = $('<div></div>').addClass("ldbCol").addClass("ldbPlat").appendTo(d);
+            if (dep.platsup) {
+                d1.append("&nbsp;");
+            } else {
+                d1.append(dep.plat);
+            }
+
+            d1 = $('<div></div>').addClass("ldbCont").appendTo(d);
+            if (dep.term) {
+                d1.append("Terminates Here");
+            } else if (dep.pass) {
+                d1.append("Does not stop here");
+            } else if (dep.dest) {
+                d1.append(dep.dest);
+                // via here
+            } else {
+                d1.append("Check front of train");
+            }
+
+            // Cancelled or late reason
+            if (dep.canc) {
+                $('<div></div>').addClass("ldb-entbot").appendTo(row)
+                        .append($('<div></div>').addClass("ldbCancelled").append(dep.cancreason));
+            } else if (dep.latereason > 0) {
+                $('<div></div>').addClass("ldb-entbot").appendTo(row)
+                        .append($('<div></div>').addClass("ldbLate").append(dep.latereason));
+            }
+
+            if (dep.term) {
+                d = $('<div></div>').addClass("ldb-entbot").appendTo(row);
+                d1 = $('<div></div>').addClass("ldbLate").appendTo(d);
+                d1.append("This was the ")
+                        .append(dep.toc)
+                        .append(dep.originTime)
+                        .append(" service from ")
+                        .append(dep.origin);
+                // via here
+            }
+
+            // associations
+
+            // calling points
+
+            d = $('<div></div>').addClass("ldb-entbot").appendTo(row);
+            if (dep.length > 0) {
+                d.append($('<span></span>')
+                        .append("Formed&nbsp;of&nbsp").append(dep.length).append("&nbsp;coaches."));
+            }
+
+            if (dep.toc) {
+                d.append($('<span></span>').append(dep.toc).append("&nbsp;service."));
+            }
+
+            if (dep.lastreport) {
+                d.append($('<span></span>').addClass("ldbHeader").append("Last report:"))
+                        .append($('<span></span>').addClass("ldbDest")
+                                .append(dep.lastreport.tpl)
+                                .append(' ')
+                                .append(dep.lastreport.time));
+            }
+
+            // Finish off
+            if (dep.terminated) {
+                row.addClass("trainTerminated");
+                //callist.addClass("callListTerminated");
+            }
+            if (dep.canc) {
+                row.addClass("callListCancelled");
+            }
+            if (dep.pass) {
+                row.addClass("doesNotStopHere");
+            }
+
+        });
+
         LDB.applySettings();
     };
 

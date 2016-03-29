@@ -15,12 +15,13 @@
  */
 package onl.area51.departureboards.service;
 
+import java.time.Duration;
 import java.time.LocalTime;
-import java.util.List;
 import java.util.Objects;
 import javax.json.Json;
 import javax.json.JsonObjectBuilder;
 import javax.xml.stream.XMLStreamReader;
+import uk.trainwatch.util.TimeUtils;
 
 /**
  *
@@ -32,24 +33,36 @@ public class Point
 
     private static final String TTNS = "";//"http://www.thalesgroup.com/rtti/XmlTimetable/v8";
 
+    private final int hashCode;
     private final Type type;
-    private final String rid;
+    private final Journey journey;
     private final String tpl;
-    private final String act;
-    private final LocalTime pta;
-    private final LocalTime wta;
-    private final LocalTime ptd;
-    private final LocalTime wtd;
-    private final LocalTime wtp;
-    private final String plat;
+    private String act;
+    private LocalTime pta;
+    private LocalTime wta;
+    private LocalTime ptd;
+    private LocalTime wtd;
+    private LocalTime wtp;
+    private String plat;
+
+    private LocalTime eta;
+    private LocalTime etd;
+    private LocalTime etp;
+    private boolean delayed;
+    private boolean arrived;
+    private boolean platsup;
+
+    private LocalTime lastUpdated;
+
     private Point next;
     private Point prev;
 
     @SuppressWarnings("LeakingThisInConstructor")
-    public Point( Journey j, XMLStreamReader r )
+    public Point( Journey journey, XMLStreamReader r )
     {
+        this.journey = journey;
+
         this.type = Type.valueOf( r.getLocalName() );
-        this.rid = j.getRid();
         this.tpl = r.getAttributeValue( TTNS, "tpl" );
         this.act = r.getAttributeValue( TTNS, "act" );
         this.plat = r.getAttributeValue( TTNS, "plat" );
@@ -59,22 +72,33 @@ public class Point
         this.ptd = Point.getTime( r, "ptd" );
         this.wtd = Point.getTime( r, "wtd" );
         this.wtp = Point.getTime( r, "wtp" );
-        j.add( this );
+
+        lastUpdated = LocalTime.now( TimeUtils.LONDON );
+
+        journey.add( this );
+        hashCode = (67 * (67 * journey.hashCode()) + tpl.hashCode()) + journey.getCallingPoints().size();
     }
 
     public JsonObjectBuilder toJson()
     {
         JsonObjectBuilder b = Json.createObjectBuilder();
-        add(b,"tpl",tpl);
-        add(b,"plat",plat);
-        add(b,"time",getTime());
-        add(b,"act",act);
-        add(b,"pta",pta);
-        add(b,"ptd",ptd);
-        add(b,"wta",wta);
-        add(b,"wtd",wtd);
-        add(b,"wtp",wtp);
-        return b;
+        add( b, "tpl", tpl );
+        add( b, "plat", plat );
+        add( b, "time", getTime() );
+        add( b, "timetable", getTimetableTime() );
+        add( b, "act", act );
+        add( b, "pta", pta );
+        add( b, "ptd", ptd );
+        add( b, "wta", wta );
+        add( b, "wtd", wtd );
+        add( b, "wtp", wtp );
+
+        return b.add( "term", type.isTerm() )
+                .add( "pass", type.isPass() )
+                .add( "platsup", isPlatsup() )
+                .add( "arrived", isArrived() )
+                .add( "delayed", isDelayed() )
+                .add( "ontime", isOntime() );
     }
 
     private static void add( JsonObjectBuilder b, String n, String s )
@@ -104,6 +128,20 @@ public class Point
      * @return
      */
     public LocalTime getTime()
+    {
+        if( etd != null ) {
+            return etd;
+        }
+        if( eta != null ) {
+            return eta;
+        }
+        if( etp != null ) {
+            return etp;
+        }
+        return getTimetableTime();
+    }
+
+    public LocalTime getTimetableTime()
     {
         if( ptd != null ) {
             return ptd;
@@ -163,10 +201,7 @@ public class Point
     @Override
     public int hashCode()
     {
-        int hash = 3;
-        hash = 67 * hash + Objects.hashCode( rid );
-        hash = 67 * hash + Objects.hashCode( tpl );
-        return hash;
+        return hashCode;
     }
 
     @Override
@@ -179,7 +214,7 @@ public class Point
             return false;
         }
         final Point other = (Point) obj;
-        return Objects.equals( this.rid, other.rid )
+        return Objects.equals( this.journey, other.journey )
                && Objects.equals( this.tpl, other.tpl )
                && Objects.equals( this.prev, other.prev )
                && Objects.equals( this.next, other.next );
@@ -190,9 +225,14 @@ public class Point
         return type;
     }
 
+    public Journey getJourney()
+    {
+        return journey;
+    }
+
     public String getRid()
     {
-        return rid;
+        return journey.getRid();
     }
 
     public String getTpl()
@@ -230,14 +270,97 @@ public class Point
         return wtp;
     }
 
+    public LocalTime getLastUpdated()
+    {
+        return lastUpdated;
+    }
+
+    public LocalTime getEta()
+    {
+        return eta;
+    }
+
+    public LocalTime getEtd()
+    {
+        return etd;
+    }
+
+    public LocalTime getEtp()
+    {
+        return etp;
+    }
+
+    public boolean isDelayed()
+    {
+        return delayed;
+    }
+
+    public boolean isOntime()
+    {
+        LocalTime a = getTime();
+        LocalTime b = getTimetableTime();
+        Duration d;
+        if( a.isAfter( b ) ) {
+            d = Duration.between( b, a );
+        }
+        else {
+            d = Duration.between( a, b );
+        }
+        return d.getSeconds() <= 60;
+    }
+
+    public boolean isArrived()
+    {
+        return arrived;
+    }
+
+    public boolean isPlatsup()
+    {
+        return platsup;
+    }
+
     public static enum Type
     {
-        OR,
-        OPOR,
-        PP,
-        IP,
-        DT,
-        OPDT
+        OR( true, false, true, false ),
+        OPOR( true, false, true, false ),
+        PP( false, false, false, true ),
+        IP( false, false, true, false ),
+        DT( false, true, true, false ),
+        OPDT( false, true, true, false );
+
+        private final boolean origin;
+        private final boolean term;
+        private final boolean stop;
+        private final boolean pass;
+
+        private Type( boolean origin, boolean term, boolean stop, boolean pass )
+        {
+            this.origin = origin;
+            this.term = term;
+            this.stop = stop;
+            this.pass = pass;
+        }
+
+        public boolean isOrigin()
+        {
+            return origin;
+        }
+
+        public boolean isPass()
+        {
+            return pass;
+        }
+
+        public boolean isStop()
+        {
+            return stop;
+        }
+
+        public boolean isTerm()
+        {
+            return term;
+        }
+
     }
 
 }

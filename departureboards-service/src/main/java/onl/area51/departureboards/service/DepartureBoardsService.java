@@ -42,6 +42,7 @@ import javax.xml.stream.XMLStreamReader;
 import onl.area51.departureboards.api.DepartureBoards;
 import uk.trainwatch.nre.darwin.reference.DarwinReferenceManager;
 import uk.trainwatch.nrod.location.TrainLocation;
+import uk.trainwatch.util.TimeUtils;
 
 /**
  *
@@ -84,7 +85,7 @@ public class DepartureBoardsService
 
         Set<Point> set = stations.get( loc.getTiploc() );
         if( set != null ) {
-            LocalTime now = LocalTime.now();
+            LocalTime now = LocalTime.now( TimeUtils.LONDON );
             LocalTime st = now.minus( 5, ChronoUnit.MINUTES );
             LocalTime et = now.plus( 1, ChronoUnit.HOURS );
 
@@ -132,7 +133,7 @@ public class DepartureBoardsService
         int jcount = 0;
         int scount = 0;
 
-        LocalTime now = LocalTime.now();
+        LocalTime now = LocalTime.now( TimeUtils.LONDON );
 
         XMLInputFactory inputFactory = XMLInputFactory.newInstance();
         XMLStreamReader r = inputFactory.createXMLStreamReader( is );
@@ -186,7 +187,7 @@ public class DepartureBoardsService
                             }
 
                             journey = null;
-                            if( (jcount % 5000) == 0 ) {
+                            if( (jcount % 20000) == 0 ) {
                                 LOG.log( Level.INFO, "Processed {0} journeys", jcount );
                             }
                             break;
