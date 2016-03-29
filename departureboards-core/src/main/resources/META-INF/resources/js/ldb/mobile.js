@@ -230,6 +230,13 @@ var LDB = (function () {
             // associations
 
             // calling points
+            if (dep.calling) {
+                d = $('<div></div>').addClass("ldb-entbot").appendTo(row);
+                d.append($('<span></span>').addClass("ldbHeader").append("Calling at: "));
+                $.each(dep.calling, function (i, cp) {
+                    $('<span></span>').appendTo(d).append(cp.tpl).append("&nbsp;(").append(cp.time).append(") ");
+                });
+            }
 
             d = $('<div></div>').addClass("ldb-entbot").appendTo(row);
             if (dep.length > 0) {

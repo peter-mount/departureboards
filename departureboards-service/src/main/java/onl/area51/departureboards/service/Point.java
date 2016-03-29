@@ -17,6 +17,8 @@ package onl.area51.departureboards.service;
 
 import java.time.Duration;
 import java.time.LocalTime;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import javax.json.Json;
 import javax.json.JsonObjectBuilder;
@@ -37,6 +39,8 @@ public class Point
     private final Type type;
     private final Journey journey;
     private final String tpl;
+    private int seq;
+
     private String act;
     private LocalTime pta;
     private LocalTime wta;
@@ -76,6 +80,7 @@ public class Point
         lastUpdated = LocalTime.now( TimeUtils.LONDON );
 
         journey.add( this );
+        seq = journey.getCallingPoints().indexOf( this );
         hashCode = (67 * (67 * journey.hashCode()) + tpl.hashCode()) + journey.getCallingPoints().size();
     }
 
@@ -99,6 +104,14 @@ public class Point
                 .add( "arrived", isArrived() )
                 .add( "delayed", isDelayed() )
                 .add( "ontime", isOntime() );
+    }
+
+    public JsonObjectBuilder toCPJson()
+    {
+        JsonObjectBuilder b = Json.createObjectBuilder();
+        add(b, "tpl", tpl );
+        add( b, "time", getTime() );
+        return b;
     }
 
     private static void add( JsonObjectBuilder b, String n, String s )
@@ -193,6 +206,11 @@ public class Point
         this.prev = prev;
     }
 
+    public int getSeq()
+    {
+        return seq;
+    }
+
     public String getPlat()
     {
         return plat;
@@ -228,6 +246,18 @@ public class Point
     public Journey getJourney()
     {
         return journey;
+    }
+
+    public List<Point> getCallingPoints()
+    {
+        List<Point> cp = journey.getCallingPoints();
+        int s = cp.size();
+        if( (seq + 1) < s ) {
+            return cp.subList( seq + 1, s );
+        }
+        else {
+            return Collections.emptyList();
+        }
     }
 
     public String getRid()

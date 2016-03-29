@@ -17,6 +17,7 @@ package onl.area51.departureboards.service;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -42,6 +43,7 @@ import javax.xml.stream.XMLStreamReader;
 import onl.area51.departureboards.api.DepartureBoards;
 import uk.trainwatch.nre.darwin.reference.DarwinReferenceManager;
 import uk.trainwatch.nrod.location.TrainLocation;
+import uk.trainwatch.util.JsonUtils;
 import uk.trainwatch.util.TimeUtils;
 
 /**
@@ -92,7 +94,16 @@ public class DepartureBoardsService
             set.stream()
                     .filter( p -> p.getTime().isAfter( st ) )
                     .filter( p -> p.getTime().isBefore( et ) )
-                    .map( Point::toJson )
+                    .map( p -> {
+                        return p.toJson()
+                                // Only stopping calling points
+                                .add( "calling",
+                                      p.getCallingPoints()
+                                      .stream()
+                                      .filter( cp -> cp.getType().isStop() )
+                                      .map( Point::toCPJson )
+                                      .collect( JsonUtils.collectJsonArray() ) );
+                    } )
                     .forEach( ab::add );
         }
 
