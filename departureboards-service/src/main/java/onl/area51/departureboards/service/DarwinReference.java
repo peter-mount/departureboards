@@ -70,7 +70,7 @@ public class DarwinReference
 
     public List<LocationRef> getLocationsFromCrs( String crs )
     {
-        List<LocationRef> l = crs == null ? null : this.crs.get( crs.toUpperCase() );
+        List<LocationRef> l = crs == null ? null : this.crs.get( crs.toUpperCase().trim() );
         return l == null ? Collections.emptyList() : l;
     }
 
@@ -82,21 +82,27 @@ public class DarwinReference
 
     public LocationRef getLocationFromTiploc( String tiploc )
     {
-        return tiploc == null ? null : this.tiploc.get( tiploc.toUpperCase() );
+        return tiploc == null ? null : this.tiploc.get( tiploc.toUpperCase().trim() );
     }
 
+    /**
+     * Like {@link #getLocationFromTiploc(java.lang.String)} except this will also try to resolve
+     * a tiploc by looking at the NR timetable data if it's not in darwin.
+     * @param tiploc
+     * @return 
+     */
     public LocationRef resovleTiploc( String tiploc )
     {
         if( tiploc == null ) {
             return null;
         }
-        return this.tiploc.computeIfAbsent( tiploc.toUpperCase(),
+        return this.tiploc.computeIfAbsent( tiploc.toUpperCase().trim(),
                                             tpl -> {
-                                                // See if NR has it
-                                                TrainLocation tl = trainLocationFactory.getTrainLocationByTiploc( tpl);
+                                                // See if NR has it in CIF file
+                                                TrainLocation tl = trainLocationFactory.getTrainLocationByTiploc( tpl );
                                                 if( tl == null ) {
                                                     // No then default to just tpl
-                                                    return new LocationRef( tpl, "", tpl, null );
+                                                    return new LocationRef( tpl, "", "{" + tpl + "}", null );
                                                 }
                                                 return new LocationRef( tl.getLocation(), tl.getCrs(), tl.getTiploc(), null );
                                             } );
@@ -184,12 +190,14 @@ public class DarwinReference
                                                                r.getAttributeValue( "", "crs" ),
                                                                r.getAttributeValue( "", "tpl" ),
                                                                r.getAttributeValue( "", "toc" ) );
-                            LocationRef orig = tiploc.put( loc.getTiploc(), loc );
-                            if( orig != null && orig.getCrs() != null ) {
-                                getCrs( orig.getCrs() ).remove( orig );
-                            }
-                            if( loc.getCrs() != null ) {
-                                getCrs( loc.getCrs() ).add( loc );
+                            if( !loc.getTiploc().equals( loc.getLocation() ) ) {
+                                LocationRef orig = tiploc.put( loc.getTiploc(), loc );
+                                if( orig != null && orig.getCrs() != null ) {
+                                    getCrs( orig.getCrs() ).remove( orig );
+                                }
+                                if( loc.getCrs() != null ) {
+                                    getCrs( loc.getCrs() ).add( loc );
+                                }
                             }
                         }
                         break;

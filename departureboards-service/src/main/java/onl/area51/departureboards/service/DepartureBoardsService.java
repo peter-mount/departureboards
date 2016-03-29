@@ -87,17 +87,14 @@ public class DepartureBoardsService
                 // Add tiploc xref table
                 .add( "locref",
                       set.stream()
-                      // Limit to just stops and within range
-                      .filter( p -> p.getType().isStop() && p.isWithin( st, et ) )
+                      .filter( p -> p.isWithin( st, et ) )
                       // Expand to point, origin, destination, lastReport etc
                       .flatMap( p -> Stream.concat( Stream.of( p,
                                                                // lastReport also here
                                                                p.getJourney().getOrigin(),
                                                                p.getJourney().getDestination() ),
-                                                    // Also calling points in range
-                                                    p.getCallingPoints()
-                                                    .stream()
-                                                    .filter( cp -> cp.isWithin( st, et ) )
+                                                    // Also calling points
+                                                    p.getCallingPoints().stream()
                       ) )
                       // Incase origin, dest, lastreport are null
                       .filter( Objects::nonNull )

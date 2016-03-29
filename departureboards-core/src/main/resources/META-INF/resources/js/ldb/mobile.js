@@ -153,9 +153,14 @@ var LDB = (function () {
         return l ? l.loc ? l.loc : tpl : tpl;
     }
 
+    var tocname = function (v, toc) {
+        var l = v[toc];
+        return l ? l : toc;
+    }
+
     var success = function (v) {
         UI.hideLoader();
-        //reloadIn(30000);
+        reloadIn(30000);
         //LDB.board.empty().append(v);
         LDB.board.empty();
 
@@ -225,7 +230,7 @@ var LDB = (function () {
                 d = $('<div></div>').addClass("ldb-entbot").appendTo(row);
                 d1 = $('<div></div>').addClass("ldbLate").appendTo(d);
                 d1.append("This was the ")
-                        .append(dep.toc)
+                        .append(tocname(v.opref,dep.toc))
                         .append(" ")
                         .append(dep.origin.time)
                         .append(" service from ")
@@ -253,7 +258,7 @@ var LDB = (function () {
 
             if (dep.toc) {
                 d.append($('<span></span>').addClass("ldbHeader").append("Operator:&nbsp;"))
-                d.append($('<span></span>').append(dep.toc).append("&nbsp;"));
+                d.append($('<span></span>').append(tocname(v.opref, dep.toc)).append("&nbsp;"));
             }
             if (dep.headcode) {
                 d.append($('<span></span>').addClass("ldbHeader").append("HeadCode:&nbsp;"))

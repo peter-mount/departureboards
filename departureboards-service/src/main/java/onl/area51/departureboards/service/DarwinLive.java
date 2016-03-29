@@ -25,7 +25,6 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.time.LocalTime;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -40,7 +39,6 @@ import javax.inject.Inject;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-import onl.area51.departureboards.api.LocationRef;
 import uk.trainwatch.util.MapBuilder;
 import uk.trainwatch.util.TimeUtils;
 
@@ -55,6 +53,8 @@ public class DarwinLive
     private static final String TTNS = "http://www.thalesgroup.com/rtti/XmlTimetable/v8";
 
     private static final Logger LOG = Logger.getGlobal();
+
+    private static final LocalTime DARWIN_MIDNIGHT = LocalTime.of( 2, 0 );
 
     @Inject
     private DarwinReference darwinReference;
@@ -163,14 +163,16 @@ public class DarwinLive
                         case "Journey":
                             Objects.requireNonNull( journey, "No journey" );
 
-                            if( journey.getDestination().getTime().isBefore( now ) ) {
+                            LocalTime jt = journey.getDestination().getTime();
+                            if( jt.isBefore( now ) && jt.isAfter( DARWIN_MIDNIGHT ) ) {
                                 scount++;
                             }
                             else {
                                 journeys.put( journey.getRid(), journey );
                                 journey.getCallingPoints()
                                         .forEach( p -> {
-                                            if( p.getTime().isAfter( now ) ) {
+                                            LocalTime pt = p.getTime();
+                                            if( pt.isAfter( now ) || pt.isBefore( DARWIN_MIDNIGHT ) ) {
                                                 stations.computeIfAbsent( p.getTpl(), tpl -> new TreeSet<>() )
                                                         .add( p );
                                             }

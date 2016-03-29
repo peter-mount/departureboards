@@ -126,7 +126,7 @@ public class Point
         }
         else {
             // s>e then we have midnight to account for
-            return t.isBefore( s ) || t.isAfter( e );
+            return t.isAfter( s ) || t.isBefore( e );
         }
     }
 
