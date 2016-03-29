@@ -19,9 +19,12 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import javax.json.Json;
 import javax.json.JsonArray;
 import onl.area51.departureboards.api.StationSearch;
+import uk.trainwatch.nre.darwin.reference.DarwinReferenceManager;
+import uk.trainwatch.util.JsonUtils;
 
 /**
  *
@@ -32,17 +35,22 @@ public class StationSearchService
         implements StationSearch
 {
 
+    @Inject
+    private DarwinReferenceManager darwinReferenceManager;
+
     @Override
     public JsonArray search( String term )
             throws IOException
     {
         Logger.getGlobal().log( Level.INFO, () -> "Searching for: " + term );
-        return Json.createArrayBuilder()
-                .add( Json.createObjectBuilder()
-                        .add( "label", "Maidstone East [MDE]" )
-                        .add( "value", "Maidstone East" )
-                        .add( "crs", "MDE" )
+
+        return darwinReferenceManager.searchLocations( term )
+                .map( l -> Json.createObjectBuilder()
+                        .add( "label", l.getLocation() + " [" + l.getCrs() + "]" )
+                        .add( "value", l.getLocation() )
+                        .add( "crs", l.getCrs() )
                 )
+                .collect( JsonUtils.collectJsonArray() )
                 .build();
     }
 
