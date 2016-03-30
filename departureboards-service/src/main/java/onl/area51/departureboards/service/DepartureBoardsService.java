@@ -18,8 +18,10 @@ package onl.area51.departureboards.service;
 import java.io.IOException;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -64,7 +66,24 @@ public class DepartureBoardsService
         LocalTime st = now.minus( 1, ChronoUnit.MINUTES );
         LocalTime et = now.plus( 1, ChronoUnit.HOURS );
 
-        // Calling points for each tiploc at this station
+        Set<String> tpls = new HashSet<>();
+        Set<String> tocs = new HashSet<>();
+
+        Consumer<Point> addPoint = p -> {
+            if( p != null ) {
+                tpls.add( p.getTpl() );
+            }
+        };
+
+        Consumer<Journey> addJourney = j -> {
+            addPoint.accept( j.getOrigin() );
+            addPoint.accept( j.getDestination() );
+            String t = j.getToc();
+            if( t != null ) {
+                tocs.add( t );
+            }
+        };
+
         Set<Point> set = darwinLive.getDeparturesByCrs( crs );
 
         JsonObjectBuilder ob = Json.createObjectBuilder()
@@ -74,46 +93,29 @@ public class DepartureBoardsService
                 .add( "departures",
                       set.stream()
                       .filter( p -> p.isWithin( st, et ) )
-                      .map( p -> p.toJson()
-                              // Only stopping calling points
-                              .add( "calling",
-                                    p.getCallingPoints()
-                                    .stream()
-                                    .filter( cp -> cp.getType().isStop() )
-                                    .map( Point::toCPJson )
-                                    .collect( JsonUtils.collectJsonArray() ) ) )
+                      .map( p -> {
+                          addPoint.accept( p );
+                          addJourney.accept( p.getJourney() );
+                          return p.toJson()
+                                  // Only stopping calling points
+                                  .add( "calling",
+                                        p.getCallingPoints()
+                                        .stream()
+                                        .filter( cp -> cp.getType().isStop() )
+                                        .map( cp -> {
+                                            addPoint.accept( p );
+                                            return cp.toCPJson();
+                                        } )
+                                        .collect( JsonUtils.collectJsonArray() ) );
+                      } )
                       .collect( JsonUtils.collectJsonArray() )
                 )
                 // Add tiploc xref table
-                .add( "locref",
-                      set.stream()
-                      .filter( p -> p.isWithin( st, et ) )
-                      // Expand to point, origin, destination, lastReport etc
-                      .flatMap( p -> Stream.concat( Stream.of( p,
-                                                               // lastReport also here
-                                                               p.getJourney().getOrigin(),
-                                                               p.getJourney().getDestination() ),
-                                                    // Also calling points
-                                                    p.getCallingPoints().stream()
-                      ) )
-                      // Incase origin, dest, lastreport are null
-                      .filter( Objects::nonNull )
-                      // Now form a unique stream of tiplocs
-                      .map( Point::getTpl )
-                      .sorted()
-                      .distinct()
-                      // Map to TrainLocation (default to tpl if new/unknown)
+                .add( "locref", tpls.stream()
                       .map( darwinReference::resovleTiploc )
-                      // Form the JsonObject
                       .collect( JsonUtils.collectJsonObject( LocationRef::getTiploc, LocationRef::toSmallJson ) )
                 )
-                .add( "opref",
-                      set.stream()
-                      .filter( p -> p.getType().isStop() && p.isWithin( st, et ) )
-                      .map( p -> p.getJourney().getToc() )
-                      .filter( Objects::nonNull )
-                      .sorted()
-                      .distinct()
+                .add( "opref", tocs.stream()
                       .map( darwinReference::getToc )
                       .filter( Objects::nonNull )
                       .collect( JsonUtils.collectJsonObject( Toc::getToc, Toc::getName ) )
