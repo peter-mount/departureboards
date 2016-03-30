@@ -1,3 +1,4 @@
 /docker/target/
 /departureboards-service/target/
 /departureboards-api/target/
+/departureboards-core/target/

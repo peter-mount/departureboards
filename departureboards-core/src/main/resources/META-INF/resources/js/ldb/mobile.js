@@ -177,8 +177,17 @@ var LDB = (function () {
 
         // Departure details
         $.each(v.departures, function (i, dep) {
-            console.log(dep);
             var row = $('<div></div>').addClass("row").appendTo(tab);
+            if (dep.terminated) {
+                row.addClass("trainTerminated");
+            }
+            if (dep.canc) {
+                row.addClass("callListCancelled");
+            }
+            if (dep.pass) {
+                row.addClass("doesNotStopHere");
+            }
+
             d = $('<div></div>').addClass("ldb-enttop").appendTo(row);
 
             var d1 = $('<div></div>').addClass("ldbCol").addClass("ldbForecast").appendTo(d);
@@ -234,12 +243,7 @@ var LDB = (function () {
             if (dep.term && dep.origin) {
                 d = $('<div></div>').addClass("ldb-entbot").appendTo(row);
                 d1 = $('<div></div>').addClass("ldbLate").appendTo(d);
-                d1.append("This was the ")
-                        .append(tocname(v.opref, dep.toc))
-                        .append(" ")
-                        .append(dep.origin.time)
-                        .append(" service from ")
-                        .append(locname(v.locref, dep.origin.tpl));
+                d1.append("This was the " + tocname(v.opref, dep.toc) + " " + dep.origin.time + " service from " + locname(v.locref, dep.origin.tpl));
                 // via here
             }
 
@@ -247,18 +251,26 @@ var LDB = (function () {
 
             // calling points
             if (dep.calling && !dep.term) {
+                var cl = "callList";
+                if (dep.canc)
+                    cl = cl + " callListCancelled";
                 d = $('<div></div>').addClass("ldb-entbot").appendTo(row);
                 if (dep.eta)
                     d.append($('<span></span>').addClass("ldbHeader").append("Due:&nbsp;"))
                             .append($('<span></span>').append(dep.eta).append(" "));
-                d.append($('<span></span>').addClass("ldbHeader").append("Calling at: "));
+                if (dep.canc)
+                    d.append($('<span></span>').addClass("ldbHeader").append("Originally calling at: "));
+                else
+                    d.append($('<span></span>').addClass("ldbHeader").append("Calling at: "));
                 $.each(dep.calling, function (i, cp) {
                     $('<span></span>').appendTo(d)
+                            // fixme seems to add style display: none
+                            //.addClass(cl)
                             .append($("<a></a>")
                                     .attr({"href": "/mldb/" + loccrs(v.locref, cp.tpl)})
                                     .append(locname(v.locref, cp.tpl))
                                     )
-                            .append("&nbsp;(").append(cp.time).append(") ");
+                            .append("&nbsp;(" + cp.time + ") ");
                 });
             }
 
@@ -273,6 +285,10 @@ var LDB = (function () {
                 d.append($('<span></span>').addClass("ldbHeader").append("Operator:&nbsp;"))
                 d.append($('<span></span>').append(tocname(v.opref, dep.toc)).append("&nbsp;"));
             }
+            if (dep.length) {
+                d.append($('<span></span>')
+                        .append("Formed&nbsp;of&nbsp;" + dep.length + "&nbsp;coaches.&nbsp;"));
+            }
             if (dep.headcode) {
                 d.append($('<span></span>').addClass("ldbHeader").append("HeadCode:&nbsp;"))
                         .append($('<span></span>').append(dep.headcode).append("&nbsp;"));
@@ -281,28 +297,13 @@ var LDB = (function () {
             if (dep.lastreport) {
                 d.append($('<span></span>').addClass("ldbHeader").append("Last report:"))
                         .append($('<span></span>').addClass("ldbDest")
-                                .append(locname(v.locref, dep.lastreport.tpl))
-                                .append(' ')
-                                .append(dep.lastreport.time)
-                                .append("&nbsp;"));
+                                .append(locname(v.locref, dep.lastreport.tpl) + '&nbsp;' + dep.lastreport.time + "&nbsp;"));
             }
 
             // Debug mode, show if point is timetable or realtime
             //if (dep.tt) {
             d.append($('<span></span>').append(dep.tt ? "&#964;" : "&#948;").append("&nbsp;"));
             //}
-
-            // Finish off
-            if (dep.terminated) {
-                row.addClass("trainTerminated");
-                //callist.addClass("callListTerminated");
-            }
-            if (dep.canc) {
-                row.addClass("callListCancelled");
-            }
-            if (dep.pass) {
-                row.addClass("doesNotStopHere");
-            }
 
         });
 
