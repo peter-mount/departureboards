@@ -1,0 +1,363 @@
+/* LDB Standard Theme */
+
+.ldbLoc {
+    font-family: Arial;
+    font-size: 24pt;
+    text-align: center;
+    color: #fff;
+}
+.ldbUpdated {
+    color:#fff;
+    float:right;
+    font-size: 80%;
+}
+.ldbTable {
+    clear: both;
+    width: 100%;
+    font-family: Arial;
+    font-size: 24pt;
+    border-collapse: collapse;
+    table-layout: fixed;
+    background: #000;
+    color: #fff;
+}
+
+#inner-body .ldbTable {
+    border-bottom: 2px solid #ffffff;
+}
+
+.ldbTable a,
+.ldbTable a:hover,
+.ldbTable a:visited {
+    color: white;
+    text-decoration: none;
+}
+
+.altrow {
+    background: #121d34;
+}
+.ldbHead {
+    border-collapse: collapse;
+    color: #ffff00;
+    margin: 0px;
+    padding: 6px 10px;
+    font-size: 130%;
+    text-align: left;
+    font-weight: bold;
+}
+
+.ldb-message a, .ldb-message a:visited, .ldb-message a:hover {
+    text-decoration: underline;
+    color: #aaa;
+}
+
+.ldb-enttop {
+    border-top: 2px solid #ffffff;
+}
+.ldb-enttop, .ldb-entmid {
+    font-size: 100%;
+}
+.ldbVia {
+    font-size: 80%;
+    color: #aaa;
+}
+
+.ldb-entwarn {
+    font-size: 60%;
+}
+.ldb-entbot {
+    font-size: 60%;
+    color: #ffff00;
+}
+.ldb-entbot p {
+    margin: 0;
+}
+
+.ldbCol {
+    text-align: center;
+    padding: 1px 10px;
+    float:right;
+}
+
+.ldbPlat {
+    width: 60px;
+}
+.ldbSched {
+    width: 115px;
+}
+.ldbForecast {
+    width: 170px;
+}
+.ldbCol .ldbForecast {
+    text-align: left;
+}
+.ldbOntime {
+    color: white;
+}
+.ldbLate {
+    color: yellow;
+}
+.ldbCancelled, .ldbDelayed {
+    color: red;
+}
+.ldbHeader, .ldbDest {
+    color: white;
+}
+
+.ldb-row {
+    color: #fff;
+}
+
+.ldb-row .ldb-label {
+    display: inline-block;
+    width: 80pt;
+    text-align: right;
+    padding-right: 1pt;
+}
+
+.ldb-row .ldb-value {
+    display: inline-block;
+    text-align: left;
+    padding-left: 1pt;
+}
+
+.ldb-row table {
+    border-collapse: collapse;
+    width: 100%;
+    border-bottom: 2px solid white;
+}
+td.ldb-fsct-arrived, td.ldb-fsct-departed {
+    font-weight: bold;
+    font-style: normal;
+}
+td.ldb-fsct-expected {
+    font-style: italic;
+}
+
+.ldb-row td {
+    text-align: center;
+}
+
+.ldb-row th {
+    color: #ffff00;
+    border-bottom: 2px solid white;
+}
+td.ldb-fsct-loc-arr, td.ldb-fsct-loc-expt, td.ldb-fsct-loc-can {
+    text-align: left;
+}
+td.ldb-fsct-loc-arr, td.ldb-fsct-plat-arr {
+    font-style: normal;
+    font-weight: bold;
+}
+td.ldb-fsct-loc-expt, td.ldb-fsct-plat-expt {
+    font-style: italic;
+    font-weight: normal;
+}
+td.ldb-fsct-loc-can, .ldb-fsct-cancelled {
+    font-style: italic;
+    font-weight: normal;
+    color: red;
+}
+td.ldb-fsct-stat {
+    width: 10pt;
+    height: 10pt;
+}
+
+/* iPhone 3GS */
+@media all and ( max-width: 320px ) {
+    #settings {
+        width:24px;
+        height: 24px;
+    }
+    .ldbLoc {
+        font-size: 15pt;
+        padding-top: 11pt;
+    }
+    .ldbUpdated { font-size: 70%; }
+    .ldbTable { font-size: 130%; }
+    .ldbHead {
+        font-size: 110%;
+        padding: 6px 4px;
+    }
+    .ldb-enttop, .ldb-entmid { font-size: 70%; }
+    .ldb-enttop .ldbVia { font-size: 70%; }
+    .ldb-entwarn { font-size: 60%; }
+    .ldb-entbot { font-size: 60%; }
+    .ldb-entbot p { margin: 0; }
+    .ldbPlat { width: 30px; }
+    .ldbSched { width: 55px; }
+    .ldbForecast { width: 64px; }
+    .ldbCol { font-size: 90%; padding: 1px 0px; }
+    .ldbLate, .ldbCancelled,.ldbDelayed {
+        padding-left: 15pt;
+        padding-right: 15pt;
+        text-align: center;
+    }
+
+    .ldb-row {
+        font-size: 80%;
+    }
+}
+
+/* Samsung Note 3 Portrait */
+@media all and (min-width: 321px) and ( max-width: 443px ) {
+    #settings {
+        width:24px;
+        height: 24px;
+    }
+    .ldbLoc { 
+        font-size: 12pt;
+        padding-top: 5pt;
+    }
+    .ldbUpdated { font-size: 70%; }
+    .ldbTable { font-size: 110%; }
+    .ldbHead {
+        font-size: 120%;
+        padding: 6px 4px;
+    }
+    .ldb-enttop, .ldb-entmid { font-size: 90%; }
+    .ldb-enttop .ldbVia { font-size: 70%; }
+    .ldb-entwarn { font-size: 60%; }
+    .ldb-entbot { font-size: 60%; }
+    .ldb-entbot p { margin: 0; }
+    .ldbPlat { width: 30px; }
+    .ldbSched { width: 55px; }
+    .ldbForecast { width: 64px; }
+    .ldbCol { font-size: 90%; padding: 1px 0px; }
+
+    .ldb-row {
+        font-size: 80%;
+    }
+}
+
+/* Samsung Note 3 Landscape */
+@media all and (min-width: 444px) and ( max-width: 640px ) {
+    #settings {
+        width:24px;
+        height: 24px;
+    }
+    .ldbLoc { font-size: 15pt; }
+    .ldbUpdated { font-size: 70%; }
+    .ldbTable { font-size: 110%; }
+    .ldbHead {
+        font-size: 100%;
+        padding: 6px 4px;
+    }
+    .ldb-enttop, .ldb-entmid { font-size: 90%; }
+    .ldb-enttop .ldbVia { font-size: 70%; }
+    .ldb-entwarn { font-size: 60%; }
+    .ldb-entbot { font-size: 60%; }
+    .ldb-entbot p { margin: 0; }
+    .ldbPlat { width: 30px; }
+    .ldbSched { width: 55px; }
+    .ldbForecast { width: 64px; }
+    .ldbCol { font-size: 90%; padding: 1px 0px; }
+
+    .ldb-row {
+        font-size: 100%;
+    }
+}
+
+/* Samsung Tab 7.7+ */
+@media all and (min-width: 641px ) and (max-width: 1023px) {
+    #settings {
+        width:24px;
+        height: 24px;
+    }
+    .ldbLoc {
+        font-size: 20pt;
+        padding-top: 10pt;
+    }
+    .ldbUpdated { font-size: 70%; }
+    .ldbTable { font-size: 130%; }
+    .ldbHead {
+        font-size: 120%;
+        padding: 6px 4px;
+    }
+    .ldb-enttop, .ldb-entmid { font-size: 90%; }
+    .ldb-enttop .ldbVia { font-size: 80%; }
+    .ldb-entwarn { font-size: 100%; }
+    .ldb-entbot { font-size: 70%; }
+    .ldb-entbot p { margin: 0; }
+    .ldbPlat { width: 60px; }
+    .ldbSched { width: 95px; }
+    .ldbForecast { width: 104px; }
+    .ldbCol { font-size: 100%; padding: 1px 0px; }
+
+    .ldb-row {
+        font-size: 210%;
+    }
+    .ldb-row .ldb-label {
+        width: 200pt;
+    }
+}
+
+/* iPad 3/4 */
+@media all and (min-width: 1024px ) and (max-width: 1599px) {
+    h1 { font-size: 100%; }
+    #settings {
+        width:32px;
+        height: 32px;
+    }
+
+    .ldbLoc {
+        font-size: 25pt;
+        padding-top: 10pt;
+    }
+    .ldbUpdated { font-size: 70%; }
+    .ldbTable { font-size: 130%; }
+    .ldbHead {
+        font-size: 120%;
+        padding: 6px 4px;
+    }
+    .ldb-enttop, .ldb-entmid { font-size: 90%; }
+    .ldb-enttop .ldbVia { font-size: 80%; }
+    .ldb-entwarn { font-size: 100%; }
+    .ldb-entbot { font-size: 70%; }
+    .ldb-entbot p { margin: 0; }
+    .ldbPlat { width: 60px; }
+    .ldbSched { width: 95px; }
+    .ldbForecast { width: 104px; }
+    .ldbCol { font-size: 100%; padding: 1px 0px; }
+
+    .ldb-row {
+        font-size: 210%;
+    }
+    .ldb-row .ldb-label {
+        width: 200pt;
+    }
+}
+
+/* Kindle Fire HDX - Massive resolution 2560x1600 */
+@media all and (min-width: 1600px ) {
+    #settings {
+        width:64px;
+        height: 64px;
+    }
+    .ldbLoc {
+        font-size: 35pt;
+        padding-top: 10pt;
+    }
+    .ldbUpdated { font-size: 200%; }
+    .ldbTable { font-size: 350%; }
+    .ldbHead {
+        font-size: 120%;
+        padding: 6px 4px;
+    }
+    .ldb-enttop, .ldb-entmid { font-size: 90%; }
+    .ldb-enttop .ldbVia { font-size: 80%; }
+    .ldb-entwarn { font-size: 100%; }
+    .ldb-entbot { font-size: 70%; }
+    .ldb-entbot p { margin: 0; }
+    .ldbPlat { width: 120px; }
+    .ldbSched { width: 190px; }
+    .ldbForecast { width: 220px; }
+    .ldbCol { font-size: 100%; padding: 1px 0px; }
+
+    .ldb-row {
+        font-size: 210%;
+    }
+    .ldb-row .ldb-label {
+        width: 200pt;
+    }
+}
