@@ -22,6 +22,7 @@ import onl.area51.kernel.CommandArguments;
 
 /**
  * Ensures the core beans are initialised on application startup
+ *
  * @author peter
  */
 @Dependent
@@ -30,11 +31,13 @@ public class Darwin
 
     void start( @Observes CommandArguments arguments,
                 DarwinLive darwinLive,
+                DarwinPushPort darwinPushPort,
                 DarwinReference darwinReference )
             throws IOException
     {
         // Just call them to initialise the beans inside the proxies
         darwinLive.toString();
+        darwinPushPort.toString();
         darwinReference.toString();
     }
 

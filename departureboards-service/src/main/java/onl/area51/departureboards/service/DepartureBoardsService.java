@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.json.Json;
@@ -68,15 +69,16 @@ public class DepartureBoardsService
         Set<String> tpls = new HashSet<>();
         Set<String> tocs = new HashSet<>();
 
-        Consumer<Point> addPoint = p -> {
+        UnaryOperator<Point> addPoint = p -> {
             if( p != null ) {
                 tpls.add( p.getTpl() );
             }
+            return p;
         };
 
         Consumer<Journey> addJourney = j -> {
-            addPoint.accept( j.getOrigin() );
-            addPoint.accept( j.getDestination() );
+            addPoint.apply( j.getOrigin() );
+            addPoint.apply( j.getDestination() );
             String t = j.getToc();
             if( t != null ) {
                 tocs.add( t );
@@ -93,7 +95,7 @@ public class DepartureBoardsService
                       set.stream()
                       .filter( p -> p.isWithin( st, et ) )
                       .map( p -> {
-                          addPoint.accept( p );
+                          tpls.add( p.getTpl() );
                           addJourney.accept( p.getJourney() );
                           return p.toJson()
                                   // Only stopping calling points
@@ -101,10 +103,7 @@ public class DepartureBoardsService
                                         p.getCallingPoints()
                                         .stream()
                                         .filter( cp -> cp.getType().isStop() )
-                                        .map( cp -> {
-                                            addPoint.accept( p );
-                                            return cp.toCPJson();
-                                        } )
+                                        .map( cp -> addPoint.apply( cp ).toCPJson() )
                                         .collect( JsonUtils.collectJsonArray() ) );
                       } )
                       .collect( JsonUtils.collectJsonArray() )

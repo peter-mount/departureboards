@@ -25,6 +25,9 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.time.LocalTime;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -68,6 +71,19 @@ public class DarwinLive
     public Journey getJourney( String rid )
     {
         return journeys.get( rid );
+    }
+
+    public Journey getJourney( String rid, String ssd, String uid )
+    {
+        return journeys.computeIfAbsent( rid, r -> new Journey( rid, uid, ssd ) );
+    }
+
+    public void removeJourney( String rid )
+    {
+        journeys.computeIfPresent( rid, ( r, j ) -> {
+                               j.getCallingPoints().forEach( p -> getStation( p ).remove( p ) );
+                               return null;
+                           } );
     }
 
     public Set<Point> getDeparturesByCrs( String crs )
@@ -175,8 +191,7 @@ public class DarwinLive
                                         .forEach( p -> {
                                             LocalTime pt = p.getTime();
                                             if( pt.isAfter( now ) || pt.isBefore( DARWIN_MIDNIGHT ) ) {
-                                                stations.computeIfAbsent( p.getTpl(), tpl -> new TreeSet<>() )
-                                                        .add( p );
+                                                getStation( p ).add( p );
                                             }
                                         } );
                             }
@@ -197,6 +212,31 @@ public class DarwinLive
         }
 
         LOG.log( Level.INFO, "Processed {0} journeys, removed {1}, active {2}", new Object[]{jcount, scount, journeys.size()} );
+    }
+
+    private Set<Point> getStation( Point p )
+    {
+        return stations.computeIfAbsent( p.getTpl(), tpl -> new TreeSet<>() );
+    }
+
+    public void update( Journey newJourney, List<Point> newCp )
+    {
+        // This effectively locks the Journey
+        journeys.compute( newJourney.getRid(),
+                          ( rid, existing ) -> {
+                              // Remove any existing points not in the new set
+                              Set<Point> n = new HashSet<>( existing.getCallingPoints() );
+                              n.removeAll( newCp );
+                              n.forEach( p -> getStation( p ).remove( p ) );
+                              // Now just add them all, this will replace existing entries as needed
+                              newCp.forEach( p -> getStation( p ).add( p ) );
+
+                              // Update Journey to the new points and use the new reference incase it's different
+                              // Sort as will be out of sync
+                              Collections.sort( newCp );
+                              newJourney.setCallingPoints( newCp );
+                              return newJourney;
+                          } );
     }
 
 }

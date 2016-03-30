@@ -17,6 +17,7 @@ package onl.area51.departureboards.service;
 
 import java.time.Duration;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -49,11 +50,10 @@ public class Point
     private LocalTime wtp;
     private String plat;
 
-    private LocalTime eta;
-    private LocalTime etd;
-    private LocalTime etp;
+    private LocalTime eta, ata;
+    private LocalTime etd, atd;
+    private LocalTime etp, atp;
     private boolean delayed;
-    private boolean arrived;
     private boolean platsup;
 
     private LocalTime lastUpdated;
@@ -64,18 +64,26 @@ public class Point
     @SuppressWarnings("LeakingThisInConstructor")
     public Point( Journey journey, XMLStreamReader r )
     {
+        this( journey, r, TTNS );
+    }
+
+    @SuppressWarnings("LeakingThisInConstructor")
+    public Point( Journey journey, XMLStreamReader r, String ns )
+    {
         this.journey = journey;
 
         this.type = Type.valueOf( r.getLocalName() );
-        this.tpl = r.getAttributeValue( TTNS, "tpl" );
-        this.act = r.getAttributeValue( TTNS, "act" );
-        this.plat = r.getAttributeValue( TTNS, "plat" );
+        this.tpl = r.getAttributeValue( ns, "tpl" );
+        this.act = r.getAttributeValue( ns, "act" );
 
-        this.pta = Point.getTime( r, "pta" );
-        this.wta = Point.getTime( r, "wta" );
-        this.ptd = Point.getTime( r, "ptd" );
-        this.wtd = Point.getTime( r, "wtd" );
-        this.wtp = Point.getTime( r, "wtp" );
+        // Platform will be here if from timetable not from pushPort
+        this.plat = r.getAttributeValue( ns, "plat" );
+
+        this.pta = Point.getTime( r, ns, "pta" );
+        this.wta = Point.getTime( r, ns, "wta" );
+        this.ptd = Point.getTime( r, ns, "ptd" );
+        this.wtd = Point.getTime( r, ns, "wtd" );
+        this.wtp = Point.getTime( r, ns, "wtp" );
 
         lastUpdated = LocalTime.now( TimeUtils.LONDON );
 
@@ -108,13 +116,37 @@ public class Point
         add( b, "wta", wta );
         add( b, "wtd", wtd );
         add( b, "wtp", wtp );
+        add( b, "ata", ata );
+        add( b, "atd", atd );
+        add( b, "atp", atp );
+        add( b, "eta", eta );
+        add( b, "etd", etd );
+        add( b, "etp", etp );
+        add( b, "updated", lastUpdated );
 
         return b.add( "term", type.isTerm() )
                 .add( "pass", type.isPass() )
                 .add( "platsup", isPlatsup() )
                 .add( "arrived", isArrived() )
                 .add( "delayed", isDelayed() )
-                .add( "ontime", isOntime() );
+                .add( "ontime", isOntime() )
+                // timetable or realTime
+                .add( "tt", isTimeTable() );
+    }
+
+    /**
+     * Is this from the timetable or from an update
+     *
+     * @return
+     */
+    public boolean isTimeTable()
+    {
+        return !isForecast();
+    }
+
+    public boolean isForecast()
+    {
+        return eta != null || ata != null || etd != null || atd != null || etp != null | atd != null;
     }
 
     public boolean isWithin( LocalTime s, LocalTime e )
@@ -187,10 +219,10 @@ public class Point
             return pta;
         }
         if( wtd != null ) {
-            return wtd;
+            return wtd.truncatedTo( ChronoUnit.MINUTES );
         }
         if( wta != null ) {
-            return wta;
+            return wta.truncatedTo( ChronoUnit.MINUTES );
         }
         return wtp;
     }
@@ -201,13 +233,18 @@ public class Point
         return getTime().compareTo( o.getTime() );
     }
 
-    private static LocalTime getTime( XMLStreamReader r, String n )
+    public static LocalTime getTime( XMLStreamReader r, String ns, String n )
     {
-        String s = r.getAttributeValue( TTNS, n );
+        String s = r.getAttributeValue( ns, n );
         if( s == null ) {
             return null;
         }
         return LocalTime.parse( s );
+    }
+
+    public String getTpl()
+    {
+        return tpl;
     }
 
     public Point getNext()
@@ -238,6 +275,12 @@ public class Point
     public String getPlat()
     {
         return plat;
+    }
+
+    public Point setPlat( String plat )
+    {
+        this.plat = plat;
+        return this;
     }
 
     @Override
@@ -289,66 +332,6 @@ public class Point
         return journey.getRid();
     }
 
-    public String getTpl()
-    {
-        return tpl;
-    }
-
-    public String getAct()
-    {
-        return act;
-    }
-
-    public LocalTime getPta()
-    {
-        return pta;
-    }
-
-    public LocalTime getWta()
-    {
-        return wta;
-    }
-
-    public LocalTime getPtd()
-    {
-        return ptd;
-    }
-
-    public LocalTime getWtd()
-    {
-        return wtd;
-    }
-
-    public LocalTime getWtp()
-    {
-        return wtp;
-    }
-
-    public LocalTime getLastUpdated()
-    {
-        return lastUpdated;
-    }
-
-    public LocalTime getEta()
-    {
-        return eta;
-    }
-
-    public LocalTime getEtd()
-    {
-        return etd;
-    }
-
-    public LocalTime getEtp()
-    {
-        return etp;
-    }
-
-    public boolean isDelayed()
-    {
-        return delayed;
-    }
-
     public boolean isOntime()
     {
         LocalTime a = getTime();
@@ -363,14 +346,174 @@ public class Point
         return d.getSeconds() <= 60;
     }
 
+    public String getAct()
+    {
+        return act;
+    }
+
+    public Point setAct( String act )
+    {
+        this.act = act;
+        return this;
+    }
+
+    public LocalTime getPta()
+    {
+        return pta;
+    }
+
+    public Point setPta( LocalTime pta )
+    {
+        this.pta = pta;
+        return this;
+    }
+
+    public LocalTime getWta()
+    {
+        return wta;
+    }
+
+    public Point setWta( LocalTime wta )
+    {
+        this.wta = wta;
+        return this;
+    }
+
+    public LocalTime getPtd()
+    {
+        return ptd;
+    }
+
+    public Point setPtd( LocalTime ptd )
+    {
+        this.ptd = ptd;
+        return this;
+    }
+
+    public LocalTime getWtd()
+    {
+        return wtd;
+    }
+
+    public Point setWtd( LocalTime wtd )
+    {
+        this.wtd = wtd;
+        return this;
+    }
+
+    public LocalTime getWtp()
+    {
+        return wtp;
+    }
+
+    public Point setWtp( LocalTime wtp )
+    {
+        this.wtp = wtp;
+        return this;
+    }
+
+    public LocalTime getEta()
+    {
+        return eta;
+    }
+
+    public Point setEta( LocalTime eta )
+    {
+        this.eta = eta;
+        return this;
+    }
+
+    public LocalTime getEtd()
+    {
+        return etd;
+    }
+
+    public Point setEtd( LocalTime etd )
+    {
+        this.etd = etd;
+        return this;
+    }
+
+    public LocalTime getEtp()
+    {
+        return etp;
+    }
+
+    public Point setEtp( LocalTime etp )
+    {
+        this.etp = etp;
+        return this;
+    }
+
+    public boolean isDelayed()
+    {
+        return delayed;
+    }
+
+    public Point setDelayed( boolean delayed )
+    {
+        this.delayed = delayed;
+        return this;
+    }
+
     public boolean isArrived()
     {
-        return arrived;
+        return atd!=null || ata!=null||atp!=null;
     }
 
     public boolean isPlatsup()
     {
         return platsup;
+    }
+
+    public Point setPlatsup( boolean platsup )
+    {
+        this.platsup = platsup;
+        return this;
+    }
+
+    public LocalTime getLastUpdated()
+    {
+        return lastUpdated;
+    }
+
+    public Point setLastUpdated()
+    {
+        this.lastUpdated = LocalTime.now( TimeUtils.LONDON );
+        return this;
+    }
+
+    public LocalTime getAta()
+    {
+        return ata;
+    }
+
+    public Point setAta( LocalTime ata )
+    {
+        this.ata = ata;
+        return this;
+    }
+
+    public LocalTime getAtd()
+    {
+        return atd;
+    }
+
+    public Point setAtd( LocalTime atd )
+    {
+        this.atd = atd;
+        return this;
+    }
+
+    public LocalTime getAtp()
+    {
+        return atp;
+    }
+
+    public Point setAtp( LocalTime atp )
+    {
+        this.atp = atp;
+        return this;
     }
 
     public static enum Type

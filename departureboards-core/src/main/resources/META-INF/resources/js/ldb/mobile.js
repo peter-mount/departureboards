@@ -153,6 +153,11 @@ var LDB = (function () {
         return l ? l.loc ? l.loc : tpl : tpl;
     }
 
+    var loccrs = function (v, tpl) {
+        var l = v[tpl];
+        return l ? l.crs ? l.crs : tpl : tpl;
+    }
+
     var tocname = function (v, toc) {
         var l = v[toc];
         return l ? l : toc;
@@ -160,7 +165,7 @@ var LDB = (function () {
 
     var success = function (v) {
         UI.hideLoader();
-        reloadIn(30000);
+        reloadIn(15000);
         //LDB.board.empty().append(v);
         LDB.board.empty();
 
@@ -230,7 +235,7 @@ var LDB = (function () {
                 d = $('<div></div>').addClass("ldb-entbot").appendTo(row);
                 d1 = $('<div></div>').addClass("ldbLate").appendTo(d);
                 d1.append("This was the ")
-                        .append(tocname(v.opref,dep.toc))
+                        .append(tocname(v.opref, dep.toc))
                         .append(" ")
                         .append(dep.origin.time)
                         .append(" service from ")
@@ -245,7 +250,12 @@ var LDB = (function () {
                 d = $('<div></div>').addClass("ldb-entbot").appendTo(row);
                 d.append($('<span></span>').addClass("ldbHeader").append("Calling at: "));
                 $.each(dep.calling, function (i, cp) {
-                    $('<span></span>').appendTo(d).append(locname(v.locref, cp.tpl)).append("&nbsp;(").append(cp.time).append(") ");
+                    $('<span></span>').appendTo(d)
+                            .append($("<a></a>")
+                                    .attr({"href": "/mldb/" + loccrs(v.locref, cp.tpl)})
+                                    .append(locname(v.locref, cp.tpl))
+                                    )
+                            .append("&nbsp;(").append(cp.time).append(") ");
                 });
             }
 
@@ -273,6 +283,11 @@ var LDB = (function () {
                                 .append(dep.lastreport.time)
                                 .append("&nbsp;"));
             }
+
+            // Debug mode, show if point is timetable or realtime
+            //if (dep.tt) {
+            d.append($('<span></span>').append(dep.tt ? "&#964;" : "&#955;").append("&nbsp;"));
+            //}
 
             // Finish off
             if (dep.terminated) {

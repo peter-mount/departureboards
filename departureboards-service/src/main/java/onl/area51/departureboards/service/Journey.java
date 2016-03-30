@@ -31,13 +31,13 @@ public class Journey
 
     private final String rid;
     private final String uid;
-    private final String trainId;
+    private String trainId;
     private final String ssd;
-    private final String toc;
-    private final String status;
-    private final String trainCat;
-    private final boolean isPassengerSvc;
-    private final List<Point> callingPoints;
+    private String toc;
+    private String status;
+    private String trainCat;
+    private boolean isPassengerSvc;
+    private List<Point> callingPoints = new ArrayList<>();
     private Point origin;
     private Point destination;
 
@@ -51,12 +51,23 @@ public class Journey
         this.status = r.getAttributeValue( TTNS, "status" );
         this.trainCat = r.getAttributeValue( TTNS, "trainCat" );
         this.isPassengerSvc = !"false".equals( r.getAttributeValue( TTNS, "isPassengerSvc" ) );
-        callingPoints = new ArrayList<>();
+    }
+
+    public Journey( String rid, String uid, String ssd )
+    {
+        this.rid = rid;
+        this.uid = uid;
+        this.ssd = ssd;
     }
 
     public List<Point> getCallingPoints()
     {
         return callingPoints;
+    }
+
+    public void setCallingPoints( List<Point> callingPoints )
+    {
+        this.callingPoints = callingPoints;
     }
 
     void add( Point p )
@@ -122,6 +133,11 @@ public class Journey
         return trainId;
     }
 
+    public void setTrainId( String trainId )
+    {
+        this.trainId = trainId;
+    }
+
     public String getSsd()
     {
         return ssd;
@@ -132,9 +148,19 @@ public class Journey
         return toc;
     }
 
+    public void setToc( String toc )
+    {
+        this.toc = toc;
+    }
+
     public String getStatus()
     {
         return status;
+    }
+
+    public void setStatus( String status )
+    {
+        this.status = status;
     }
 
     public String getTrainCat()
@@ -142,9 +168,19 @@ public class Journey
         return trainCat;
     }
 
+    public void setTrainCat( String trainCat )
+    {
+        this.trainCat = trainCat;
+    }
+
     public boolean isIsPassengerSvc()
     {
         return isPassengerSvc;
+    }
+
+    public void setIsPassengerSvc( boolean isPassengerSvc )
+    {
+        this.isPassengerSvc = isPassengerSvc;
     }
 
 }
