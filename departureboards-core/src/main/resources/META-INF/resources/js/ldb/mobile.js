@@ -248,6 +248,9 @@ var LDB = (function () {
             // calling points
             if (dep.calling && !dep.term) {
                 d = $('<div></div>').addClass("ldb-entbot").appendTo(row);
+                if (dep.eta)
+                    d.append($('<span></span>').addClass("ldbHeader").append("Due:&nbsp;"))
+                            .append($('<span></span>').append(dep.eta).append(" "));
                 d.append($('<span></span>').addClass("ldbHeader").append("Calling at: "));
                 $.each(dep.calling, function (i, cp) {
                     $('<span></span>').appendTo(d)
@@ -286,7 +289,7 @@ var LDB = (function () {
 
             // Debug mode, show if point is timetable or realtime
             //if (dep.tt) {
-            d.append($('<span></span>').append(dep.tt ? "&#964;" : "&#955;").append("&nbsp;"));
+            d.append($('<span></span>').append(dep.tt ? "&#964;" : "&#948;").append("&nbsp;"));
             //}
 
             // Finish off
