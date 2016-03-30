@@ -22,7 +22,6 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.json.Json;
@@ -124,17 +123,4 @@ public class DepartureBoardsService
         return ob.build();
     }
 
-    @Override
-    public void loadReference()
-            throws IOException
-    {
-        darwinReference.loadReference();
-    }
-
-    @Override
-    public void loadTimeTable()
-            throws IOException
-    {
-        darwinLive.loadTimeTable();
-    }
 }

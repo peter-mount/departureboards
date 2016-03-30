@@ -32,6 +32,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.xml.stream.XMLInputFactory;
@@ -128,6 +129,7 @@ public class DarwinReference
         return vias.get( via );
     }
 
+    @PostConstruct
     public void loadReference()
             throws IOException
     {

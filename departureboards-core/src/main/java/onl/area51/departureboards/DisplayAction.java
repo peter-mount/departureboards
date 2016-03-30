@@ -16,7 +16,6 @@
 package onl.area51.departureboards;
 
 import java.io.IOException;
-import java.time.Duration;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
@@ -48,12 +47,6 @@ public class DisplayAction
     void deploy( @Observes ActionRegistry builder )
             throws IOException
     {
-        departureBoards.loadReference();
-        departureBoards.loadTimeTable();
-
-        Duration HOUR = Duration.ofHours( 1 );
-        Duration DAY = Duration.ofDays( 1 );
-
         builder.registerHandler( "/mldb/*",
                                  HttpRequestHandlerBuilder.create()
                                  .log()

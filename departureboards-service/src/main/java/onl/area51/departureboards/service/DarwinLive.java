@@ -34,6 +34,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.xml.stream.XMLInputFactory;
@@ -79,6 +80,7 @@ public class DarwinLive
                 .collect( Collectors.toCollection( () -> new TreeSet<>( ( a, b ) -> a.getTime().compareTo( b.getTime() ) ) ) );
     }
 
+    @PostConstruct
     public void loadTimeTable()
             throws IOException
     {

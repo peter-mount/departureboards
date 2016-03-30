@@ -17,10 +17,5 @@ public interface DepartureBoards
 
     JsonObject departureBoards( String crs )
             throws IOException;
-
-    void loadTimeTable()
-            throws IOException;
-
-    void loadReference()
-            throws IOException;
+    
 }
