@@ -119,6 +119,13 @@ public class DisplayAction
         }
     }
 
+    private static final String JS_START = "var ldb,ui;"
+            + "$(document).ready(function (){"
+            + "setTimeout(function (){"
+            + "ui=new UI();"
+            + "ldb=new LDB('";
+    private static final String JS_END = "');},250);});";
+
     private void display( Request request )
             throws HttpException,
                    IOException
@@ -129,15 +136,9 @@ public class DisplayAction
                 .div().id( "board" ).end()
                 .div().id( "message" ).end()
                 .script()
-                .write( "\nvar ldb, ui;\n" )
-                .write( "$(document).ready(function () {\n" )
-                .write( "setTimeout(function () {\n" )
-                .write( "if (!ui) ui = new UI();\n" )
-                .write( "if (!ldb) ldb = new LDB('" )
+                .write( JS_START )
                 .write( crs )
-                .write( "');\n" )
-                .write( "}, 250);\n" )
-                .write( "});\n" )
+                .write( JS_END )
                 .end();
     }
 

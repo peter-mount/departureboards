@@ -165,8 +165,7 @@ var LDB = (function () {
 
     var success = function (v) {
         UI.hideLoader();
-        reloadIn(15000);
-        //LDB.board.empty().append(v);
+        //reloadIn(15000);
         LDB.board.empty();
 
         var d = $('<div></div>').addClass("ldbWrapper").appendTo(LDB.board);
@@ -178,7 +177,7 @@ var LDB = (function () {
         // Departure details
         $.each(v.departures, function (i, dep) {
             var row = $('<div></div>').addClass("row").appendTo(tab);
-            if (dep.terminated) {
+            if (dep.terminated || dep.term) {
                 row.addClass("trainTerminated");
             }
             if (dep.canc) {
@@ -251,10 +250,12 @@ var LDB = (function () {
 
             // calling points
             if (dep.calling && !dep.term) {
-                var cl = "callList";
+                d = $('<div></div>')
+                        .addClass("ldb-entbot")
+                        .addClass("callList")
+                        .appendTo(row);
                 if (dep.canc)
-                    cl = cl + " callListCancelled";
-                d = $('<div></div>').addClass("ldb-entbot").appendTo(row);
+                    d.addClass("callListCancelled");
                 if (dep.eta)
                     d.append($('<span></span>').addClass("ldbHeader").append("Due:&nbsp;"))
                             .append($('<span></span>').append(dep.eta).append(" "));
@@ -263,14 +264,13 @@ var LDB = (function () {
                 else
                     d.append($('<span></span>').addClass("ldbHeader").append("Calling at: "));
                 $.each(dep.calling, function (i, cp) {
-                    $('<span></span>').appendTo(d)
-                            // fixme seems to add style display: none
-                            //.addClass(cl)
+                    $('<span></span>')
                             .append($("<a></a>")
                                     .attr({"href": "/mldb/" + loccrs(v.locref, cp.tpl)})
                                     .append(locname(v.locref, cp.tpl))
                                     )
-                            .append("&nbsp;(" + cp.time + ") ");
+                            .append("&nbsp;(" + cp.time + ") ")
+                            .appendTo(d);
                 });
             }
 
