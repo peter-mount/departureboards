@@ -16,12 +16,15 @@
 package onl.area51.departureboards.api;
 
 import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonStructure;
 import javax.json.JsonWriter;
+import onl.area51.httpd.action.Actions;
+import onl.area51.httpd.action.Request;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpStatus;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 
@@ -35,20 +38,32 @@ public class JsonEntity
         implements Cloneable
 {
 
+    public static HttpEntity createFromAttribute( String n, Request r )
+    {
+        Object o = r.getAttribute( n );
+        if( o instanceof JsonStructure ) {
+            return new JsonEntity( (JsonStructure) o );
+        }
+        if( o instanceof JsonObjectBuilder ) {
+            return new JsonEntity( (JsonObjectBuilder) o );
+        }
+        if( o instanceof JsonArrayBuilder ) {
+            return new JsonEntity( (JsonArrayBuilder) o );
+        }
+        return Actions.errorEntity( r, HttpStatus.SC_INTERNAL_SERVER_ERROR, "Unsupported Json " + o );
+    }
+
     public JsonEntity( JsonStructure json )
-            throws UnsupportedEncodingException
     {
         super( encode( json ), ContentType.APPLICATION_JSON );
     }
 
     public JsonEntity( JsonObjectBuilder b )
-            throws UnsupportedEncodingException
     {
         this( b.build() );
     }
 
     public JsonEntity( JsonArrayBuilder b )
-            throws UnsupportedEncodingException
     {
         this( b.build() );
     }

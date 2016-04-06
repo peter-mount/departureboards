@@ -114,7 +114,7 @@ var UI = (function () {
      */
     UI.search = function () {
         $("#stations").autocomplete({
-            source: "/search",
+            source: "/api/departure/search",
             minLength: 3,
             autoFocus: true,
             select: function (event, ui) {
@@ -134,8 +134,10 @@ var UI = (function () {
 // Live Departure Boards, refresh every 60s
 var LDB = (function () {
 
-    function LDB(crs, small) {
-        LDB.url = (small ? '/sldb/' : '/vldb/') + crs;
+    function LDB(crs, time) {
+        LDB.url = '/api/departure/board/' + crs;
+        if (time !== 'null')
+            LDB.url = LDB.url + '/' + time;
         LDB.board = $('#board');
         UI.settingsSaved = LDB.applySettings;
         reload();

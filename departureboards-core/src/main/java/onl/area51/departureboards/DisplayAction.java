@@ -16,133 +16,89 @@
 package onl.area51.departureboards;
 
 import java.io.IOException;
-import javax.enterprise.context.ApplicationScoped;
+import java.time.LocalTime;
+import java.util.Objects;
+import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
-import javax.inject.Inject;
 import javax.json.JsonObject;
-import onl.area51.departureboards.api.DepartureBoards;
-import onl.area51.departureboards.api.JsonEntity;
 import onl.area51.departureboards.api.StationSearch;
 import onl.area51.httpd.HttpRequestHandlerBuilder;
 import onl.area51.httpd.action.ActionRegistry;
-import onl.area51.httpd.action.Actions;
 import onl.area51.httpd.action.Request;
 import org.apache.http.HttpException;
 import org.apache.http.HttpStatus;
 
 /**
+ * Handles the /mldb/{CRS} action which displays the departure boards for a specific station.
+ * <p>
+ * This supports an optional time as /mldb/{CRS}/{TIME} mainly used in debugging but kept in production as may be useful to show whats expected later on in the
+ * day or to display previous departures.
  *
  * @author peter
  */
-@ApplicationScoped
+@Dependent
 public class DisplayAction
 {
 
-    @Inject
-    private DepartureBoards departureBoards;
-
-    @Inject
-    private StationSearch stationSearch;
-
-    void deploy( @Observes ActionRegistry builder )
+    void deploy( @Observes ActionRegistry builder, StationSearch stationSearch )
             throws IOException
     {
         builder.registerHandler( "/mldb/*",
                                  HttpRequestHandlerBuilder.create()
                                  .log()
                                  .method( "GET" )
-                                 .add( this::checkCrs )
+                                 // The CRS. If not Upper case then issue a redirect
+                                 .add( CommonActions.extractCrsAction( 2, true ) )
+                                 // If crs present then lookup the location
+                                 .ifAttributePresentSetAttribute( "crs", "location", r -> stationSearch.lookupCrs( r.getAttribute( "crs" ) ) )
+                                 // Optional display time
+                                 .add( CommonActions.extractTime( 3, "time" ) )
+                                 // If location set then set pageTitle
+                                 .ifAttributePresentSetAttribute( "location", "pageTitle", r -> {
+                                                     JsonObject location = r.getAttribute( "location" );
+                                                     return location.getString( "crs" ) + " " + location.getString( "location" );
+                                                 } )
+                                 // The page content
                                  .ifAttributePresent( "location",
                                                       LayoutBuilder.builder()
                                                       .setTitle( "Departure Boards" )
                                                       .setBanner( Banner.STATION )
-                                                      .setHeader( this::header )
+                                                      .setHeader( DisplayAction::header )
                                                       .setFooter( StandardTiles.FOOTER )
-                                                      .setBody( this::display )
+                                                      .setBody( DisplayAction::display )
                                                       .build()
                                  )
-                                 .errorIfAttributeAbsent( "location", HttpStatus.SC_NOT_FOUND )
+                                 .ifAttributeAbsentSendError( "location", HttpStatus.SC_NOT_FOUND )
+                                 .end()
                                  .build()
-        )
-                .registerHandler( "/vldb/*",
-                                  HttpRequestHandlerBuilder.create()
-                                  .log()
-                                  .method( "GET" )
-                                  .add( this::search )
-                                  .end()
-                                  .build()
-                );
-    }
-
-    private String getCrs( Request request )
-            throws HttpException,
-                   IOException
-    {
-        String path = request.getURI().getPath();
-        int i = path.indexOf( '/', 1 );
-        return i > -1 ? path.substring( i + 1 ) : null;
-    }
-
-    private void checkCrs( Request request )
-            throws HttpException,
-                   IOException
-    {
-        String crs = getCrs( request );
-        JsonObject location = stationSearch.lookupCrs( crs );
-        if( location != null ) {
-            request.setAttribute( "crs", location.getString( "crs" ) )
-                    .setAttribute( "location", location )
-                    .setAttribute( "pageTitle", location.getString( "crs" ) + " " + location.getString( "location" ) );
-        }
-    }
-
-    /**
-     * Handle the initial display
-     *
-     * @param request
-     *
-     * @throws HttpException
-     * @throws IOException
-     */
-    private void search( Request request )
-            throws HttpException,
-                   IOException
-    {
-        String crs = getCrs( request );
-
-        JsonObject boards = departureBoards.departureBoards( crs );
-        if( boards == null || boards.isEmpty() ) {
-            Actions.notFoundAction().apply( request );
-        }
-        else {
-            request.setEntity( new JsonEntity( boards ) );
-        }
+        );
     }
 
     private static final String JS_START = "var ldb,ui;"
-            + "$(document).ready(function (){"
-            + "setTimeout(function (){"
-            + "ui=new UI();"
-            + "ldb=new LDB('";
+                                           + "$(document).ready(function (){"
+                                           + "setTimeout(function (){"
+                                           + "ui=new UI();"
+                                           + "ldb=new LDB('";
     private static final String JS_END = "');},250);});";
 
-    private void display( Request request )
+    private static void display( Request request )
             throws HttpException,
                    IOException
     {
-        String crs = request.getAttribute( "crs" );
-
         request.getResponse()
                 .div().id( "board" ).end()
                 .div().id( "message" ).end()
                 .script()
                 .write( JS_START )
-                .write( crs )
+                .write( request.<String>getAttribute( "crs" ) )
+                .write( "','" )
+                // Time is optional
+                .write( Objects.toString( request.<LocalTime>getAttribute( "time" ) ) )
                 .write( JS_END )
                 .end();
     }
 
-    private void header( Request request )
+    private static void header( Request request )
             throws HttpException,
                    IOException
     {

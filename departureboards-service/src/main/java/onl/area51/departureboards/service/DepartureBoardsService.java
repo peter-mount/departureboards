@@ -50,7 +50,7 @@ public class DepartureBoardsService
     private DarwinLive darwinLive;
 
     @Override
-    public JsonObject departureBoards( String crs )
+    public JsonObject departureBoards( String crs, LocalTime time )
             throws IOException
     {
         if( crs == null || crs.length() != 3 ) {
@@ -62,7 +62,7 @@ public class DepartureBoardsService
             return null;
         }
 
-        LocalTime now = LocalTime.now( TimeUtils.LONDON );
+        LocalTime now = time == null ? LocalTime.now( TimeUtils.LONDON ) : time;
         LocalTime st = now.minus( 1, ChronoUnit.MINUTES );
         LocalTime et = now.plus( 1, ChronoUnit.HOURS );
 

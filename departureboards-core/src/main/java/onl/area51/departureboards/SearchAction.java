@@ -20,8 +20,8 @@ import javax.enterprise.event.Observes;
 import onl.area51.departureboards.api.StationSearch;
 import onl.area51.httpd.action.ActionRegistry;
 import onl.area51.httpd.HttpRequestHandlerBuilder;
-import onl.area51.httpd.action.Actions;
 import onl.area51.departureboards.api.JsonEntity;
+import org.apache.http.HttpStatus;
 
 /**
  * Exposes the {@link StationSearch} API to JQuery on the home page which allows the user to search for a station.
@@ -34,11 +34,14 @@ public class SearchAction
 
     void deploy( @Observes ActionRegistry builder, StationSearch stationSearch )
     {
-        builder.registerHandler( "/search",
+        builder.registerHandler( "/api/departure/search",
                                  HttpRequestHandlerBuilder.create()
                                  .log()
                                  .method( "GET" )
-                                 .add( r -> Actions.sendOk( r, new JsonEntity( stationSearch.search( r.getParam( "term" ) ) ) ) )
+                                 .setAttributeFromParameter( "term" )
+                                 .ifAttributePresentSetAttribute( "term", "result", ( r, term ) -> stationSearch.search( (String) term ) )
+                                 .ifAttributePresentSendOk( "result", JsonEntity::createFromAttribute )
+                                 .ifAttributeAbsentSendError( "result", HttpStatus.SC_NOT_FOUND )
                                  .end()
                                  .build()
         );

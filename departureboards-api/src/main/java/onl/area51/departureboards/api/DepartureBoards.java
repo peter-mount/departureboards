@@ -6,6 +6,7 @@
 package onl.area51.departureboards.api;
 
 import java.io.IOException;
+import java.time.LocalTime;
 import javax.json.JsonObject;
 
 /**
@@ -15,7 +16,7 @@ import javax.json.JsonObject;
 public interface DepartureBoards
 {
 
-    JsonObject departureBoards( String crs )
+    JsonObject departureBoards( String crs, LocalTime time )
             throws IOException;
     
 }
