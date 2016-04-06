@@ -24,7 +24,7 @@
                 <include>onl.area51.filesystem:*</include>
                 <!-- http dependencies -->
                 <include>org.apache.httpcomponents:*</include>
-                <include>onl.area51.httpd:*</include>
+                <include>onl.area51.httpd:area51-httpd</include>
                 <include>commons-codec:*</include>
                 <include>commons-logging:*</include>
             </includes>
@@ -41,7 +41,7 @@
                 <exclude>onl.area51.filesystem:*</exclude>
                 <!-- http dependencies -->
                 <exclude>org.apache.httpcomponents:*</exclude>
-                <exclude>onl.area51.httpd:*</exclude>
+                <exclude>onl.area51.httpd:area51-httpd</exclude>
                 <exclude>commons-codec:*</exclude>
                 <exclude>commons-logging:*</exclude>
             </excludes>

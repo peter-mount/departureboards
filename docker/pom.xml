@@ -52,6 +52,11 @@
             <artifactId>area51-httpd</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>onl.area51.httpd</groupId>
+            <artifactId>area51-httpd-cdi</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
         
         <dependency>
             <groupId>onl.area51.kernel</groupId>
