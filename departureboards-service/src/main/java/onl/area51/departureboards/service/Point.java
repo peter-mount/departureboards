@@ -21,9 +21,11 @@ import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.UnaryOperator;
 import javax.json.Json;
 import javax.json.JsonObjectBuilder;
 import javax.xml.stream.XMLStreamReader;
+import uk.trainwatch.util.JsonUtils;
 import uk.trainwatch.util.TimeUtils;
 
 /**
@@ -95,34 +97,45 @@ public class Point
     public JsonObjectBuilder toJson()
     {
         JsonObjectBuilder b = toJsonImpl()
+                .add( "rid", journey.getRid() )
                 .add( "origin", journey.getOrigin().toJsonImpl() )
                 .add( "dest", journey.getDestination().toJsonImpl() );
-        add( b, "toc", journey.getToc() );
-        add( b, "headcode", journey.getTrainId() );
-        add( b, "cat", journey.getTrainCat() );
+        JsonUtils.add( b, "toc", journey.getToc() );
+        JsonUtils.add( b, "headcode", journey.getTrainId() );
+        JsonUtils.add( b, "cat", journey.getTrainCat() );
         return b;
+    }
+
+    public JsonObjectBuilder toJson( UnaryOperator<Point> addPoint )
+    {
+        return toJson().add( "calling",
+                             getCallingPoints()
+                             .stream()
+                             .filter( cp -> cp.getType().isStop() )
+                             .map( cp -> addPoint.apply( cp ).toCPJson() )
+                             .collect( JsonUtils.collectJsonArray() ) );
     }
 
     public JsonObjectBuilder toJsonImpl()
     {
         JsonObjectBuilder b = Json.createObjectBuilder();
-        add( b, "tpl", tpl );
-        add( b, "plat", plat );
-        add( b, "time", getTime() );
-        add( b, "timetable", getTimetableTime() );
-        add( b, "act", act );
-        add( b, "pta", pta );
-        add( b, "ptd", ptd );
-        add( b, "wta", wta );
-        add( b, "wtd", wtd );
-        add( b, "wtp", wtp );
-        add( b, "ata", ata );
-        add( b, "atd", atd );
-        add( b, "atp", atp );
-        add( b, "eta", eta );
-        add( b, "etd", etd );
-        add( b, "etp", etp );
-        add( b, "updated", lastUpdated );
+        JsonUtils.add( b, "tpl", tpl );
+        JsonUtils.add( b, "plat", plat );
+        JsonUtils.add( b, "time", getTime() );
+        JsonUtils.add( b, "timetable", getTimetableTime() );
+        JsonUtils.add( b, "act", act );
+        JsonUtils.add( b, "pta", pta );
+        JsonUtils.add( b, "ptd", ptd );
+        JsonUtils.add( b, "wta", wta );
+        JsonUtils.add( b, "wtd", wtd );
+        JsonUtils.add( b, "wtp", wtp );
+        JsonUtils.add( b, "ata", ata );
+        JsonUtils.add( b, "atd", atd );
+        JsonUtils.add( b, "atp", atp );
+        JsonUtils.add( b, "eta", eta );
+        JsonUtils.add( b, "etd", etd );
+        JsonUtils.add( b, "etp", etp );
+        JsonUtils.add( b, "updated", lastUpdated );
 
         return b.add( "term", type.isTerm() )
                 .add( "pass", type.isPass() )
@@ -165,29 +178,9 @@ public class Point
     public JsonObjectBuilder toCPJson()
     {
         JsonObjectBuilder b = Json.createObjectBuilder();
-        add( b, "tpl", tpl );
-        add( b, "time", getTime() );
+        JsonUtils.add( b, "tpl", tpl );
+        JsonUtils.add( b, "time", getTime() );
         return b;
-    }
-
-    private static void add( JsonObjectBuilder b, String n, String s )
-    {
-        if( s == null ) {
-            b.addNull( n );
-        }
-        else {
-            b.add( n, s );
-        }
-    }
-
-    private static void add( JsonObjectBuilder b, String n, LocalTime t )
-    {
-        if( t == null ) {
-            b.addNull( n );
-        }
-        else {
-            b.add( n, t.toString() );
-        }
     }
 
     /**
@@ -458,7 +451,7 @@ public class Point
 
     public boolean isArrived()
     {
-        return atd!=null || ata!=null||atp!=null;
+        return atd != null || ata != null || atp != null;
     }
 
     public boolean isPlatsup()

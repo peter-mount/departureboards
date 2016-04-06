@@ -18,11 +18,16 @@ package onl.area51.departureboards.service;
 import java.io.IOException;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.json.Json;
@@ -65,6 +70,7 @@ public class DepartureBoardsService
         LocalTime now = time == null ? LocalTime.now( TimeUtils.LONDON ) : time;
         LocalTime st = now.minus( 1, ChronoUnit.MINUTES );
         LocalTime et = now.plus( 1, ChronoUnit.HOURS );
+        Logger.getGlobal().log( Level.INFO, () -> "Time " + time + " Now " + now + " st=" + st + " et=" + et );
 
         Set<String> tpls = new HashSet<>();
         Set<String> tocs = new HashSet<>();
@@ -76,13 +82,16 @@ public class DepartureBoardsService
             return p;
         };
 
-        Consumer<Journey> addJourney = j -> {
-            addPoint.apply( j.getOrigin() );
-            addPoint.apply( j.getDestination() );
-            String t = j.getToc();
-            if( t != null ) {
-                tocs.add( t );
+        UnaryOperator<Journey> addJourney = j -> {
+            if( j != null ) {
+                addPoint.apply( j.getOrigin() );
+                addPoint.apply( j.getDestination() );
+                String t = j.getToc();
+                if( t != null ) {
+                    tocs.add( t );
+                }
             }
+            return j;
         };
 
         Set<Point> set = darwinLive.getDeparturesByCrs( crs );
@@ -93,17 +102,22 @@ public class DepartureBoardsService
                 // The departures
                 .add( "departures",
                       set.stream()
-                      .filter( p -> p.isWithin( st, et ) )
+                      .filter( p -> p.isWithin( st, et ) && p.getType().isStop() )
                       .map( p -> {
                           tpls.add( p.getTpl() );
-                          addJourney.accept( p.getJourney() );
-                          return p.toJson()
-                                  // Only stopping calling points
-                                  .add( "calling",
-                                        p.getCallingPoints()
+                          addJourney.apply( p.getJourney() );
+                          return p.toJson( addPoint )
+                                  // Any splits
+                                  .add( "split",
+                                        p.getJourney()
+                                        .getAssociations()
                                         .stream()
-                                        .filter( cp -> cp.getType().isStop() )
-                                        .map( cp -> addPoint.apply( cp ).toCPJson() )
+                                        .filter( a -> "VV".equals( a.getCategory() ) )
+                                        .map( a -> addJourney.apply( darwinLive.getJourney( a.getAssocRid() ) ) )
+                                        .filter( Objects::nonNull )
+                                        .map( Journey::getDestination )
+                                        .filter( Objects::nonNull )
+                                        .map( d -> d.toJson( addPoint ) )
                                         .collect( JsonUtils.collectJsonArray() ) );
                       } )
                       .collect( JsonUtils.collectJsonArray() )
@@ -122,4 +136,14 @@ public class DepartureBoardsService
         return ob.build();
     }
 
+    private List<Point> callingPoints( Predicate<Point> filter, List<Point> scp )
+    {
+        int s = scp.size();
+        for( int i = 0; i < s; i++ ) {
+            if( filter.test( scp.get( i ) ) ) {
+                return scp.subList( i, s );
+            }
+        }
+        return Collections.emptyList();
+    }
 }

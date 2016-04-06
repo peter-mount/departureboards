@@ -62,12 +62,12 @@ public class DeparturesAction
                                  .method( "GET" )
                                  // CRS fail if not valid, we need location of the validated crs
                                  .add( CommonActions.extractCrsAction( 4, false ) )
-                                 .ifAttributePresentSetAttribute( "crs", "location", r -> stationSearch.lookupCrs( r.getAttribute( "crs" ) ) )
+                                 .ifAttributePresentSetAttribute( "crs", "crsValid", r -> stationSearch.isCrsValid( r.getAttribute( "crs" ) ) )
                                  // Time to return, default to now if not present
                                  .add( CommonActions.extractTime( 5, "time", TimeUtils::getLondonTime ) )
                                  // If location is present then get the departureboards
-                                 .ifAttributePresentSetAttribute( "location", "boards", r -> departureBoards.departureBoards( r.getAttribute( "crs" ),
-                                                                                                                              r.getAttribute( "time" ) ) )
+                                 .ifAttributeTrueSetAttribute( "crsValid", "boards", r -> departureBoards.departureBoards( r.getAttribute( "crs" ),
+                                                                                                                           r.getAttribute( "time" ) ) )
                                  // Return as Json
                                  .ifAttributePresent( "boards", r -> r.expiresIn( MAX_AGE ).maxAge( MAX_AGE ) )
                                  .ifAttributePresentSendOk( "boards", JsonEntity::createFromAttribute )

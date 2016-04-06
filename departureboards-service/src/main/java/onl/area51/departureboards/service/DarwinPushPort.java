@@ -17,6 +17,7 @@ package onl.area51.departureboards.service;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -75,6 +76,7 @@ public class DarwinPushPort
             Map<String, Point> locations = new HashMap<>();
             Point location = null;
             boolean plat = false;
+            Association assoc = null;
 
             XMLStreamReader r = inputFactory.createXMLStreamReader( is );
             while( r.hasNext() ) {
@@ -95,6 +97,29 @@ public class DarwinPushPort
                                 journey.setToc( r.getAttributeValue( ns, "toc" ) );
                                 journey.setTrainId( r.getAttributeValue( ns, "trainId" ) );
                                 schedule = new ArrayList<>();
+                                break;
+
+                            case "association":
+                                ns = null;
+                                assoc = new Association( r.getAttributeValue( ns, "category" ), r.getAttributeValue( ns, "tiploc" ) );
+                                break;
+
+                            case "main":
+                                ns = null;
+                                if( assoc != null ) {
+                                    assoc.setMain( Point.getTime( r, ns, "pta" ),
+                                                   Point.getTime( r, ns, "wta" ),
+                                                   r.getAttributeValue( ns, "rid" ) );
+                                }
+                                break;
+
+                            case "assoc":
+                                ns = null;
+                                if( assoc != null ) {
+                                    assoc.setAssoc( Point.getTime( r, ns, "ptd" ),
+                                                    Point.getTime( r, ns, "wtd" ),
+                                                    r.getAttributeValue( ns, "rid" ) );
+                                }
                                 break;
 
                             case "OPOR":
@@ -210,6 +235,15 @@ public class DarwinPushPort
 
                             case "plat":
                                 plat = false;
+                                break;
+
+                            case "association":
+                                if( assoc != null ) {
+                                    Association a = assoc;
+                                    darwinLive.forJourney( assoc.getMainRid(), j -> j.associate( a ) );
+                                    darwinLive.forJourney( assoc.getAssocRid(), j -> j.associate( a ) );
+                                    assoc = null;
+                                }
                                 break;
 
                             default:

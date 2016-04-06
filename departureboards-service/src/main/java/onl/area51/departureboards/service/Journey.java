@@ -16,8 +16,12 @@
 package onl.area51.departureboards.service;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CopyOnWriteArraySet;
 import javax.xml.stream.XMLStreamReader;
 
 /**
@@ -40,6 +44,7 @@ public class Journey
     private List<Point> callingPoints = new ArrayList<>();
     private Point origin;
     private Point destination;
+    private Collection<Association> associations = null;
 
     public Journey( XMLStreamReader r )
     {
@@ -58,6 +63,19 @@ public class Journey
         this.rid = rid;
         this.uid = uid;
         this.ssd = ssd;
+    }
+
+    public Collection<Association> getAssociations()
+    {
+        return associations == null ? Collections.emptyList() : associations;
+    }
+
+    public synchronized void associate( Association assoc )
+    {
+        if( associations == null ) {
+            associations = new CopyOnWriteArraySet<>();
+        }
+        associations.add( assoc );
     }
 
     public List<Point> getCallingPoints()

@@ -228,6 +228,13 @@ var LDB = (function () {
             } else if (dep.dest) {
                 d1.append(locname(v.locref, dep.dest.tpl));
                 // via here
+                // splits
+                if (dep.split && !dep.term) {
+                    $.each(dep.split, function (i, assoc) {
+                        d1.append(" &amp; " + locname(v.locref, assoc.dest.tpl));
+                        // via here
+                    });
+                }
             } else {
                 d1.append("Check front of train");
             }
@@ -276,6 +283,31 @@ var LDB = (function () {
                 });
             }
 
+            if (dep.split && !dep.term) {
+                $.each(dep.split, function (i, assoc) {
+                    d = $('<div></div>')
+                            .addClass("ldb-entbot")
+                            .addClass("callList")
+                            .appendTo(row);
+
+                    var d2 = $('<span></span>').addClass("ldbHeader").appendTo(d);
+                    d2.append("Rear coaches ");
+                    if (dep.canc)
+                        d2.append("originally ");
+                    d2.append("calling at: ");
+
+                    $.each(assoc.calling, function (i, cp) {
+                        $('<span></span>')
+                                .append($("<a></a>")
+                                        .attr({"href": "/mldb/" + loccrs(v.locref, cp.tpl)})
+                                        .append(locname(v.locref, cp.tpl))
+                                        )
+                                .append("&nbsp;(" + cp.time + ") ")
+                                .appendTo(d);
+                    });
+                });
+            }
+
             d = $('<div></div>').addClass("ldb-entbot").appendTo(row);
 
             if (dep.length > 0) {
@@ -305,6 +337,7 @@ var LDB = (function () {
             // Debug mode, show if point is timetable or realtime
             //if (dep.tt) {
             d.append($('<span></span>').append(dep.tt ? "&#964;" : "&#948;").append("&nbsp;"));
+            d.append($('<span></span>').append(" RID: " + dep.rid));
             //}
 
         });

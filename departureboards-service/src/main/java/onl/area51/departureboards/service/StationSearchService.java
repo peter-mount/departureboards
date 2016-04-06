@@ -57,6 +57,13 @@ public class StationSearchService
     }
 
     @Override
+    public boolean isCrsValid( String crs )
+            throws IOException
+    {
+        return darwinReferenceManager.getLocationRefFromCrs( crs ) != null;
+    }
+
+    @Override
     public JsonObject lookupCrs( String crs )
             throws IOException
     {

@@ -33,6 +33,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -54,7 +55,10 @@ import uk.trainwatch.util.TimeUtils;
 public class DarwinLive
 {
 
-    private static final String TTNS = "http://www.thalesgroup.com/rtti/XmlTimetable/v8";
+    /**
+     * Debugging: Normally this is null, set to a time to force when the timetable starts
+     */
+    private static final LocalTime FORCE_TIME = LocalTime.of( 16, 30 );
 
     private static final Logger LOG = Logger.getGlobal();
 
@@ -71,6 +75,14 @@ public class DarwinLive
     public Journey getJourney( String rid )
     {
         return journeys.get( rid );
+    }
+
+    public void forJourney( String rid, Consumer<Journey> c )
+    {
+        Journey j = getJourney( rid );
+        if( j != null ) {
+            c.accept( j );
+        }
     }
 
     public Journey getJourney( String rid, String ssd, String uid )
@@ -138,11 +150,12 @@ public class DarwinLive
                    XMLStreamException
     {
         Journey journey = null;
+        Association assoc = null;
         int seq = 0;
         int jcount = 0;
         int scount = 0;
 
-        LocalTime now = LocalTime.now( TimeUtils.LONDON );
+        LocalTime now = FORCE_TIME == null ? LocalTime.now( TimeUtils.LONDON ) : FORCE_TIME;
 
         XMLInputFactory inputFactory = XMLInputFactory.newInstance();
         XMLStreamReader r = inputFactory.createXMLStreamReader( is );
@@ -151,7 +164,7 @@ public class DarwinLive
                 case XMLStreamReader.START_ELEMENT:
                     switch( r.getName().getLocalPart() ) {
                         case "PportTimetable":
-                            LOG.log( Level.INFO, () -> "Processing timetable " + r.getAttributeValue( TTNS, "timetableId" ) );
+                            LOG.log( Level.INFO, () -> "Processing timetable " + r.getAttributeValue( null, "timetableID" ) );
                             break;
 
                         case "Journey":
@@ -171,6 +184,26 @@ public class DarwinLive
                             Point point = new Point( journey, r );
                             break;
 
+                        case "Association":
+                            assoc = new Association( r.getAttributeValue( null, "category" ), r.getAttributeValue( null, "tiploc" ) );
+                            break;
+
+                        case "main":
+                            if( assoc != null ) {
+                                assoc.setMain( Point.getTime( r, null, "pta" ),
+                                               Point.getTime( r, null, "wta" ),
+                                               r.getAttributeValue( null, "rid" ) );
+                            }
+                            break;
+
+                        case "assoc":
+                            if( assoc != null ) {
+                                assoc.setAssoc( Point.getTime( r, null, "ptd" ),
+                                                Point.getTime( r, null, "wtd" ),
+                                                r.getAttributeValue( null, "rid" ) );
+                            }
+                            break;
+
                         default:
                             break;
                     }
@@ -179,28 +212,40 @@ public class DarwinLive
                 case XMLStreamReader.END_ELEMENT:
                     switch( r.getName().getLocalPart() ) {
                         case "Journey":
-                            Objects.requireNonNull( journey, "No journey" );
+                            if( journey != null ) {
+                                Objects.requireNonNull( journey, "No journey" );
 
-                            LocalTime jt = journey.getDestination().getTime();
-                            if( jt.isBefore( now ) && jt.isAfter( DARWIN_MIDNIGHT ) ) {
-                                scount++;
-                            }
-                            else {
-                                journeys.put( journey.getRid(), journey );
-                                journey.getCallingPoints()
-                                        .forEach( p -> {
-                                            LocalTime pt = p.getTime();
-                                            if( pt.isAfter( now ) || pt.isBefore( DARWIN_MIDNIGHT ) ) {
-                                                getStation( p ).add( p );
-                                            }
-                                        } );
-                            }
+                                LocalTime jt = journey.getDestination().getTime();
+                                if( jt.isBefore( now ) && jt.isAfter( DARWIN_MIDNIGHT ) ) {
+                                    scount++;
+                                }
+                                else {
+                                    journeys.put( journey.getRid(), journey );
+                                    journey.getCallingPoints()
+                                            .forEach( p -> {
+                                                LocalTime pt = p.getTime();
+                                                if( pt.isAfter( now ) || pt.isBefore( DARWIN_MIDNIGHT ) ) {
+                                                    getStation( p ).add( p );
+                                                }
+                                            } );
+                                }
 
-                            journey = null;
-                            if( (jcount % 20000) == 0 ) {
-                                LOG.log( Level.INFO, "Processed {0} journeys", jcount );
+                                journey = null;
+                                if( (jcount % 20000) == 0 ) {
+                                    LOG.log( Level.INFO, "Processed {0} journeys", jcount );
+                                }
                             }
                             break;
+
+                        case "Association":
+                            if( assoc != null && assoc.isValid() ) {
+                                Association a = assoc;
+                                forJourney( assoc.getMainRid(), j -> j.associate( a ) );
+                                forJourney( assoc.getAssocRid(), j -> j.associate( a ) );
+                            }
+                            assoc = null;
+                            break;
+
                         default:
                             break;
                     }
