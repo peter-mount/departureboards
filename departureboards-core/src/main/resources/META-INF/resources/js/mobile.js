@@ -273,10 +273,12 @@ var LDB = (function () {
             if (dep.calling && !dep.term && !dep.canc) {
                 d = callList(row, dep);
                 d.append($('<span></span>').append("Calling at: "));
-                var d2 = null;
+                var d2 = null, d3 = false;
                 $.each(dep.calling, function (i, cp) {
-                    if (d2)
+                    if (d2) {
                         d.append(d2);
+                        d3 = true;
+                    }
                     d2 = $('<span></span>').append(linkStation(v.locref, cp.tpl)).append("&nbsp;(" + cp.time + ") ");
                     if (dep.split && dep.split.origin.tpl === cp.tpl) {
                         d.append($('<span></span>').append(" and&nbsp;"))
@@ -290,7 +292,10 @@ var LDB = (function () {
                     }
                 });
                 if (d2)
-                    d.append($('<span></span>').append(" and&nbsp;")).append(d2);
+                    if (d3)
+                        d.append($('<span></span>').append(" and&nbsp;")).append(d2);
+                    else
+                        d.append(d2);
             }
 
             if (dep.split && !dep.term && !dep.canc) {
@@ -298,10 +303,12 @@ var LDB = (function () {
                         .append($('<span></span>').append("Rear coaches for "))
                         .append($('<span></span>').addClass("ldbHeader").append(linkStation(v.locref, dep.split.dest.tpl)))
                         .append($('<span></span>').append(" calling at: "));
-                var d2 = null;
+                var d2 = null, d3 = false;
                 $.each(dep.split.calling, function (i, cp) {
-                    if (d2)
+                    if (d2) {
                         d.append(d2);
+                        d3 = true;
+                    }
                     d2 = $('<span></span>')
                             .append($("<a></a>")
                                     .attr({"href": "/mldb/" + loccrs(v.locref, cp.tpl)})
@@ -310,7 +317,10 @@ var LDB = (function () {
                             .append("&nbsp;(" + cp.time + ") ");
                 });
                 if (d2)
-                    d.append($('<span></span>').append(" and&nbsp;")).append(d2);
+                    if (d3)
+                        d.append($('<span></span>').append(" and&nbsp;")).append(d2);
+                    else
+                        d.append(d2);
             }
 
             // metaData
