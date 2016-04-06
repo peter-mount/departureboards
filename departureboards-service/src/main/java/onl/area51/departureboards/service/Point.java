@@ -100,11 +100,7 @@ public class Point
         JsonObjectBuilder b = toJsonImpl()
                 .add( "rid", journey.getRid() )
                 .add( "origin", journey.getOrigin().toJsonImpl() )
-                .add( "dest", journey.getDestination().toJsonImpl() )
-                // TODO reverse formation
-                .add( "reverse", false )
-                // TODO train length
-                .add( "length", 0 );
+                .add( "dest", journey.getDestination().toJsonImpl() );
         JsonUtils.add( b, "toc", journey.getToc() );
         JsonUtils.add( b, "headcode", journey.getTrainId() );
         JsonUtils.add( b, "cat", journey.getTrainCat() );
@@ -127,7 +123,11 @@ public class Point
 
     public JsonObjectBuilder toJsonImpl()
     {
-        JsonObjectBuilder b = Json.createObjectBuilder();
+        JsonObjectBuilder b = Json.createObjectBuilder()
+                // TODO reverse formation
+                .add( "reverse", false )
+                // TODO train length
+                .add( "length", 0 );
         JsonUtils.add( b, "tpl", tpl );
         JsonUtils.add( b, "plat", plat );
         JsonUtils.add( b, "time", getTime() );
