@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalTime;
 import java.util.Objects;
+import java.util.function.Function;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.json.JsonObject;
@@ -28,11 +29,16 @@ import onl.area51.httpd.action.ActionRegistry;
 import onl.area51.httpd.action.Request;
 import org.apache.http.HttpException;
 import org.apache.http.HttpStatus;
-import uk.trainwatch.util.TimeUtils;
 import onl.area51.departureboards.api.RealTimeTrain;
+import org.apache.http.protocol.HttpRequestHandler;
 
 /**
- * Handles the detail page for a specific train via /train/{RID}
+ * Handles the train details.
+ * <ul>
+ * <li>/api/departure/train/short/{rid} Returns Json for an active train with stops only.</li>
+ * <li>/api/departure/train/full/{rid} Returns Json for an active train with all points.</li>
+ * <li>/train/{rid} Returns the departureboards detail page which shows the short content</li>
+ * </ul>
  *
  * @author peter
  */
@@ -45,18 +51,19 @@ public class DetailsAction
     {
         Duration MAX_AGE = Duration.ofMinutes( 1 );
 
-        builder.registerHandler( "/api/departure/train/*",
-                                 HttpRequestHandlerBuilder.create()
-                                 .log()
-                                 .method( "GET" )
-                                 .setAttribute( "rid", r -> r.getPath( 4 ) )
-                                 .ifAttributePresentSetAttribute( "rid", "journey", r -> realtimeTrain.getJourney( r.getAttribute( "rid" ) ) )
-                                 .ifAttributePresent( "journey", r -> r.expiresIn( MAX_AGE ).maxAge( MAX_AGE ) )
-                                 .ifAttributePresentSendOk( "journey", JsonEntity::createFromAttribute )
-                                 .ifAttributeAbsentSendError( "journey", HttpStatus.SC_NOT_FOUND )
-                                 .end()
-                                 .build()
-        )
+        Function<Boolean, HttpRequestHandler> api = stopsOnly -> HttpRequestHandlerBuilder.create()
+                .log()
+                .method( "GET" )
+                .setAttribute( "rid", r -> r.getPath( 5 ) )
+                .ifAttributePresentSetAttribute( "rid", "journey", r -> realtimeTrain.getJourney( r.getAttribute( "rid" ), stopsOnly ) )
+                .ifAttributePresent( "journey", r -> r.expiresIn( MAX_AGE ).maxAge( MAX_AGE ) )
+                .ifAttributePresentSendOk( "journey", JsonEntity::createFromAttribute )
+                .ifAttributeAbsentSendError( "journey", HttpStatus.SC_NOT_FOUND )
+                .end()
+                .build();
+
+        builder.registerHandler( "/api/departure/train/short/*", api.apply( true ) )
+                .registerHandler( "/api/departure/train/full/*", api.apply( false ) )
                 .registerHandler( "/train/*",
                                   HttpRequestHandlerBuilder.create()
                                   .log()

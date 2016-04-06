@@ -48,7 +48,7 @@ public class RealTimeTrainService
     }
 
     @Override
-    public JsonObject getJourney( String rid )
+    public JsonObject getJourney( String rid, boolean stopsOnly )
             throws IOException
     {
         Journey journey = darwinLive.getJourney( rid );
@@ -89,7 +89,7 @@ public class RealTimeTrainService
         JsonUtils.add( b, "cat", journey.getTrainCat() );
         b.add( "calling", journey.getCallingPoints()
                .stream()
-               .filter( cp -> cp.getType().isStop() )
+               .filter( cp -> !stopsOnly || cp.getType().isStop() )
                .map( cp -> addPoint.apply( cp ).toJsonImpl() )
                .collect( JsonUtils.collectJsonArray() ) );
 

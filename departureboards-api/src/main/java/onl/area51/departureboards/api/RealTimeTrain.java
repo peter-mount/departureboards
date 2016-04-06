@@ -28,6 +28,6 @@ public interface RealTimeTrain
     boolean isRidValid( String rid )
             throws IOException;
 
-    JsonObject getJourney( String rid )
+    JsonObject getJourney( String rid, boolean stopsOnly )
             throws IOException;
 }
