@@ -152,7 +152,7 @@ var LDB = (function () {
 
     var locname = function (v, tpl) {
         var l = v[tpl];
-        return l ? l.loc ? l.loc : tpl : tpl;
+        return l ? l.loc ? l.loc.replace("&", "&amp;").replace(" ", "&nbsp;") : tpl : tpl;
     }
 
     var loccrs = function (v, tpl) {
@@ -164,6 +164,22 @@ var LDB = (function () {
         var l = v[toc];
         return l ? l : toc;
     }
+
+    // Begin a call list
+    var callList = function (row, dep) {
+        var d = $('<div></div>')
+                .addClass("ldb-entbot")
+                .addClass("callList")
+                .appendTo(row);
+        if (dep.canc)
+            d.addClass("callListCancelled");
+        return d;
+    };
+
+    // Link to a station page
+    var linkStation = function (locref, tpl) {
+        return $("<a></a>").attr({"href": "/mldb/" + loccrs(locref, tpl)}).append(locname(locref, tpl));
+    };
 
     var success = function (v) {
         UI.hideLoader();
@@ -230,10 +246,8 @@ var LDB = (function () {
                 // via here
                 // splits
                 if (dep.split && !dep.term) {
-                    $.each(dep.split, function (i, assoc) {
-                        d1.append(" &amp; " + locname(v.locref, assoc.dest.tpl));
-                        // via here
-                    });
+                    d1.append(" &amp; " + locname(v.locref, dep.split.dest.tpl));
+                    // via here
                 }
             } else {
                 d1.append("Check front of train");
@@ -255,84 +269,77 @@ var LDB = (function () {
                 // via here
             }
 
-            // associations
-
             // calling points
-            if (dep.calling && !dep.term) {
-                d = $('<div></div>')
-                        .addClass("ldb-entbot")
-                        .addClass("callList")
-                        .appendTo(row);
-                if (dep.canc)
-                    d.addClass("callListCancelled");
-                if (dep.eta)
-                    d.append($('<span></span>').addClass("ldbHeader").append("Due:&nbsp;"))
-                            .append($('<span></span>').append(dep.eta).append(" "));
-                if (dep.canc)
-                    d.append($('<span></span>').addClass("ldbHeader").append("Originally calling at: "));
-                else
-                    d.append($('<span></span>').addClass("ldbHeader").append("Calling at: "));
+            if (dep.calling && !dep.term && !dep.canc) {
+                d = callList(row, dep);
+                d.append($('<span></span>').append("Calling at: "));
+                var d2 = null;
                 $.each(dep.calling, function (i, cp) {
-                    $('<span></span>')
+                    if (d2)
+                        d.append(d2);
+                    d2 = $('<span></span>').append(linkStation(v.locref, cp.tpl)).append("&nbsp;(" + cp.time + ") ");
+                    if (dep.split && dep.split.origin.tpl === cp.tpl) {
+                        d.append($('<span></span>').append(" and&nbsp;"))
+                                .append(d2)
+                                .append($('<span></span>').append(" where the train divides."));
+                        d2 = null;
+                        d = callList(row, dep)
+                                .append($('<span></span>').append("Front coaches for "))
+                                .append($('<span></span>').addClass("ldbHeader").append(linkStation(v.locref, dep.dest.tpl)))
+                                .append($('<span></span>').append(" calling at: "));
+                    }
+                });
+                if (d2)
+                    d.append($('<span></span>').append(" and&nbsp;")).append(d2);
+            }
+
+            if (dep.split && !dep.term && !dep.canc) {
+                d = callList(row, dep)
+                        .append($('<span></span>').append("Rear coaches for "))
+                        .append($('<span></span>').addClass("ldbHeader").append(linkStation(v.locref, dep.split.dest.tpl)))
+                        .append($('<span></span>').append(" calling at: "));
+                var d2 = null;
+                $.each(dep.split.calling, function (i, cp) {
+                    if (d2)
+                        d.append(d2);
+                    d2 = $('<span></span>')
                             .append($("<a></a>")
                                     .attr({"href": "/mldb/" + loccrs(v.locref, cp.tpl)})
                                     .append(locname(v.locref, cp.tpl))
                                     )
-                            .append("&nbsp;(" + cp.time + ") ")
-                            .appendTo(d);
+                            .append("&nbsp;(" + cp.time + ") ");
                 });
+                if (d2)
+                    d.append($('<span></span>').append(" and&nbsp;")).append(d2);
             }
 
-            if (dep.split && !dep.term) {
-                $.each(dep.split, function (i, assoc) {
-                    d = $('<div></div>')
-                            .addClass("ldb-entbot")
-                            .addClass("callList")
-                            .appendTo(row);
-
-                    var d2 = $('<span></span>').addClass("ldbHeader").appendTo(d);
-                    d2.append("Rear coaches ");
-                    if (dep.canc)
-                        d2.append("originally ");
-                    d2.append("calling at: ");
-
-                    $.each(assoc.calling, function (i, cp) {
-                        $('<span></span>')
-                                .append($("<a></a>")
-                                        .attr({"href": "/mldb/" + loccrs(v.locref, cp.tpl)})
-                                        .append(locname(v.locref, cp.tpl))
-                                        )
-                                .append("&nbsp;(" + cp.time + ") ")
-                                .appendTo(d);
-                    });
-                });
-            }
-
+            // metaData
             d = $('<div></div>').addClass("ldb-entbot").appendTo(row);
 
-            if (dep.length > 0) {
+            if (dep.length > 0)
                 d.append($('<span></span>')
                         .append("Formed&nbsp;of&nbsp;").append(dep.length).append("&nbsp;coaches.&nbsp;"));
-            }
 
-            if (dep.toc) {
+            if (dep.toc)
                 d.append($('<span></span>').addClass("ldbHeader").append("Operator:&nbsp;"))
-                d.append($('<span></span>').append(tocname(v.opref, dep.toc)).append("&nbsp;"));
-            }
-            if (dep.length) {
+                        .append($('<span></span>').append(tocname(v.opref, dep.toc)).append("&nbsp;"));
+
+            if (dep.length)
                 d.append($('<span></span>')
                         .append("Formed&nbsp;of&nbsp;" + dep.length + "&nbsp;coaches.&nbsp;"));
-            }
-            if (dep.headcode) {
+
+            if (dep.headcode)
                 d.append($('<span></span>').addClass("ldbHeader").append("HeadCode:&nbsp;"))
                         .append($('<span></span>').append(dep.headcode).append("&nbsp;"));
-            }
 
-            if (dep.lastreport) {
+            if (dep.lastreport)
                 d.append($('<span></span>').addClass("ldbHeader").append("Last report:"))
                         .append($('<span></span>').addClass("ldbDest")
                                 .append(locname(v.locref, dep.lastreport.tpl) + '&nbsp;' + dep.lastreport.time + "&nbsp;"));
-            }
+
+            if (dep.eta)
+                d.append($('<span></span>').addClass("ldbHeader").append("Due:&nbsp;"))
+                        .append($('<span></span>').append(dep.eta).append(" "));
 
             // Debug mode, show if point is timetable or realtime
             //if (dep.tt) {

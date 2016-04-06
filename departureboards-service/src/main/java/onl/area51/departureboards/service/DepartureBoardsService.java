@@ -106,19 +106,24 @@ public class DepartureBoardsService
                       .map( p -> {
                           tpls.add( p.getTpl() );
                           addJourney.apply( p.getJourney() );
-                          return p.toJson( addPoint )
-                                  // Any splits
-                                  .add( "split",
-                                        p.getJourney()
-                                        .getAssociations()
-                                        .stream()
-                                        .filter( a -> "VV".equals( a.getCategory() ) )
-                                        .map( a -> addJourney.apply( darwinLive.getJourney( a.getAssocRid() ) ) )
-                                        .filter( Objects::nonNull )
-                                        .map( Journey::getDestination )
-                                        .filter( Objects::nonNull )
-                                        .map( d -> d.toJson( addPoint ) )
-                                        .collect( JsonUtils.collectJsonArray() ) );
+                          JsonObjectBuilder b = p.toJson( addPoint );
+
+                          // Any splits
+                          p.getJourney()
+                                  .getAssociations()
+                                  .stream()
+                                  .filter( a -> "VV".equals( a.getCategory() ) )
+                                  .map( a -> addJourney.apply( darwinLive.getJourney( a.getAssocRid() ) ) )
+                                  .filter( Objects::nonNull )
+                                  .map( Journey::getDestination )
+                                  .filter( Objects::nonNull )
+                                  // Filter out splits to ourselves, i.e. we are the split train
+                                  .filter( d -> !p.getTpl().equals( d.getTpl() ) )
+                                  .map( d -> d.toJson( addPoint ) )
+                                  .findAny()
+                                  .ifPresent( b1 -> b.add( "split", b1 ) );
+                          
+                          return b;
                       } )
                       .collect( JsonUtils.collectJsonArray() )
                 )
@@ -136,14 +141,4 @@ public class DepartureBoardsService
         return ob.build();
     }
 
-    private List<Point> callingPoints( Predicate<Point> filter, List<Point> scp )
-    {
-        int s = scp.size();
-        for( int i = 0; i < s; i++ ) {
-            if( filter.test( scp.get( i ) ) ) {
-                return scp.subList( i, s );
-            }
-        }
-        return Collections.emptyList();
-    }
 }
