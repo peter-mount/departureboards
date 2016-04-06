@@ -115,14 +115,22 @@ public class DepartureBoardsService
                                   .filter( a -> "VV".equals( a.getCategory() ) )
                                   .map( a -> addJourney.apply( darwinLive.getJourney( a.getAssocRid() ) ) )
                                   .filter( Objects::nonNull )
-                                  .map( Journey::getDestination )
+                                  .map( sj -> {
+                                      Point orig = sj.getOrigin();
+                                      Point dest = sj.getDestination();
+
+                                      // Filter out splits to ourselves, i.e. we are the split train
+                                      if( orig == null || dest == null || j.getDestination().getTpl().equals( dest.getTpl() ) ) {
+                                          return null;
+                                      }
+
+                                      // Json but use calling points from origin
+                                      return dest.toJson( addPoint, orig.getCallingPoints() );
+                                  } )
                                   .filter( Objects::nonNull )
-                                  // Filter out splits to ourselves, i.e. we are the split train
-                                  .filter( d -> !j.getDestination().getTpl().equals( d.getTpl() ) )
-                                  .map( d -> d.toJson( addPoint ) )
                                   .findAny()
                                   .ifPresent( b1 -> b.add( "split", b1 ) );
-                          
+
                           return b;
                       } )
                       .collect( JsonUtils.collectJsonArray() )
