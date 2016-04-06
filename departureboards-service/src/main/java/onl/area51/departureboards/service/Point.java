@@ -18,6 +18,7 @@ package onl.area51.departureboards.service;
 import java.time.Duration;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -99,7 +100,11 @@ public class Point
         JsonObjectBuilder b = toJsonImpl()
                 .add( "rid", journey.getRid() )
                 .add( "origin", journey.getOrigin().toJsonImpl() )
-                .add( "dest", journey.getDestination().toJsonImpl() );
+                .add( "dest", journey.getDestination().toJsonImpl() )
+                // TODO reverse formation
+                .add( "reverse", false )
+                // TODO train length
+                .add( "length", 0 );
         JsonUtils.add( b, "toc", journey.getToc() );
         JsonUtils.add( b, "headcode", journey.getTrainId() );
         JsonUtils.add( b, "cat", journey.getTrainCat() );
@@ -108,9 +113,13 @@ public class Point
 
     public JsonObjectBuilder toJson( UnaryOperator<Point> addPoint )
     {
+        return toJson( addPoint, getCallingPoints() );
+    }
+
+    public JsonObjectBuilder toJson( UnaryOperator<Point> addPoint, Collection<Point> callingPoints )
+    {
         return toJson().add( "calling",
-                             getCallingPoints()
-                             .stream()
+                             callingPoints.stream()
                              .filter( cp -> cp.getType().isStop() )
                              .map( cp -> addPoint.apply( cp ).toCPJson() )
                              .collect( JsonUtils.collectJsonArray() ) );
