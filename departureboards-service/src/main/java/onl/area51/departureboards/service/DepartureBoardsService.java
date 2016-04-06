@@ -105,7 +105,7 @@ public class DepartureBoardsService
                       .filter( p -> p.isWithin( st, et ) && p.getType().isStop() )
                       .map( p -> {
                           tpls.add( p.getTpl() );
-                          addJourney.apply( p.getJourney() );
+                          Journey j = addJourney.apply( p.getJourney() );
                           JsonObjectBuilder b = p.toJson( addPoint );
 
                           // Any splits
@@ -118,7 +118,7 @@ public class DepartureBoardsService
                                   .map( Journey::getDestination )
                                   .filter( Objects::nonNull )
                                   // Filter out splits to ourselves, i.e. we are the split train
-                                  .filter( d -> !p.getTpl().equals( d.getTpl() ) )
+                                  .filter( d -> !j.getDestination().getTpl().equals( d.getTpl() ) )
                                   .map( d -> d.toJson( addPoint ) )
                                   .findAny()
                                   .ifPresent( b1 -> b.add( "split", b1 ) );
