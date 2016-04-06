@@ -197,6 +197,7 @@ var LDB = (function () {
         else if (split)
             d.append(sp().append(frc(dep.reverse)))
                     .append(sph().append(linkStation(locref, dep.split.dest.tpl)))
+                    .append(" departing &nbsp;(" + dep.split.origin.time + ") ")
                     .append(sp().append(" calling at: "));
 
         var c = main ? dep.calling : split ? split.calling : null, d2 = null, d3 = false;
@@ -215,6 +216,7 @@ var LDB = (function () {
                     d = callListHeader(row)
                             .append(sp().append(frc(!dep.reverse)))
                             .append(sph().append(linkStation(locref, dep.dest.tpl)))
+                            .append(" departing &nbsp;(" + cp.time + ") ")
                             .append(sp().append(" calling at: "));
                 }
             });
