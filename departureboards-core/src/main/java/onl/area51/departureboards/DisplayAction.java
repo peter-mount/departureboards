@@ -16,6 +16,7 @@
 package onl.area51.departureboards;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.time.LocalTime;
 import java.util.Objects;
 import javax.enterprise.context.Dependent;
@@ -43,6 +44,8 @@ public class DisplayAction
     void deploy( @Observes ActionRegistry builder, StationSearch stationSearch )
             throws IOException
     {
+        Duration MAX_AGE = Duration.ofHours( 1 );
+
         builder.registerHandler( "/mldb/*",
                                  HttpRequestHandlerBuilder.create()
                                  .log()
@@ -55,10 +58,11 @@ public class DisplayAction
                                  .add( CommonActions.extractTime( 3, "time" ) )
                                  // If location set then set pageTitle
                                  .ifAttributePresentSetAttribute( "location", "pageTitle", r -> {
-                                                     JsonObject location = r.getAttribute( "location" );
-                                                     return location.getString( "crs" ) + " " + location.getString( "location" );
-                                                 } )
+                                                              JsonObject location = r.getAttribute( "location" );
+                                                              return location.getString( "crs" ) + " " + location.getString( "location" );
+                                                          } )
                                  // The page content
+                                 .ifAttributePresent( "location", r -> r.expiresIn( MAX_AGE ).maxAge( MAX_AGE ) )
                                  .ifAttributePresent( "location",
                                                       LayoutBuilder.builder()
                                                       .setTitle( "Departure Boards" )

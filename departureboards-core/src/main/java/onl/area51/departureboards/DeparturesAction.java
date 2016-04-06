@@ -16,6 +16,7 @@
 package onl.area51.departureboards;
 
 import java.io.IOException;
+import java.time.Duration;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.json.JsonObject;
@@ -51,6 +52,8 @@ public class DeparturesAction
     void deploy( @Observes ActionRegistry builder, StationSearch stationSearch, DepartureBoards departureBoards )
             throws IOException
     {
+        Duration MAX_AGE = Duration.ofMinutes( 1 );
+
         // /api/departure/board/{crs}
         // /api/departure/board/{crs}/{time}
         builder.registerHandler( "/api/departure/board/*",
@@ -66,6 +69,7 @@ public class DeparturesAction
                                  .ifAttributePresentSetAttribute( "location", "boards", r -> departureBoards.departureBoards( r.getAttribute( "crs" ),
                                                                                                                               r.getAttribute( "time" ) ) )
                                  // Return as Json
+                                 .ifAttributePresent( "boards", r -> r.expiresIn( MAX_AGE ).maxAge( MAX_AGE ) )
                                  .ifAttributePresentSendOk( "boards", JsonEntity::createFromAttribute )
                                  .ifAttributeAbsentSendError( "boards", HttpStatus.SC_NOT_FOUND )
                                  .end()

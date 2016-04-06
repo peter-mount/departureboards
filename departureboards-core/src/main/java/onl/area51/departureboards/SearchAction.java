@@ -15,6 +15,7 @@
  */
 package onl.area51.departureboards;
 
+import java.time.Duration;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import onl.area51.departureboards.api.StationSearch;
@@ -34,12 +35,15 @@ public class SearchAction
 
     void deploy( @Observes ActionRegistry builder, StationSearch stationSearch )
     {
+        Duration MAX_AGE = Duration.ofDays( 1 );
+        
         builder.registerHandler( "/api/departure/search",
                                  HttpRequestHandlerBuilder.create()
                                  .log()
                                  .method( "GET" )
                                  .setAttributeFromParameter( "term" )
                                  .ifAttributePresentSetAttribute( "term", "result", ( r, term ) -> stationSearch.search( (String) term ) )
+                                 .ifAttributePresent( "result", r -> r.expiresIn( MAX_AGE ).maxAge( MAX_AGE ) )
                                  .ifAttributePresentSendOk( "result", JsonEntity::createFromAttribute )
                                  .ifAttributeAbsentSendError( "result", HttpStatus.SC_NOT_FOUND )
                                  .end()
