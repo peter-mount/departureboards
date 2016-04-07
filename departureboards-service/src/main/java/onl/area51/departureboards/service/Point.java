@@ -147,9 +147,8 @@ public class Point
         JsonUtils.add( b, "etp", etp );
         JsonUtils.add( b, "updated", lastUpdated );
         JsonUtils.add( b, "delay", getDelay() );
-
-        Point lastReport = getJourney().getLastReport();
-        JsonUtils.add( b, "lastReport", lastReport == null ? null : lastReport.toCPJson() );
+        JsonUtils.add( b, "lastReport", getJourney().getLastReport(), Point::toCPJson );
+        JsonUtils.add( b, "lastStop", getJourney().getLastStop(), Point::toCPJson );
 
         return b.add( "term", type.isTerm() )
                 .add( "pass", type.isPass() )
@@ -190,9 +189,29 @@ public class Point
         return eta != null || etd != null || etp != null || isReport();
     }
 
+    /**
+     * Do we have a report here
+     *
+     * @return
+     */
     public boolean isReport()
     {
         return ata != null || atd != null || atp != null;
+    }
+
+    /**
+     * Is this point a stop (i.e. not a pass)
+     *
+     * @return
+     */
+    public boolean isStop()
+    {
+        return wtp == null && atp == null && etp == null;
+    }
+
+    public boolean isPass()
+    {
+        return !isStop();
     }
 
     public boolean isWithin( LocalTime s, LocalTime e )

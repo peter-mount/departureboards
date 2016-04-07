@@ -73,27 +73,45 @@ public class RealTimeTrainService
                .map( cp -> tpls.addPoint( cp ).toJsonImpl() )
                .collect( JsonUtils.collectJsonArray() ) );
 
-        // Any splits
         journey.getAssociations()
                 .stream()
-                .filter( a -> "VV".equals( a.getCategory() ) )
-                .map( a -> tpls.addJourney( darwinLive.getJourney( a.getAssocRid() ) ) )
-                .filter( Objects::nonNull )
-                .map( sj -> {
-                    Point orig = sj.getOrigin();
-                    Point dest = sj.getDestination();
-
-                    // Filter out splits to ourselves, i.e. we are the split train
-                    if( orig == null || dest == null || j.getDestination().getTpl().equals( dest.getTpl() ) ) {
+                .map( a -> new Object()
+                {
+                    Association as = a;
+                    Journey sj;
+                    JsonObjectBuilder b;
+                    String k;
+                } )
+                .map( a -> {
+                    a.sj = tpls.addJourney( darwinLive.getJourney( a.as.getAssocRid() ) );
+                    if( a.sj == null ) {
                         return null;
                     }
 
-                    // Json but use calling points from origin
-                    return dest.toJson( tpls::addPoint, Collections.emptyList() );
+                    Point dest = a.sj.getDestination();
+                    if( a.sj.getOrigin() == null || dest == null || j.getDestination().getTpl().equals( dest.getTpl() ) ) {
+                        return null;
+                    }
+
+                    switch( a.as.getCategory() ) {
+                        case "JJ":
+                            a.k = "joins";
+                            break;
+                        case "VV":
+                            a.k = "split";
+                            break;
+                        case "NP":
+                            a.k = "nextTrain";
+                            break;
+                        default:
+                            return null;
+                    }
+
+                    a.b = a.sj.getDestination().toJson( tpls::addPoint, Collections.emptyList() );
+                    return a;
                 } )
                 .filter( Objects::nonNull )
-                .findAny()
-                .ifPresent( b1 -> b.add( "split", b1 ) );
+                .forEach( a -> b.add( a.k, a.b ) );
 
         return tpls.toJson( b, darwinReference )
                 .build();

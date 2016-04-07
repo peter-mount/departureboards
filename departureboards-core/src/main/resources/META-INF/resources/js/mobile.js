@@ -1,5 +1,5 @@
 // Common UI functions
-var host = 'http://[2001:8b0:fb75:51dd:5::5]';
+var host = null;
 
 var UI = (function () {
     function UI() {
@@ -509,7 +509,12 @@ var Train = (function () {
         if (main)
             trainhd(tab, v, t, Train.detailed ? 8 : 6);
 
-        var lr = t.lastReport ? t.lastReport.tpl : null;
+        // detailed uses last report rather than last stop on this display
+        // lr = tpl of last report or stop in basic mode
+        // ls true if last report was a stop and not moving
+        // lrf true if lr is not null & we are before that point
+        var lr = Train.detailed ? t.lastReport : t.lastStop ? t.lastStop : t.lastReport;
+        lr = lr ? lr.tpl : null;
         var lrf = lr !== null;
         var r = tr().appendTo(tab)
                 .append(th().append('&nbsp;'))
@@ -524,7 +529,7 @@ var Train = (function () {
             //console.log(i, lrf, cp);
             var st = t.canc ? "can" : cp.wtp ? "pass" : lrf ? "arr" : "expt";
             r = tr().appendTo(tab)
-                    .append(td().addClass("ldb-fsct-stat").append(lrf && cp.tpl === lr ? ">" : ""))
+                    .append(td().addClass("ldb-fsct-stat"))
                     .append(td().addClass("ldb-fsct-loc-" + st).append(locname(v.locref, cp.tpl)))
                     .append(td().addClass(cp.wtp ? "ldb-fsct-pass" : "ldb-fsct-plat-" + st).append(cp.platSup ? "N/A" : cp.plat));
             // Darwin forecast data. f is true to show planned data, so detailed mode or if this block doesnt show anything
@@ -598,7 +603,7 @@ var Train = (function () {
         }
 
         train(v, v, true, d0);
-        if (v.split) {
+        if (v.split||v.joins||v.nextTrain) {
             //train(v, v.split, false, d0);
             var tab = ta().appendTo(nr(d0))
                     .append(tr().append(td().append('&nbsp;')))
@@ -607,13 +612,17 @@ var Train = (function () {
                             .append(th().append('Type'))
                             .append(th().append('Head&nbsp;Code'))
                             .append(th().append('Origin'))
+                            .append(th().append('P'))
                             .append(th().append('Dep'))
                             .append(th().append('Arr'))
+                            .append(th().append('P'))
                             .append(th().append('Destination'))
                             .append(th().append('Last&nbsp;Report'))
                             );
             showassoc(tab, 'Primary', v, v);
             showassoc(tab, 'Split', v, v.split);
+            showassoc(tab, 'Joins', v, v.joins);
+            showassoc(tab, 'Next', v, v.nextTrain);
         }
     };
 
@@ -623,8 +632,10 @@ var Train = (function () {
                     .append(td().append(t))
                     .append(td().append($("<a></a>").attr({"href": "/train/" + a.rid}).append(a.headcode)))
                     .append(td().append(locname(v.locref, a.origin.tpl)))
+                    .append(td().append(a.origin.platSup ? "N/A" : a.origin.plat))
                     .append(td().append(locname(v.locref, a.origin.time)))
                     .append(td().append(locname(v.locref, a.dest.time)))
+                    .append(td().append(a.dest.platSup ? "N/A" : a.dest.plat))
                     .append(td().append(locname(v.locref, a.dest.tpl)))
                     .append(td().append(a.lastReport ? locname(v.locref, a.lastReport.tpl) + "&nbsp;" + a.lastReport.time : ''))
                     );

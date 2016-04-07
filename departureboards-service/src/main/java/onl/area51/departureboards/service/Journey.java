@@ -74,6 +74,15 @@ public class Journey
                 .orElse( null );
     }
 
+    public Point getLastStop()
+    {
+        return callingPoints.stream()
+                .filter( Point::isReport )
+                .filter( Point::isStop )
+                .collect( CollectorUtils.findLast() )
+                .orElse( null );
+    }
+
     public Collection<Association> getAssociations()
     {
         return associations == null ? Collections.emptyList() : associations;

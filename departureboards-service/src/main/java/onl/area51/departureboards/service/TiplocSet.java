@@ -52,6 +52,7 @@ public class TiplocSet
         if( j != null ) {
             addPoint( j.getOrigin() );
             addPoint( j.getDestination() );
+            addPoint( j.getLastReport() );
             String t = j.getToc();
             if( t != null ) {
                 tocs.add( t );
