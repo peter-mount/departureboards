@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArraySet;
 import javax.xml.stream.XMLStreamReader;
+import uk.trainwatch.util.CollectorUtils;
 
 /**
  *
@@ -63,6 +64,14 @@ public class Journey
         this.rid = rid;
         this.uid = uid;
         this.ssd = ssd;
+    }
+
+    public Point getLastReport()
+    {
+        return callingPoints.stream()
+                .filter( Point::isReport )
+                .collect( CollectorUtils.findLast() )
+                .orElse( null );
     }
 
     public Collection<Association> getAssociations()

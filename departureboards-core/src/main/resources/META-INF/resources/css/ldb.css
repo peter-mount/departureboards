@@ -103,7 +103,6 @@
 .ldbHeader, .ldbDest {
     color: white;
 }
-
 .ldb-row {
     color: #fff;
 }
@@ -134,6 +133,14 @@ td.ldb-fsct-expected {
     font-style: italic;
 }
 
+td.ldb-fsct-pass,td.ldb-fsct-passed {
+    font-style: italic;
+    color:gray;
+}
+td.ldb-fsct-passed {
+    font-weight: bold;
+}
+
 .ldb-row td {
     text-align: center;
 }
@@ -142,7 +149,7 @@ td.ldb-fsct-expected {
     color: #ffff00;
     border-bottom: 2px solid white;
 }
-td.ldb-fsct-loc-arr, td.ldb-fsct-loc-expt, td.ldb-fsct-loc-can {
+td.ldb-fsct-loc-arr, td.ldb-fsct-loc-expt, td.ldb-fsct-loc-can, td.ldb-fsct-loc-pass {
     text-align: left;
 }
 td.ldb-fsct-loc-arr, td.ldb-fsct-plat-arr {
@@ -157,6 +164,11 @@ td.ldb-fsct-loc-can, .ldb-fsct-cancelled {
     font-style: italic;
     font-weight: normal;
     color: red;
+}
+td.ldb-fsct-loc-pass {
+    font-style: italic;
+    font-weight: normal;
+    color: gray;
 }
 td.ldb-fsct-stat {
     width: 10pt;

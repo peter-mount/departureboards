@@ -58,7 +58,7 @@ public class DarwinLive
     /**
      * Debugging: Normally this is null, set to a time to force when the timetable starts
      */
-    private static final LocalTime FORCE_TIME = LocalTime.of( 16, 30 );
+    private static final LocalTime FORCE_TIME = null;//LocalTime.of( 16, 30 );
 
     private static final Logger LOG = Logger.getGlobal();
 

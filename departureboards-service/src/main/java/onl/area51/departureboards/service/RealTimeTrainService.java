@@ -17,10 +17,7 @@ package onl.area51.departureboards.service;
 
 import java.io.IOException;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
-import java.util.function.UnaryOperator;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.json.JsonObject;
@@ -40,6 +37,9 @@ public class RealTimeTrainService
     @Inject
     private DarwinLive darwinLive;
 
+    @Inject
+    private DarwinReference darwinReference;
+
     @Override
     public boolean isRidValid( String rid )
             throws IOException
@@ -56,29 +56,9 @@ public class RealTimeTrainService
             return null;
         }
 
-        Set<String> tpls = new HashSet<>();
-        Set<String> tocs = new HashSet<>();
+        TiplocSet tpls = new TiplocSet();
 
-        UnaryOperator<Point> addPoint = p -> {
-            if( p != null ) {
-                tpls.add( p.getTpl() );
-            }
-            return p;
-        };
-
-        UnaryOperator<Journey> addJourney = j -> {
-            if( j != null ) {
-                addPoint.apply( j.getOrigin() );
-                addPoint.apply( j.getDestination() );
-                String t = j.getToc();
-                if( t != null ) {
-                    tocs.add( t );
-                }
-            }
-            return j;
-        };
-
-        Journey j = addJourney.apply( journey );
+        Journey j = tpls.addJourney( journey );
         JsonObjectBuilder b = journey.getOrigin()
                 .toJsonImpl()
                 .add( "rid", journey.getRid() )
@@ -90,14 +70,14 @@ public class RealTimeTrainService
         b.add( "calling", journey.getCallingPoints()
                .stream()
                .filter( cp -> !stopsOnly || cp.getType().isStop() )
-               .map( cp -> addPoint.apply( cp ).toJsonImpl() )
+               .map( cp -> tpls.addPoint( cp ).toJsonImpl() )
                .collect( JsonUtils.collectJsonArray() ) );
 
         // Any splits
         journey.getAssociations()
                 .stream()
                 .filter( a -> "VV".equals( a.getCategory() ) )
-                .map( a -> addJourney.apply( darwinLive.getJourney( a.getAssocRid() ) ) )
+                .map( a -> tpls.addJourney( darwinLive.getJourney( a.getAssocRid() ) ) )
                 .filter( Objects::nonNull )
                 .map( sj -> {
                     Point orig = sj.getOrigin();
@@ -109,13 +89,14 @@ public class RealTimeTrainService
                     }
 
                     // Json but use calling points from origin
-                    return dest.toJson( addPoint, Collections.emptyList() );
+                    return dest.toJson( tpls::addPoint, Collections.emptyList() );
                 } )
                 .filter( Objects::nonNull )
                 .findAny()
                 .ifPresent( b1 -> b.add( "split", b1 ) );
 
-        return b.build();
+        return tpls.toJson( b, darwinReference )
+                .build();
     }
 
 }

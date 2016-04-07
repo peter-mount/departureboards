@@ -72,27 +72,7 @@ public class DepartureBoardsService
         LocalTime et = now.plus( 1, ChronoUnit.HOURS );
         Logger.getGlobal().log( Level.INFO, () -> "Time " + time + " Now " + now + " st=" + st + " et=" + et );
 
-        Set<String> tpls = new HashSet<>();
-        Set<String> tocs = new HashSet<>();
-
-        UnaryOperator<Point> addPoint = p -> {
-            if( p != null ) {
-                tpls.add( p.getTpl() );
-            }
-            return p;
-        };
-
-        UnaryOperator<Journey> addJourney = j -> {
-            if( j != null ) {
-                addPoint.apply( j.getOrigin() );
-                addPoint.apply( j.getDestination() );
-                String t = j.getToc();
-                if( t != null ) {
-                    tocs.add( t );
-                }
-            }
-            return j;
-        };
+        TiplocSet tpls = new TiplocSet();
 
         Set<Point> set = darwinLive.getDeparturesByCrs( crs );
 
@@ -105,15 +85,15 @@ public class DepartureBoardsService
                       .filter( p -> p.isWithin( st, et ) && p.getType().isStop() )
                       .map( p -> {
                           tpls.add( p.getTpl() );
-                          Journey j = addJourney.apply( p.getJourney() );
-                          JsonObjectBuilder b = p.toJson( addPoint );
+                          Journey j = tpls.addJourney( p.getJourney() );
+                          JsonObjectBuilder b = p.toJson( tpls::addPoint );
 
                           // Any splits
                           p.getJourney()
                                   .getAssociations()
                                   .stream()
                                   .filter( a -> "VV".equals( a.getCategory() ) )
-                                  .map( a -> addJourney.apply( darwinLive.getJourney( a.getAssocRid() ) ) )
+                                  .map( a -> tpls.addJourney( darwinLive.getJourney( a.getAssocRid() ) ) )
                                   .filter( Objects::nonNull )
                                   .map( sj -> {
                                       Point orig = sj.getOrigin();
@@ -125,7 +105,7 @@ public class DepartureBoardsService
                                       }
 
                                       // Json but use calling points from origin
-                                      return dest.toJson( addPoint, orig.getCallingPoints() );
+                                      return dest.toJson( tpls::addPoint, orig.getCallingPoints() );
                                   } )
                                   .filter( Objects::nonNull )
                                   .findAny()
@@ -134,19 +114,11 @@ public class DepartureBoardsService
                           return b;
                       } )
                       .collect( JsonUtils.collectJsonArray() )
-                )
-                // Add tiploc xref table
-                .add( "locref", tpls.stream()
-                      .map( darwinReference::resovleTiploc )
-                      .collect( JsonUtils.collectJsonObject( LocationRef::getTiploc, LocationRef::toSmallJson ) )
-                )
-                .add( "opref", tocs.stream()
-                      .map( darwinReference::getToc )
-                      .filter( Objects::nonNull )
-                      .collect( JsonUtils.collectJsonObject( Toc::getToc, Toc::getName ) )
                 );
 
-        return ob.build();
+        // Add tiploc xref table at end
+        return tpls.toJson( ob, darwinReference )
+                .build();
     }
 
 }

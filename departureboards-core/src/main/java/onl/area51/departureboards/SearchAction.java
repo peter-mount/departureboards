@@ -43,7 +43,7 @@ public class SearchAction
                                  .method( "GET" )
                                  .setAttributeFromParameter( "term" )
                                  .ifAttributePresentSetAttribute( "term", "result", ( r, term ) -> stationSearch.search( (String) term ) )
-                                 .ifAttributePresent( "result", r -> r.expiresIn( MAX_AGE ).maxAge( MAX_AGE ) )
+                                 .ifAttributePresent( "result", r -> r.expiresIn( MAX_AGE ).maxAge( MAX_AGE ).accessControlAllowOriginAny() )
                                  .ifAttributePresentSendOk( "result", JsonEntity::createFromAttribute )
                                  .ifAttributeAbsentSendError( "result", HttpStatus.SC_NOT_FOUND )
                                  .end()

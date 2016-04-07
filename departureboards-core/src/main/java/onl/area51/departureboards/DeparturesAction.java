@@ -69,7 +69,7 @@ public class DeparturesAction
                                  .ifAttributeTrueSetAttribute( "crsValid", "boards", r -> departureBoards.departureBoards( r.getAttribute( "crs" ),
                                                                                                                            r.getAttribute( "time" ) ) )
                                  // Return as Json
-                                 .ifAttributePresent( "boards", r -> r.expiresIn( MAX_AGE ).maxAge( MAX_AGE ) )
+                                 .ifAttributePresent( "boards", r -> r.expiresIn( MAX_AGE ).maxAge( MAX_AGE ).accessControlAllowOriginAny() )
                                  .ifAttributePresentSendOk( "boards", JsonEntity::createFromAttribute )
                                  .ifAttributeAbsentSendError( "boards", HttpStatus.SC_NOT_FOUND )
                                  .end()

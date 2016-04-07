@@ -131,6 +131,7 @@ public class Point
         JsonUtils.add( b, "tpl", tpl );
         JsonUtils.add( b, "plat", plat );
         JsonUtils.add( b, "time", getTime() );
+        JsonUtils.add( b, "darwin", this.getDarwinTime() );
         JsonUtils.add( b, "timetable", getTimetableTime() );
         JsonUtils.add( b, "act", act );
         JsonUtils.add( b, "pta", pta );
@@ -145,6 +146,10 @@ public class Point
         JsonUtils.add( b, "etd", etd );
         JsonUtils.add( b, "etp", etp );
         JsonUtils.add( b, "updated", lastUpdated );
+        JsonUtils.add( b, "delay", getDelay() );
+
+        Point lastReport = getJourney().getLastReport();
+        JsonUtils.add( b, "lastReport", lastReport == null ? null : lastReport.toCPJson() );
 
         return b.add( "term", type.isTerm() )
                 .add( "pass", type.isPass() )
@@ -152,8 +157,22 @@ public class Point
                 .add( "arrived", isArrived() )
                 .add( "delayed", isDelayed() )
                 .add( "ontime", isOntime() )
+                .add( "report", isReport() )
                 // timetable or realTime
                 .add( "tt", isTimeTable() );
+    }
+
+    public JsonObjectBuilder toCPJson()
+    {
+        JsonObjectBuilder b = Json.createObjectBuilder();
+        JsonUtils.add( b, "tpl", tpl );
+        JsonUtils.add( b, "time", getTime() );
+        JsonUtils.add( b, "darwin", this.getDarwinTime() );
+        JsonUtils.add( b, "timetable", this.getTimetableTime() );
+        JsonUtils.add( b, "ata", getAta() );
+        JsonUtils.add( b, "atd", getAtd() );
+        JsonUtils.add( b, "atp", getAtp() );
+        return b.add( "report", isReport() );
     }
 
     /**
@@ -168,7 +187,12 @@ public class Point
 
     public boolean isForecast()
     {
-        return eta != null || ata != null || etd != null || atd != null || etp != null | atd != null;
+        return eta != null || etd != null || etp != null || isReport();
+    }
+
+    public boolean isReport()
+    {
+        return ata != null || atd != null || atp != null;
     }
 
     public boolean isWithin( LocalTime s, LocalTime e )
@@ -184,14 +208,6 @@ public class Point
         }
     }
 
-    public JsonObjectBuilder toCPJson()
-    {
-        JsonObjectBuilder b = Json.createObjectBuilder();
-        JsonUtils.add( b, "tpl", tpl );
-        JsonUtils.add( b, "time", getTime() );
-        return b;
-    }
-
     /**
      * This entries current time. This takes the first non-null value of:
      * ptd, pta, wtd, wta, wtp
@@ -200,6 +216,22 @@ public class Point
      */
     public LocalTime getTime()
     {
+        LocalTime t = getDarwinTime();
+        return t == null ? getTimetableTime() : t;
+
+    }
+
+    public LocalTime getDarwinTime()
+    {
+        if( atd != null ) {
+            return atd;
+        }
+        if( ata != null ) {
+            return ata;
+        }
+        if( atp != null ) {
+            return atp;
+        }
         if( etd != null ) {
             return etd;
         }
@@ -209,7 +241,7 @@ public class Point
         if( etp != null ) {
             return etp;
         }
-        return getTimetableTime();
+        return null;
     }
 
     public LocalTime getTimetableTime()
@@ -227,6 +259,12 @@ public class Point
             return wta.truncatedTo( ChronoUnit.MINUTES );
         }
         return wtp;
+    }
+
+    public Duration getDelay()
+    {
+        LocalTime tt = getDarwinTime();
+        return tt == null ? Duration.ZERO : Duration.between( getTimetableTime(), tt );
     }
 
     @Override

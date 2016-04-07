@@ -17,12 +17,9 @@ package onl.area51.departureboards;
 
 import java.io.IOException;
 import java.time.Duration;
-import java.time.LocalTime;
-import java.util.Objects;
 import java.util.function.Function;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
-import javax.json.JsonObject;
 import onl.area51.departureboards.api.JsonEntity;
 import onl.area51.httpd.HttpRequestHandlerBuilder;
 import onl.area51.httpd.action.ActionRegistry;
@@ -56,7 +53,7 @@ public class DetailsAction
                 .method( "GET" )
                 .setAttribute( "rid", r -> r.getPath( 5 ) )
                 .ifAttributePresentSetAttribute( "rid", "journey", r -> realtimeTrain.getJourney( r.getAttribute( "rid" ), stopsOnly ) )
-                .ifAttributePresent( "journey", r -> r.expiresIn( MAX_AGE ).maxAge( MAX_AGE ) )
+                .ifAttributePresent( "journey", r -> r.expiresIn( MAX_AGE ).maxAge( MAX_AGE ).accessControlAllowOriginAny() )
                 .ifAttributePresentSendOk( "journey", JsonEntity::createFromAttribute )
                 .ifAttributeAbsentSendError( "journey", HttpStatus.SC_NOT_FOUND )
                 .end()
@@ -91,7 +88,7 @@ public class DetailsAction
                                            + "$(document).ready(function (){"
                                            + "setTimeout(function (){"
                                            + "ui=new UI();"
-                                           + "ldb=new LDB('";
+                                           + "ldb=new Train('";
     private static final String JS_END = "');},250);});";
 
     private static void display( Request request )
@@ -103,10 +100,7 @@ public class DetailsAction
                 .div().id( "message" ).end()
                 .script()
                 .write( JS_START )
-                .write( request.<String>getAttribute( "crs" ) )
-                .write( "','" )
-                // Time is optional
-                .write( Objects.toString( request.<LocalTime>getAttribute( "time" ) ) )
+                .write( request.<String>getAttribute( "rid" ) )
                 .write( JS_END )
                 .end();
     }
@@ -115,73 +109,10 @@ public class DetailsAction
             throws HttpException,
                    IOException
     {
-        JsonObject loc = request.getAttribute( "location" );
-
-        request.getResponse()
-                .begin( "img" )
-                .id( "settings" )
-                .attr( "src", "/images/search.png" )
-                .end()
-                .div()
-                ._class( "ldbWrapper" )
-                .div()
-                ._class( "ldbTable" )
-                .div()
-                ._class( "ldbLoc" )
-                .div()
-                ._class( "ldbCont" )
-                .write( loc.getString( "location" ) )
-                // TUBE/DLR here
-                .end()
-                .end()
-                //
-                .div()
-                ._class( "ldbHead" )
-                .div()._class( "ldbCol ldbForecast" ).write( "Expected" ).end()
-                .div()._class( "ldbCol ldbSched" ).write( "Departs" ).end()
-                .div()._class( "ldbCol ldbPlat" ).write( "Plat." ).end()
-                .div()._class( "ldbCont" ).write( "Destination" ).end()
-                .end()
-                //
-                .end()
-                .end();
-
         request.getResponse()
                 .div()
-                .id( "settingsPanel" )
-                .div()
-                ._class( "settingsInner" )
-                .h2().write( "Options" ).end()
-                .write( "The following o[ptions are available" )
-                .table()
-                //
-                .tr().th()._class( "center" ).attr( "colspan", 2 ).write( "Services" ).end().end()
-                .tr()
-                .th().write( "Show services terminating here" ).end()
-                .td().input().id( "settingTerm" ).attr( "name", "ldbTerm" ).attr( "default", false ).attr( "type", "checkbox" ).end().end()
-                .end()
-                //
-                .tr().th()._class( "center" ).attr( "colspan", 2 ).write( "Calling points" ).end().end()
-                .tr()
-                .th().write( "Show running services" ).end()
-                .td().input().id( "settingCall" ).attr( "name", "ldbCall" ).attr( "default", true ).attr( "type", "checkbox" ).end().end()
-                .end()
-                .tr()
-                .th().write( "Show terminated services" ).end()
-                .td().input().id( "settingTermCall" ).attr( "name", "ldbTermCall" ).attr( "default", true ).attr( "type", "checkbox" ).end().end()
-                .end()
-                .tr()
-                .th().write( "Show cancelled services" ).end()
-                .td().input().id( "settingCanCall" ).attr( "name", "ldbCanCall" ).attr( "default", true ).attr( "type", "checkbox" ).end().end()
-                .end()
-                .end()
-                //
-                .div()
-                .a().id( "settingsCancel" )._class( "ldbbutton" ).write( "Cancel" ).end()
-                .a().id( "settingsSave" )._class( "ldbbutton" ).write( "Save" ).end()
-                .end()
-                //
-                .end()
+                .write( "Train details" )
+                .write( request.<String>getAttribute( "rid" ) )
                 .end();
     }
 }

@@ -1,4 +1,6 @@
 // Common UI functions
+var host = 'http://[2001:8b0:fb75:51dd:5::5]';
+
 var UI = (function () {
     function UI() {
         UI.messageSpan = $('<div></div>');
@@ -114,7 +116,7 @@ var UI = (function () {
      */
     UI.search = function () {
         $("#stations").autocomplete({
-            source: "/api/departure/search",
+            source: host + "/api/departure/search",
             minLength: 3,
             autoFocus: true,
             select: function (event, ui) {
@@ -131,11 +133,58 @@ var UI = (function () {
     return UI;
 })();
 
+var locname = function (v, tpl) {
+    var l = v[tpl];
+    return l ? l.loc ? l.loc.replace("&", "&amp;").replace(" ", "&nbsp;") : tpl : tpl;
+};
+
+var loccrs = function (v, tpl) {
+    var l = v[tpl];
+    return l ? l.crs ? l.crs : tpl : tpl;
+};
+
+var tocname = function (v, toc) {
+    var l = v[toc];
+    return l ? l : toc;
+};
+
+// Link to a station page
+var linkStation = function (locref, tpl) {
+    return $("<a></a>").attr({"href": "/mldb/" + loccrs(locref, tpl)}).append(locname(locref, tpl));
+};
+
+var dv = function () {
+    return $('<div></div>');
+};
+var sp = function (h) {
+    return $('<span></span>');
+};
+var sph = function (h) {
+    return sp().addClass("ldbHeader");
+};
+var ta = function () {
+    return $('<table></table>');
+};
+var tr = function () {
+    return $('<tr></tr>');
+};
+var td = function () {
+    return $('<td></td>');
+};
+var th = function () {
+    return $('<th></th>');
+};
+var delay = function (d) {
+    var e = s.contains('-') ? "E" : "L";
+    var s = (d ? d : "").replace("PT", "").replace("30S", "").replace("0S", "").replace("-", "");
+    return s === "" ? "OT" : (s + " " + e);
+}
+
 // Live Departure Boards, refresh every 60s
 var LDB = (function () {
 
     function LDB(crs, time) {
-        LDB.url = '/api/departure/board/' + crs;
+        LDB.url = host + '/api/departure/board/' + crs;
         if (time !== 'null')
             LDB.url = LDB.url + '/' + time;
         LDB.board = $('#board');
@@ -148,36 +197,6 @@ var LDB = (function () {
             setTimeout(reload, timeout);
         else
             LDB.reload();
-    };
-
-    var locname = function (v, tpl) {
-        var l = v[tpl];
-        return l ? l.loc ? l.loc.replace("&", "&amp;").replace(" ", "&nbsp;") : tpl : tpl;
-    };
-
-    var loccrs = function (v, tpl) {
-        var l = v[tpl];
-        return l ? l.crs ? l.crs : tpl : tpl;
-    };
-
-    var tocname = function (v, toc) {
-        var l = v[toc];
-        return l ? l : toc;
-    };
-
-    // Link to a station page
-    var linkStation = function (locref, tpl) {
-        return $("<a></a>").attr({"href": "/mldb/" + loccrs(locref, tpl)}).append(locname(locref, tpl));
-    };
-
-    var dv = function () {
-        return $('<div></div>');
-    };
-    var sp = function (h) {
-        return $('<span></span>');
-    };
-    var sph = function (h) {
-        return sp().addClass("ldbHeader");
     };
 
     // Begin a call list
@@ -209,6 +228,7 @@ var LDB = (function () {
                 }
                 d2 = sp().append(linkStation(locref, cp.tpl)).append("&nbsp;(" + cp.time + ") ");
                 if (split && split.origin.tpl === cp.tpl) {
+                    // BUG: 1756 TBD - Horsham & Tonbridge split is at Horsham & terminating point of main train so this message is not shown.
                     d.append(sp().append(" and&nbsp;"))
                             .append(d2)
                             .append(sp().append(" where&nbsp;the&nbsp;train&nbsp;divides."));
@@ -229,7 +249,7 @@ var LDB = (function () {
 
     var success = function (v) {
         UI.hideLoader();
-        //reloadIn(15000);
+        //reloadIn(60000);
         LDB.board.empty();
 
         var d = dv().addClass("ldbWrapper").appendTo(LDB.board);
@@ -283,6 +303,7 @@ var LDB = (function () {
             }
 
             d1 = dv().addClass("ldbCont").appendTo(d);
+            d1 = $("<a></a>").attr({"href": "/train/" + dep.rid}).appendTo(d1);
             if (dep.term) {
                 d1.append("Terminates Here");
             } else if (dep.pass) {
@@ -358,10 +379,12 @@ var LDB = (function () {
     };
 
     LDB.applySettings = function () {
-        UI.show($('.trainTerminated'), 'ldbTerm', 'block', 'none');
-        UI.show($('.callList'), 'ldbCall', 'inline-block', 'none');
-        UI.show($('.callListTerminated'), 'ldbTermCall', 'inline-block', 'none');
-        UI.show($('.callListCancelled'), 'ldbCanCall', 'inline-block', 'none');
+        if (!host) {
+            UI.show($('.trainTerminated'), 'ldbTerm', 'block', 'none');
+            UI.show($('.callList'), 'ldbCall', 'inline-block', 'none');
+            UI.show($('.callListTerminated'), 'ldbTermCall', 'inline-block', 'none');
+            UI.show($('.callListCancelled'), 'ldbCanCall', 'inline-block', 'none');
+        }
 
         var r = 0;
         $.each($('.row'), function (i, c) {
@@ -417,42 +440,179 @@ var LDB = (function () {
 
 // Train details - refresh every 60s
 var Train = (function () {
-    function Train(rid, rtt) {
-        Train.url = (rtt ? '/rtt/vtrain/' : '/vtrain/') + rid;
+    function Train(rid, detailed) {
+        Train.rid = rid;
         Train.board = $('#board');
-        Train.rtt = rtt;
-        if (rtt)
-            reloadIn(60000);
-        else
-            reload();
+        var ib = $('#inner-banner');
+        Train.loc = dv().appendTo(ib).addClass('ldbLoc');
+
+        var d = dv().appendTo(ib).attr({'style': 'position: absolute;top: 1px;right: 1px;'});
+        Train.mode = $('<a></a>').addClass('ldbbutton').appendTo(d).click(setMode);
+
+        // Now toggle the mode - hence !
+        Train.detailed = !detailed;
+        setMode();
     }
 
+    var setMode = function (e) {
+        Train.detailed = !Train.detailed;
+        Train.url = host + '/api/departure/train/' + (Train.detailed ? 'full' : 'short') + '/' + Train.rid;
+        Train.mode.empty().append("Switch&nbsp;to&nbsp;" + (Train.detailed ? "basic" : "detailed") + "&nbsp;mode");
+        reload();
+    }
     var reloadIn = function (timeout) {
         if (timeout)
             setTimeout(reload, timeout);
         else
-            Train.reload();
+            reload();
+    };
+    var nr = function (d0) {
+        return dv().addClass("ldb-row").appendTo(d0);
+    };
+    var ts = function (v) {
+        return v ? v : "&nbsp;";
+    };
+    var trainhd = function (tab, v, t, s) {
+        return tab.append(tr().append(td().append('&nbsp;')))
+                .append(tr().append(td()
+                        .attr({
+                            'colspan': s,
+                            'style': 'text-align:center;'
+                        })
+                        .append(locname(v.locref, t.origin.tpl) + " to " + locname(v.locref, t.dest.tpl))
+                        ));
+    };
+    var train = function (v, t, main, d0) {
+
+        var tab = ta().appendTo(nr(d0));
+        if (!main)
+            trainhd(tab, v, t, 5)
+                    .append(tr().append(td().append('&nbsp;')));
+        tab.append(tr()
+                .append(th().append("Head code"))
+                .append(th().append("Operator"))
+                .append(th().append("Last report"))
+                .append(th().append("UID"))
+                .append(th().append("RID"))
+                )
+                .append(tr()
+                        .append(td().append(t.headcode))
+                        .append(td().append(tocname(v.opref, t.toc)))
+                        .append(td().append(t.lastReport ? (locname(v.locref, t.lastReport.tpl) + " at " + t.lastReport.time) : ""))
+                        .append(th().append(t.uid))
+                        .append(td().append($('<a></a>').attr({'href': '//uktra.in/rtt/train/' + t.rid}).append(t.rid)))
+                        );
+        if (!main)
+            tab.append(tr().append(td().append('&nbsp;')));
+
+        tab = ta().appendTo(nr(d0));
+        if (main)
+            trainhd(tab, v, t, Train.detailed ? 8 : 6);
+
+        var lr = t.lastReport ? t.lastReport.tpl : null;
+        var lrf = lr !== null;
+        console.log(lr, lrf, t.lastReport);
+        var r = tr().appendTo(tab)
+                .append(th().append('&nbsp;'))
+                .append(th().append('Location'))
+                .append(th().append('Plat'))
+                .append(th().append('Arr')).append(th().append('Dep'));
+        if (Train.detailed)
+            r.append(th().append('Arr')).append(th().append('Dep'));
+        r.append(th().append('Delay'));
+        //r.append(th().append('Len'));
+
+        $.each(t.calling, function (i, cp) {
+            //console.log(i, lrf, cp);
+            var st = t.canc ? "can" : cp.wtp ? "pass" : lrf ? "arr" : "expt";
+            r = tr().appendTo(tab)
+                    .append(td().addClass("ldb-fsct-stat").append(lrf && cp.tpl === lr ? ">" : ""))
+                    .append(td().addClass("ldb-fsct-loc-" + st).append(locname(v.locref, cp.tpl)))
+                    .append(td().addClass("ldb-fsct-plat-" + st).append(cp.platSup ? "N/A" : cp.plat));
+            // Darwin forecast data. f is true to show planned data, so detailed mode or if this block doesnt show anything
+            var f = Train.detailed;
+            if (cp.canc)
+                r.append(td().addClass("ldb-fsct-csncelled").attr({"colspan": 2}).append("Cancelled"));
+            else if (cp.atp)
+                r.append(td().addClass("ldb-fsct-passed").attr({"colspan": 2}).append("Pass&nbsp;" + cp.atp));
+            else if (cp.ata || cp.atd)
+                r.append(td().addClass("ldb-fsct-arrived").append(cp.ata))
+                        .append(td().addClass("ldb-fsct-arrived").append(cp.atd));
+            else if (cp.etp)
+                r.append(td().addClass("ldb-fsct-pass").attr({"colspan": 2}).append("Pass&nbsp;" + cp.etp));
+            else if (cp.eta || cp.etd)
+                r.append(td().addClass("ldb-fsct-expected").append(cp.eta))
+                        .append(td().addClass("ldb-fsct-expected").append(cp.etd));
+            else if (lrf)
+                r.append(td().addClass("ldb-fsct-expected").attr({"colspan": 2}).append("No&nbsp;report"));
+            else if (Train.detailed)
+                r.append(td().addClass("ldb-fsct-expected").attr({"colspan": 2}).append("&nbsp;"));
+            else
+                f = true;
+
+            if (f && (cp.pta || cp.ptd))
+                r.append(td().addClass("ldb-fsct-expected").append(cp.pta))
+                        .append(td().addClass("ldb-fsct-expected").append(cp.ptd));
+            else if (f && cp.ptp)
+                r.append(td().addClass("ldb-fsct-pass").attr({"colspan": 2}).append("Pass&nbsp;" + cp.ptp));
+            else if (f && (cp.wta || cp.wtd))
+                r.append(td().addClass("ldb-fsct-expected").append(cp.wta))
+                        .append(td().addClass("ldb-fsct-expected").append(cp.wtd));
+            else if (f && cp.wtp)
+                r.append(td().addClass("ldb-fsct-pass").attr({"colspan": 2}).append("Pass&nbsp;" + cp.wtp));
+            else if (f)
+                r.append(td().addClass("ldb-fsct-expected").attr({"colspan": 2}).append("&nbsp;"));
+
+            r.append(td().addClass("ldb-fsct-expected").append(cp.delay));
+            //r.append(td().addClass("ldb-fsct-expected").append("L" ).append( cp.length > 0 ? cp.length : ""));
+
+            if (t.split && cp.tpl === t.split.origin.tpl)
+                r = tr().appendTo(tab)
+                        .append(td().addClass("ldb-fsct-stat"))
+                        .append(td().addClass("ldb-fsct-loc-" + st).attr({
+                            'colspan': Train.detailed ? 6 : 4,
+                            'style': 'color:yellow;'
+                        })
+                                .append('&nbsp;&nbsp;&nbsp;where the train divides for ' + locname(v.locref, t.split.dest.tpl))
+                                );
+
+            console.log(i, lrf, cp.tpl);
+            if (lrf && cp.tpl === lr)
+                lrf = false;
+        });
     };
 
     var success = function (v) {
         UI.hideLoader();
         reloadIn(60000);
-        Train.board.empty().append(v);
-        if (Train.rtt)
-            Track.update();
+        Train.board.empty();
+        var d0 = dv().addClass("ldbWrapper").appendTo(Train.board);
+
+        Train.loc.empty()
+                .append(locname(v.locref, v.dest.tpl));
+        // via here
+
+        if (v.split) {
+            Train.loc.append(" & ")
+                    .append(locname(v.locref, v.split.dest.tpl));
+            // via here
+        }
+
+        train(v, v, true, d0);
+//        if (v.split) {
+//            train(v, v.split, false, d0);
+//        }
     };
 
     var notModified = function (v) {
         UI.hideLoader();
         reloadIn(10000);
     };
-
     var failure = function (v) {
         UI.hideLoader();
         UI.showError("Failed to connect to server<br />Will attempt again shortly.");
         reloadIn(10000);
     };
-
     var reload = function () {
         UI.showLoader();
         $.ajax({
@@ -470,10 +630,9 @@ var Train = (function () {
                 // Proxy error
                 502: failure,
                 // apache is up but no tomcat
-                503: failure,
+                503: failure
             }
         });
     };
-
     return Train;
 })();
