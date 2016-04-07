@@ -17,7 +17,6 @@ package onl.area51.departureboards.service;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -66,10 +65,9 @@ public class DarwinPushPort
     private void parseXML( InputStream is )
     {
         try {
-            String ns = null;
-            String ts;
-            String rid = null;
-            String tpl = null;
+            String ns;
+            String rid;
+            String tpl;
             Journey journey = null;
             List<Point> schedule = null;
 
@@ -85,7 +83,7 @@ public class DarwinPushPort
                         ns = r.getName().getPrefix();
                         switch( r.getName().getLocalPart() ) {
                             case "Pport":
-                                ts = r.getAttributeValue( ns, "ts" );
+                                //ts = r.getAttributeValue( ns, "ts" );
                                 break;
 
                             case "uR":
@@ -173,7 +171,7 @@ public class DarwinPushPort
                                 ns = null;
                                 if( location != null ) {
                                     location.setEtd( Point.getTime( r, ns, "et" ) )
-                                            .setAta( Point.getTime( r, ns, "at" ) )
+                                            .setAtd( Point.getTime( r, ns, "at" ) )
                                             .setDelayed( Boolean.valueOf( r.getAttributeValue( ns, "delayed" ) ) );
                                 }
                                 break;
@@ -182,7 +180,7 @@ public class DarwinPushPort
                                 ns = null;
                                 if( location != null ) {
                                     location.setEta( Point.getTime( r, ns, "et" ) )
-                                            .setAtd( Point.getTime( r, ns, "at" ) )
+                                            .setAta( Point.getTime( r, ns, "at" ) )
                                             .setDelayed( Boolean.valueOf( r.getAttributeValue( ns, "delayed" ) ) );
                                 }
                                 break;
