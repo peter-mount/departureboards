@@ -538,9 +538,15 @@ var Train = (function () {
                 r.append(td().addClass("ldb-fsct-csncelled").attr({"colspan": 2}).append("Cancelled"));
             else if (cp.atp)
                 r.append(td().addClass("ldb-fsct-passed").attr({"colspan": 2}).append("Pass&nbsp;" + cp.atp));
-            else if (cp.ata || cp.atd)
+            else if (cp.atd) {
+                if (cp.ata)
+                    r.append(td().addClass("ldb-fsct-arrived").append(cp.ata));
+                else
+                    r.append(td().addClass("ldb-fsct-expected").append(cp.eta ? cp.eta : cp.pta ? cp.pta : cp.wta));
+                r.append(td().addClass("ldb-fsct-arrived").append(cp.atd));
+            } else if (cp.ata)
                 r.append(td().addClass("ldb-fsct-arrived").append(cp.ata))
-                        .append(td().addClass("ldb-fsct-arrived").append(cp.atd));
+                        .append(td().addClass("ldb-fsct-expected").append(cp.etd ? cp.etd : cp.ptd ? cp.ptd : cp.wtd));
             else if (cp.etp)
                 r.append(td().addClass("ldb-fsct-pass").attr({"colspan": 2}).append("Pass&nbsp;" + cp.etp));
             else if (cp.eta || cp.etd)
@@ -603,7 +609,7 @@ var Train = (function () {
         }
 
         train(v, v, true, d0);
-        if (v.split||v.joins||v.nextTrain) {
+        if (v.split || v.joins || v.nextTrain) {
             //train(v, v.split, false, d0);
             var tab = ta().appendTo(nr(d0))
                     .append(tr().append(td().append('&nbsp;')))
