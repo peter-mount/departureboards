@@ -511,7 +511,6 @@ var Train = (function () {
 
         var lr = t.lastReport ? t.lastReport.tpl : null;
         var lrf = lr !== null;
-        console.log(lr, lrf, t.lastReport);
         var r = tr().appendTo(tab)
                 .append(th().append('&nbsp;'))
                 .append(th().append('Location'))
@@ -520,7 +519,6 @@ var Train = (function () {
         if (Train.detailed)
             r.append(th().append('Arr')).append(th().append('Dep'));
         r.append(th().append('Delay'));
-        //r.append(th().append('Len'));
 
         $.each(t.calling, function (i, cp) {
             //console.log(i, lrf, cp);
@@ -528,7 +526,7 @@ var Train = (function () {
             r = tr().appendTo(tab)
                     .append(td().addClass("ldb-fsct-stat").append(lrf && cp.tpl === lr ? ">" : ""))
                     .append(td().addClass("ldb-fsct-loc-" + st).append(locname(v.locref, cp.tpl)))
-                    .append(td().addClass("ldb-fsct-plat-" + st).append(cp.platSup ? "N/A" : cp.plat));
+                    .append(td().addClass(cp.wtp ? "ldb-fsct-pass" : "ldb-fsct-plat-" + st).append(cp.platSup ? "N/A" : cp.plat));
             // Darwin forecast data. f is true to show planned data, so detailed mode or if this block doesnt show anything
             var f = Train.detailed;
             if (cp.canc)
@@ -544,7 +542,7 @@ var Train = (function () {
                 r.append(td().addClass("ldb-fsct-expected").append(cp.eta))
                         .append(td().addClass("ldb-fsct-expected").append(cp.etd));
             else if (lrf)
-                r.append(td().addClass("ldb-fsct-expected").attr({"colspan": 2}).append("No&nbsp;report"));
+                r.append(td().addClass(cp.wtp ? "ldb-fsct-pass" : "ldb-fsct-expected").attr({"colspan": 2}).append("No&nbsp;report"));
             else if (Train.detailed)
                 r.append(td().addClass("ldb-fsct-expected").attr({"colspan": 2}).append("&nbsp;"));
             else
@@ -569,14 +567,15 @@ var Train = (function () {
             if (t.split && cp.tpl === t.split.origin.tpl)
                 r = tr().appendTo(tab)
                         .append(td().addClass("ldb-fsct-stat"))
-                        .append(td().addClass("ldb-fsct-loc-" + st).attr({
-                            'colspan': Train.detailed ? 6 : 4,
-                            'style': 'color:yellow;'
-                        })
-                                .append('&nbsp;&nbsp;&nbsp;where the train divides for ' + locname(v.locref, t.split.dest.tpl))
+                        .append(td().addClass("ldb-fsct-loc-" + st)
+                                .attr({'colspan': Train.detailed ? 6 : 4, 'style': 'color:yellow;'})
+                                .append('&nbsp;&nbsp;&nbsp;where the train ' +
+                                        (t.split.origin.atd ? 'divided' : 'divides')
+                                        + ' for ')
+                                .append($("<a></a>").attr({"href": "/train/" + t.split.rid}).append(locname(v.locref, t.split.dest.tpl)))
+                                .append(" departing at " + t.split.origin.time)
                                 );
 
-            console.log(i, lrf, cp.tpl);
             if (lrf && cp.tpl === lr)
                 lrf = false;
         });
@@ -599,9 +598,37 @@ var Train = (function () {
         }
 
         train(v, v, true, d0);
-//        if (v.split) {
-//            train(v, v.split, false, d0);
-//        }
+        if (v.split) {
+            //train(v, v.split, false, d0);
+            var tab = ta().appendTo(nr(d0))
+                    .append(tr().append(td().append('&nbsp;')))
+                    .append(tr().append(td().append('Asscoiations').attr({'colspan': 7})))
+                    .append(tr()
+                            .append(th().append('Type'))
+                            .append(th().append('Head&nbsp;Code'))
+                            .append(th().append('Origin'))
+                            .append(th().append('Dep'))
+                            .append(th().append('Arr'))
+                            .append(th().append('Destination'))
+                            .append(th().append('Last&nbsp;Report'))
+                            );
+            showassoc(tab, 'Primary', v, v);
+            showassoc(tab, 'Split', v, v.split);
+        }
+    };
+
+    var showassoc = function (tab, t, v, a) {
+        if (a) {
+            tab.append(tr()
+                    .append(td().append(t))
+                    .append(td().append($("<a></a>").attr({"href": "/train/" + a.rid}).append(a.headcode)))
+                    .append(td().append(locname(v.locref, a.origin.tpl)))
+                    .append(td().append(locname(v.locref, a.origin.time)))
+                    .append(td().append(locname(v.locref, a.dest.time)))
+                    .append(td().append(locname(v.locref, a.dest.tpl)))
+                    .append(td().append(a.lastReport ? locname(v.locref, a.lastReport.tpl) + "&nbsp;" + a.lastReport.time : ''))
+                    );
+        }
     };
 
     var notModified = function (v) {
