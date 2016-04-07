@@ -1,5 +1,5 @@
 // Common UI functions
-var host = null;
+var host = '';
 
 var UI = (function () {
     function UI() {

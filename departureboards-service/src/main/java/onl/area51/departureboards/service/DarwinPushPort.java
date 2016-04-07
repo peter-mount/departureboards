@@ -89,6 +89,10 @@ public class DarwinPushPort
                             case "uR":
                                 break;
 
+                            case "deactivated":
+                                darwinLive.removeJourney( r.getAttributeValue( null, "rid" ) );
+                                break;
+
                             case "Schedule":
                                 rid = r.getAttributeValue( ns, "rid" );
                                 journey = darwinLive.getJourney( rid, r.getAttributeValue( ns, "ssd" ), r.getAttributeValue( ns, "uid" ) );

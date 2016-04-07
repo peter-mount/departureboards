@@ -53,8 +53,6 @@ import uk.trainwatch.util.MapBuilder;
 public class DarwinReference
 {
 
-    private static final String NS = "http://www.thalesgroup.com/rtti/XmlRefData/v3";
-
     private static final Logger LOG = Logger.getGlobal();
 
     @Inject
