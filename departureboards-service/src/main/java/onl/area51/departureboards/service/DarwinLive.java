@@ -17,10 +17,8 @@ package onl.area51.departureboards.service;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.time.LocalTime;
@@ -38,13 +36,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-import uk.trainwatch.util.MapBuilder;
 import uk.trainwatch.util.TimeUtils;
 
 /**
@@ -66,8 +62,6 @@ public class DarwinLive
 
     @Inject
     private DarwinReference darwinReference;
-
-    private FileSystem fs;
 
     private final Map<String, Journey> journeys = new ConcurrentHashMap<>();
     private final Map<String, Set<Point>> stations = new ConcurrentHashMap<>();
@@ -108,40 +102,29 @@ public class DarwinLive
                 .collect( Collectors.toCollection( () -> new TreeSet<>( ( a, b ) -> a.getTime().compareTo( b.getTime() ) ) ) );
     }
 
-    @PostConstruct
-    public void loadTimeTable()
+    void loadTimeTable( Path path )
             throws IOException
     {
-        if( fs == null ) {
-            fs = FileSystems.newFileSystem( URI.create( "cache://ref" ),
-                                            MapBuilder.<String, Object>builder()
-                                            .add( "fileSystemType", "cache" )
-                                            .add( "fileSystemWrapper", "http" )
-                                            .add( "remoteUrl", "http://fileserver/ref" )
-                                            .build() );
+        if( !Files.exists( path, LinkOption.NOFOLLOW_LINKS ) ) {
+            LOG.log( Level.INFO, () -> "Unable to load timetable " + path );
         }
-
-        loadTimeTable( fs.getPath( "timetable.xml.gz" ) );
-    }
-
-    private void loadTimeTable( Path path )
-            throws IOException
-    {
-        LOG.log( Level.INFO, () -> "Loading timetable " + path );
-        try( InputStream is = Files.newInputStream( path, StandardOpenOption.READ ) ) {
-            String p = path.getName( path.getNameCount() - 1 ).toString();
-            if( p.endsWith( ".gz" ) ) {
-                try( GZIPInputStream gis = new GZIPInputStream( is ) ) {
-                    load( gis );
+        else {
+            LOG.log( Level.INFO, () -> "Loading timetable " + path );
+            try( InputStream is = Files.newInputStream( path, StandardOpenOption.READ ) ) {
+                String p = path.getName( path.getNameCount() - 1 ).toString();
+                if( p.endsWith( ".gz" ) ) {
+                    try( GZIPInputStream gis = new GZIPInputStream( is ) ) {
+                        load( gis );
+                    }
+                }
+                else {
+                    load( is );
                 }
             }
-            else {
-                load( is );
+            catch( XMLStreamException ex ) {
+                LOG.log( Level.SEVERE, ex, () -> "Failed to load " + path );
+                throw new IOException( ex );
             }
-        }
-        catch( XMLStreamException ex ) {
-            LOG.log( Level.SEVERE, ex, () -> "Failed to load " + path );
-            throw new IOException( ex );
         }
     }
 
