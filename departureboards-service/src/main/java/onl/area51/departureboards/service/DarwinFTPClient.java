@@ -25,6 +25,7 @@ import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -41,7 +42,7 @@ import uk.trainwatch.util.config.Configuration;
 import uk.trainwatch.util.config.impl.GlobalConfiguration;
 import uk.trainwatch.io.ftp.FTPClient;
 import uk.trainwatch.scheduler.Cron;
-import uk.trainwatch.util.CollectorUtils;
+import uk.trainwatch.util.Functions;
 
 /**
  * Service that handles the updating of static data by connecting to NRE via FTP
@@ -172,10 +173,14 @@ public class DarwinFTPClient
         boolean reload = client.getBooleanAttribute( FORCE );
 
         if( !Files.exists( path, LinkOption.NOFOLLOW_LINKS ) ) {
-            Optional<FTPFile> file = client.files( f -> f.isFile() && f.getName().endsWith( endsWith ) )
-                    .sorted( ( a, b ) -> a.getName().compareTo( b.getName() ) )
-                    .collect( CollectorUtils.findLast() );
-            reload |= client.retrieveIfNeeded( file.get(), path, StandardCopyOption.REPLACE_EXISTING );
+            // Get the LAST file in the stream, in this case the most recent as the files are in ISO date format
+            Optional<FTPFile> file = client.files()
+                    .filter( f -> f.isFile() && f.getName().endsWith( endsWith ) )
+                    .filter( Objects::nonNull )
+                    .sorted( FTPClient.sortFTPFileReversed())
+                    .findAny();
+
+            reload |= file.isPresent() && client.retrieveIfNeeded( file.get(), path, StandardCopyOption.REPLACE_EXISTING );
         }
 
         return reload ? task.get() : null;
