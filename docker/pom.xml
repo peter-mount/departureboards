@@ -14,7 +14,7 @@
     <description>Docker image for the site</description>
     
     <properties>
-        <docker.image.prefix>area51</docker.image.prefix>
+        <docker.image.prefix>docker.area51.onl/area51</docker.image.prefix>
         <docker.image.name>departureboards</docker.image.name>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
@@ -169,11 +169,7 @@
                 <artifactId>docker-maven-plugin</artifactId>
                 <version>0.2.3</version>
                 <configuration>
-                    <imageName>${docker.image.prefix}/${docker.image.name}</imageName>
-                    <imageTags>
-                        <imageTag>latest</imageTag>
-                        <imageTag>${project.version}</imageTag>
-                    </imageTags>
+                    <imageName>${docker.image.prefix}/${docker.image.name}:latest</imageName>
                     <dockerDirectory>${project.build.directory}/docker.temp</dockerDirectory>
                     <resources>
                         <resource>

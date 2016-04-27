@@ -249,7 +249,7 @@ var LDB = (function () {
 
     var success = function (v) {
         UI.hideLoader();
-        //reloadIn(60000);
+        reloadIn(60000);
         LDB.board.empty();
 
         var d = dv().addClass("ldbWrapper").appendTo(LDB.board);

@@ -88,7 +88,7 @@ public class Point
         this.wtd = Point.getTime( r, ns, "wtd" );
         this.wtp = Point.getTime( r, ns, "wtp" );
 
-        lastUpdated = LocalTime.now( TimeUtils.LONDON );
+        lastUpdated = TimeUtils.getLondonTime();
 
         journey.add( this );
         seq = journey.getCallingPoints().indexOf( this );
@@ -538,7 +538,7 @@ public class Point
 
     public Point setLastUpdated()
     {
-        this.lastUpdated = LocalTime.now( TimeUtils.LONDON );
+        this.lastUpdated = TimeUtils.getLondonTime();
         return this;
     }
 

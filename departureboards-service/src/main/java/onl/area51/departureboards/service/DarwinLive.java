@@ -21,6 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Collection;
 import java.util.Collections;
@@ -138,7 +139,8 @@ public class DarwinLive
         int jcount = 0;
         int scount = 0;
 
-        LocalTime now = FORCE_TIME == null ? LocalTime.now( TimeUtils.LONDON ) : FORCE_TIME;
+        LocalDate today = TimeUtils.getLondonDate();
+        LocalTime now = FORCE_TIME == null ? TimeUtils.getLondonTime() : FORCE_TIME;
 
         XMLInputFactory inputFactory = XMLInputFactory.newInstance();
         XMLStreamReader r = inputFactory.createXMLStreamReader( is );
@@ -198,8 +200,10 @@ public class DarwinLive
                             if( journey != null ) {
                                 Objects.requireNonNull( journey, "No journey" );
 
+                                // Sometimes we get schedules for tomorrow so filter those out otherwise we'll get those entries overriding the current ones
+                                LocalDate dt = LocalDate.parse( journey.getSsd() );
                                 LocalTime jt = journey.getDestination().getTime();
-                                if( jt.isBefore( now ) && jt.isAfter( DARWIN_MIDNIGHT ) ) {
+                                if( dt.isAfter( today ) || (jt.isBefore( now ) && jt.isAfter( DARWIN_MIDNIGHT )) ) {
                                     scount++;
                                 }
                                 else {
