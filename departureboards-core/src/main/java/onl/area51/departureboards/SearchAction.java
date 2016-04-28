@@ -21,7 +21,7 @@ import javax.enterprise.event.Observes;
 import onl.area51.departureboards.api.StationSearch;
 import onl.area51.httpd.action.ActionRegistry;
 import onl.area51.httpd.HttpRequestHandlerBuilder;
-import onl.area51.departureboards.api.JsonEntity;
+import onl.area51.httpd.rest.JsonEntity;
 import org.apache.http.HttpStatus;
 
 /**

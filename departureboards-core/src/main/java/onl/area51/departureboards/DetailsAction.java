@@ -20,13 +20,13 @@ import java.time.Duration;
 import java.util.function.Function;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
-import onl.area51.departureboards.api.JsonEntity;
 import onl.area51.httpd.HttpRequestHandlerBuilder;
 import onl.area51.httpd.action.ActionRegistry;
 import onl.area51.httpd.action.Request;
 import org.apache.http.HttpException;
 import org.apache.http.HttpStatus;
 import onl.area51.departureboards.api.RealTimeTrain;
+import onl.area51.httpd.rest.JsonEntity;
 import org.apache.http.protocol.HttpRequestHandler;
 
 /**

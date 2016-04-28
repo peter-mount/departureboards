@@ -19,12 +19,11 @@ import java.io.IOException;
 import java.time.Duration;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
-import javax.json.JsonObject;
 import onl.area51.departureboards.api.DepartureBoards;
-import onl.area51.departureboards.api.JsonEntity;
 import onl.area51.departureboards.api.StationSearch;
 import onl.area51.httpd.HttpRequestHandlerBuilder;
 import onl.area51.httpd.action.ActionRegistry;
+import onl.area51.httpd.rest.JsonEntity;
 import org.apache.http.HttpStatus;
 import uk.trainwatch.util.TimeUtils;
 
