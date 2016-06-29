@@ -1,0 +1,12 @@
+{
+    "name": "area51-departureboards",
+    "private": true,
+    "version": "0.0.1",
+    "description": "Departureboards.mobi website",
+    "author": "area51.onl",
+    "dependencies": {
+        "express": "",
+        "morgan": "",
+        "request": ""
+    }
+}

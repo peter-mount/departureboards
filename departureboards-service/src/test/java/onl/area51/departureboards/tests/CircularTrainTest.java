@@ -13,16 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package onl.area51.departureboards.api;
+package onl.area51.departureboards.tests;
 
-import java.io.IOException;
-import java.time.LocalTime;
-import javax.json.JsonObject;
+/**
+ *
+ * @author peter
+ */
 
-public interface DepartureBoards
+public class CircularTrainTest
 {
-
-    JsonObject departureBoards( String crs, LocalTime time )
-            throws IOException;
     
 }

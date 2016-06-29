@@ -11,10 +11,8 @@
     <description>The new docker based DepartureBoards.mobi site</description>
     
     <modules>
-        <module>departureboards-core</module>
-        <module>docker</module>
         <module>departureboards-api</module>
-        <module>departureboards-service</module>
+        <module>departureboards-site</module>
     </modules>
     
     <properties>
