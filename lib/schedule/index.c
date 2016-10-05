@@ -6,7 +6,6 @@
 #include <area51/hashmap.h>
 #include <area51/list.h>
 #include <area51/log.h>
-#include <libxml/xmlreader.h>
 #include <nre/reference.h>
 #include <nre/schedule.h>
 
@@ -25,7 +24,7 @@ static bool indexAll(void *k, void *v, void *c) {
 
         struct LocationRef *l = hashmapGet(s->ref->tiploc, &sl->tpl);
         if (l && l->crs > 0)
-            hashmapAddList(s->crs, &l->crs, s);
+            hashmapAddList(s->crs, &l->crs, sched);
     }
     
     return true;
