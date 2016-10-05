@@ -1,4 +1,5 @@
 
+#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -47,6 +48,9 @@ static struct Schedule *addJourney(struct Schedules *s, xmlTextReaderPtr reader)
 
     list_init(&sched->locations);
 
+    // Initial use as we are in the schedules
+    sched->useCount = 1;
+
     void *e = hashmapPut(s->schedules, &sched->rid, sched);
     if (e) {
         logconsole("Fail rid %d e %lx s %lx %lx", sched->rid, e, sched, &sched->rid);
@@ -88,6 +92,7 @@ struct Schedules *importSchedules(struct Reference *ref, char *filename) {
     }
 
     memset(s, 0, sizeof (struct Schedules));
+    pthread_mutex_init(&s->mutex, NULL);
     s->ref = ref;
     s->schedules = hashmapCreate(100, hashmapIntHash, hashmapIntEquals);
 

@@ -1,9 +1,14 @@
 MODULE = darwin
 
+#OBJS =	api/status.o
+
 OBJS =	reference/import.o \
 	reference/normal.o \
 	
-OBJS +=	schedule/import.o \
-	schedule/index.o
+OBJS +=	schedule/free.o \
+	schedule/import.o \
+	schedule/index.o \
+	schedule/lock.o \
+	schedule/updateStatus.o
 
 include ../SubMakefile
