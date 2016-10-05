@@ -2,5 +2,7 @@ MODULE = darwin
 
 OBJS =	reference/import.o \
 	reference/normal.o \
+	
+OBJS +=	schedule/import.o
 
 include ../SubMakefile
