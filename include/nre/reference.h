@@ -10,20 +10,21 @@ extern "C" {
 
 #define LOCREF_TIPLOC_LEN   7
 #define LOCREF_CRS_LEN      3
-    
+
     struct LocationRef {
         Node node;
-        char tiploc[LOCREF_TIPLOC_LEN+1];
-        char crs[LOCREF_CRS_LEN+1];
-        char toc[3];
+        int tiploc;
+        int crs;
+        int toc;
+        int name;
     };
-    
+
     struct Via {
-        char at[LOCREF_CRS_LEN+1];
-        char dest[LOCREF_TIPLOC_LEN+1];
-        char loc1[LOCREF_TIPLOC_LEN+1];
-        char loc2[LOCREF_TIPLOC_LEN+1];
-        char *text;
+        int at;
+        int dest;
+        int loc1;
+        int loc2;
+        int text;
     };
 
     struct Reference {
@@ -45,10 +46,10 @@ extern "C" {
         // CIS Source
         Hashmap *cis;
     };
-    
+
     extern int normaliseText(struct Reference *, char *);
     extern char *lookupText(struct Reference *, int);
-    
+
     extern struct Reference *importReference(char *);
 #ifdef __cplusplus
 }

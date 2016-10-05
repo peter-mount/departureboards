@@ -35,11 +35,15 @@ int main(int argc, char** argv) {
             hashmapSize(ref->toc)
             );
     
-    logconsole("Reaons: Late %d Cancelled %d",
+    logconsole("Reasons: Late %d Cancelled %d",
             hashmapSize(ref->lateReason),
             hashmapSize(ref->cancReason)
             );
 
+    logconsole("Normalization: %d %d",
+            hashmapSize(ref->normid),
+            hashmapSize(ref->normtxt)
+            );
     return EXIT_SUCCESS;
 }
 

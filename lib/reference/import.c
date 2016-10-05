@@ -34,55 +34,59 @@ static void addLocation(struct Reference *ref, xmlTextReaderPtr reader) {
 
     memset(loc, 0, sizeof (struct LocationRef));
 
-    attrC(reader, "tpl", loc->tiploc, LOCREF_TIPLOC_LEN);
-    attrC(reader, "crs", loc->crs, LOCREF_CRS_LEN);
-
-    loc->node.name = attr(reader, "locname");
-
-    attrC(reader, "toc", loc->toc, 2);
+    loc->tiploc = normaliseText(ref, attr(reader, "tpl"));
+    loc->crs = normaliseText(ref, attr(reader, "crs"));
+    loc->name = normaliseText(ref, attr(reader, "locname"));
+    loc->toc = normaliseText(ref, attr(reader, "toc"));
 
     list_addTail(&ref->locations, &loc->node);
 
-    if (loc->tiploc[0])
-        hashmapPut(ref->tiploc, loc->tiploc, loc);
+    if (loc->tiploc)
+        hashmapPut(ref->tiploc, &loc->tiploc, loc);
 
-    if (loc->crs[0])
-        hashmapAddList(ref->crs, loc->crs, loc);
+    if (loc->crs)
+        hashmapAddList(ref->crs, &loc->crs, loc);
 
+}
+
+static void add(struct Reference *ref, Hashmap *m, char *k, char *v, xmlTextReaderPtr reader) {
+    int *id = malloc(sizeof (int));
+    *id = normaliseText(ref, attr(reader, k));
+
+    int *name = malloc(sizeof (int));
+    *name = normaliseText(ref, attr(reader, v));
+    hashmapPut(m, id, name);
 }
 
 static void addToc(struct Reference *ref, xmlTextReaderPtr reader) {
-    char *k = attr(reader, "toc");
-    char *v = attr(reader, "tocname");
-    if (k && v)
-        hashmapPut(ref->toc, k, v);
+    add(ref, ref->toc, "toc", "tocname", reader);
 }
 
-static void addReason(Hashmap *m, xmlTextReaderPtr reader) {
-    char *k = attr(reader, "code");
-    char *v = attr(reader, "reasontext");
-    if (k && v)
-        hashmapPut(m, k, v);
+static void addReason(struct Reference *ref, Hashmap *m, xmlTextReaderPtr reader) {
+    add(ref, m, "code", "reasontext", reader);
+}
+
+static void addCis(struct Reference *ref, xmlTextReaderPtr reader) {
+    add(ref, ref->cis, "code", "name", reader);
 }
 
 static void addVia(struct Reference *ref, xmlTextReaderPtr reader) {
     struct Via *v = malloc(sizeof (struct Via));
     memset(v, 0, sizeof (struct Via));
 
-    attrC(reader, "at", v->at, LOCREF_CRS_LEN);
-    attrC(reader, "dest", v->dest, LOCREF_TIPLOC_LEN);
-    attrC(reader, "loc1", v->loc1, LOCREF_TIPLOC_LEN);
-    attrC(reader, "loc2", v->loc2, LOCREF_TIPLOC_LEN);
-    // We could optimise text as it's duplicated a lot
-    v->text = attr(reader, "viatext");
+    v->at = normaliseText(ref, attr(reader, "at"));
+    v->dest = normaliseText(ref, attr(reader, "dest"));
+    v->loc1 = normaliseText(ref, attr(reader, "loc1"));
+    v->loc2 = normaliseText(ref, attr(reader, "loc2"));
+    v->text = normaliseText(ref, attr(reader, "viatext"));
 
-    Hashmap *m = hashmapGet(ref->via, v->at);
+    Hashmap *m = hashmapGet(ref->via, &v->at);
     if (!m) {
-        m = hashmapCreate(10, hashmapStringHash, hashmapStringEquals);
-        hashmapPut(ref->via, v->at, m);
+        m = hashmapCreate(10, hashmapIntHash, hashmapIntEquals);
+        hashmapPut(ref->via, &v->at, m);
     }
 
-    hashmapAddList(m,v->dest,v);
+    hashmapAddList(m, &v->dest, v);
 }
 
 struct Reference *importReference(char *filename) {
@@ -92,13 +96,18 @@ struct Reference *importReference(char *filename) {
         exit(99);
     }
     memset(ref, 0, sizeof (struct Reference));
+
+    ref->normid = hashmapCreate(100, hashmapIntHash, hashmapIntEquals);
+    ref->normtxt = hashmapCreate(100, hashmapStringHash, hashmapStringEquals);
+
     list_init(&ref->locations);
-    ref->tiploc = hashmapCreate(100, hashmapStringHash, hashmapStringEquals);
-    ref->crs = hashmapCreate(100, hashmapStringHash, hashmapStringEquals);
-    ref->toc = hashmapCreate(10, hashmapStringHash, hashmapStringEquals);
-    ref->lateReason = hashmapCreate(100, hashmapStringHash, hashmapStringEquals);
-    ref->cancReason = hashmapCreate(100, hashmapStringHash, hashmapStringEquals);
-    ref->via = hashmapCreate(100, hashmapStringHash, hashmapStringEquals);
+    ref->tiploc = hashmapCreate(100, hashmapIntHash, hashmapIntEquals);
+    ref->crs = hashmapCreate(100, hashmapIntHash, hashmapIntEquals);
+    ref->toc = hashmapCreate(10, hashmapIntHash, hashmapIntEquals);
+    ref->lateReason = hashmapCreate(100, hashmapIntHash, hashmapIntEquals);
+    ref->cancReason = hashmapCreate(100, hashmapIntHash, hashmapIntEquals);
+    ref->via = hashmapCreate(100, hashmapIntHash, hashmapIntEquals);
+    ref->cis = hashmapCreate(100, hashmapIntHash, hashmapIntEquals);
 
     logconsole("Importing reference file %s", filename);
 
@@ -124,10 +133,13 @@ struct Reference *importReference(char *filename) {
                     inLate = false;
 
                 if (strcmp("Reason", name) == 0)
-                    addReason(inLate ? ref->lateReason : ref->cancReason, reader);
+                    addReason(ref, inLate ? ref->lateReason : ref->cancReason, reader);
 
                 if (strcmp("Via", name) == 0)
                     addVia(ref, reader);
+
+                if (strcmp("CISSource", name) == 0)
+                    addCis(ref, reader);
 
             }
             ret = xmlTextReaderRead(reader);

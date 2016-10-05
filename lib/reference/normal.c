@@ -10,6 +10,9 @@
 #include <nre/reference.h>
 
 int normaliseText(struct Reference *ref, char *s) {
+    if (!s)
+        return 0;
+
     int *id = hashmapGet(ref->normtxt, s);
     if (!id) {
         id = malloc(sizeof (int));
@@ -21,5 +24,5 @@ int normaliseText(struct Reference *ref, char *s) {
 }
 
 char *lookupText(struct Reference *ref, int id) {
-    return hashmapGet(ref->normid, &id);
+    return id < 1 ? NULL : hashmapGet(ref->normid, &id);
 }
