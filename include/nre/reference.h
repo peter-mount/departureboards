@@ -49,6 +49,7 @@ extern "C" {
 
     extern int normaliseText(struct Reference *, char *);
     extern char *lookupText(struct Reference *, int);
+    extern int lookupId(struct Reference *, char *);
 
     extern struct Reference *importReference(char *);
 #ifdef __cplusplus

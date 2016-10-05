@@ -34,3 +34,17 @@ int normaliseText(struct Reference *ref, char *s) {
 char *lookupText(struct Reference *ref, int id) {
     return id < 1 ? NULL : hashmapGet(ref->normid, &id);
 }
+
+/**
+ * Same as normaliseText but does not create if not found
+ * @param ref
+ * @param s
+ * @return 
+ */
+int lookupId(struct Reference *ref, char *s) {
+    if (!s)
+        return 0;
+
+    int *id = hashmapGet(ref->normtxt, s);
+    return id ? *id : 0;
+}

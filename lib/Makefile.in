@@ -1,8 +1,8 @@
 MODULE = darwin
 
-#OBJS =	api/status.o
+OBJS =	api/boards.o
 
-OBJS =	reference/import.o \
+OBJS +=	reference/import.o \
 	reference/normal.o \
 	
 OBJS +=	schedule/expire.o \

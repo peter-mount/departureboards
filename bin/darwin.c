@@ -62,7 +62,10 @@ static void initWebserver(struct Schedules *schedules) {
     webserver_set_defaults(schedules->webserver);
 }
 
+extern int api_board(WEBSERVER_REQUEST *);
+
 static void registerAPIs(struct Schedules *s) {
+    webserver_add_handler(s->webserver, "/departures/*", api_board, s);
 
     // /status is updated every 60 seconds
     updateStatusImpl(s);
