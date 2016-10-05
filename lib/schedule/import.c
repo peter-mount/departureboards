@@ -51,15 +51,7 @@ static struct Schedule *addJourney(struct Schedules *s, xmlTextReaderPtr reader)
     // Initial use as we are in the schedules
     sched->useCount = 1;
 
-    void *e = hashmapPut(s->schedules, &sched->rid, sched);
-    if (e) {
-        logconsole("Fail rid %d e %lx s %lx %lx", sched->rid, e, sched, &sched->rid);
-        struct Schedule *es = (struct Schedule *) e;
-        logconsole("rid %s", lookupText(s->ref, sched->rid));
-        logconsole("rid %s", lookupText(s->ref, es->rid));
-
-        exit(30);
-    }
+    hashmapPut(s->schedules, &sched->rid, sched);
 
     return sched;
 }
