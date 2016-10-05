@@ -11,10 +11,8 @@
 #include <nre/reference.h>
 #include <nre/schedule.h>
 
-void updateStatus(MainTask *t) {
+void updateStatusImpl(struct Schedules *s) {
     logconsole("Updating status");
-    
-    struct Schedules *s = area51_mainGetUserData(t);
 
     CharBuffer *b = charbuffer_new();
     charbuffer_add(b, '{');
@@ -51,4 +49,10 @@ void updateStatus(MainTask *t) {
     webserver_replaceResponseCharBuffer(s->webserver, "/status", b, "application/json");
 
     charbuffer_free(b);
+
+}
+
+void updateStatus(MainTask *t) {
+    struct Schedules *s = area51_mainGetUserData(t);
+    updateStatusImpl(s);
 }

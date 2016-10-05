@@ -38,8 +38,6 @@ static bool indexAll(void *k, void *v, void *c) {
 void indexSchedules(struct Schedules *s) {
     logconsole("Indexing %d schedules", hashmapSize(s->schedules));
 
-    s->crs = hashmapCreate(100, hashmapIntHash, hashmapIntEquals);
-
     // Run through each crs
     hashmapForEach(s->schedules, indexAll, s);
 }

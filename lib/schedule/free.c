@@ -15,6 +15,7 @@ static void removeFromStation(List *l, struct Schedule *sched) {
         n = list_getNext(n);
         if (e->value == sched) {
             list_remove(e);
+            e->value = NULL;
             free(e);
         }
     }
@@ -24,6 +25,9 @@ static void freeSched(struct Schedules *s, struct Schedule *sched) {
     // Don't log on startup
     if (s->running)
         logconsole("Removing schedule %s", lookupText(s->ref, sched->rid));
+
+    // Remove from the main map
+    hashmapRemove(s->schedules, &sched->rid);
 
     // Scan stations in the schedule and remove the schedule from them
     Node *n = list_getHead(&sched->locations);

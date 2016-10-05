@@ -67,6 +67,7 @@ extern "C" {
     };
 
     extern struct Schedules *importSchedules(struct Reference *, char *);
+    extern void expireSchedules(struct Schedules *);
     extern void indexSchedules(struct Schedules *);
 
     extern int schedules_lock(struct Schedules *);
@@ -74,7 +75,7 @@ extern "C" {
     extern void schedule_inc(struct Schedule *);
     extern void schedule_free(struct Schedules *, struct Schedule *);
 
-    
+    extern void updateStatusImpl(struct Schedules *);
     extern void updateStatus(MainTask *);
 #ifdef __cplusplus
 }

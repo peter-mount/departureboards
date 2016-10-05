@@ -43,6 +43,7 @@ static struct Schedules *importAll(char **argv) {
             );
 
     struct Schedules *schedules = importSchedules(ref, argv[2]);
+    expireSchedules(schedules);
     indexSchedules(schedules);
     logconsole("Schedules: %d crs %d",
             hashmapSize(schedules->schedules),
@@ -64,6 +65,7 @@ static void initWebserver(struct Schedules *schedules) {
 static void registerAPIs(struct Schedules *s) {
 
     // /status is updated every 60 seconds
+    updateStatusImpl(s);
     area51_mainRunPeriodic(s->tasks, updateStatus, 60, s, NULL);
     webserver_add_response_handler(s->webserver, "/status");
 }

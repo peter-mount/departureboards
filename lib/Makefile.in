@@ -5,7 +5,8 @@ MODULE = darwin
 OBJS =	reference/import.o \
 	reference/normal.o \
 	
-OBJS +=	schedule/free.o \
+OBJS +=	schedule/expire.o \
+	schedule/free.o \
 	schedule/import.o \
 	schedule/index.o \
 	schedule/lock.o \

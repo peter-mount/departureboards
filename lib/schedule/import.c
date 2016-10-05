@@ -95,6 +95,7 @@ struct Schedules *importSchedules(struct Reference *ref, char *filename) {
     pthread_mutex_init(&s->mutex, NULL);
     s->ref = ref;
     s->schedules = hashmapCreate(100, hashmapIntHash, hashmapIntEquals);
+    s->crs = hashmapCreate(100, hashmapIntHash, hashmapIntEquals);
 
     logconsole("Importing timetable file %s", filename);
 
