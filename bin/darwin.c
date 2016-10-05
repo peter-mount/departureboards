@@ -42,10 +42,14 @@ int main(int argc, char** argv) {
             );
 
     struct Schedules *schedules = importSchedules(ref, argv[2]);
-    logconsole("Schedules: %d", hashmapSize(schedules->schedules));
+    indexSchedules(schedules);
+    logconsole("Schedules: %d crs %d",
+            hashmapSize(schedules->schedules),
+            hashmapSize(schedules->crs)
+            );
 
     logconsole("Normalization: %d %d", hashmapSize(ref->normid), hashmapSize(ref->normtxt));
-    
+
     return EXIT_SUCCESS;
 }
 

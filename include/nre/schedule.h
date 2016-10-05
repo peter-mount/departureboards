@@ -50,9 +50,12 @@ extern "C" {
         struct Reference *ref;
         // Schedule indexed by rid
         Hashmap *schedules;
+        // List of schedules per CRS
+        Hashmap *crs;
     };
 
     extern struct Schedules *importSchedules(struct Reference *, char *);
+    extern void indexSchedules(struct Schedules *);
     
 #ifdef __cplusplus
 }

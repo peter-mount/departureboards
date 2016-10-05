@@ -12,7 +12,7 @@
 
 static int attr(struct Schedules *s, xmlTextReaderPtr reader, char *n) {
     const xmlChar *v = xmlTextReaderGetAttribute(reader, n);
-    return v ? normaliseText(s->ref, strdup(v)) : 0;
+    return v ? normaliseText(s->ref, (char *) v) : 0;
 }
 
 static int tim(xmlTextReaderPtr reader, char *n) {
@@ -47,7 +47,15 @@ static struct Schedule *addJourney(struct Schedules *s, xmlTextReaderPtr reader)
 
     list_init(&sched->locations);
 
-    hashmapPut(s->schedules, &sched->rid, sched);
+    void *e = hashmapPut(s->schedules, &sched->rid, sched);
+    if (e) {
+        logconsole("Fail rid %d e %lx s %lx %lx", sched->rid, e, sched, &sched->rid);
+        struct Schedule *es = (struct Schedule *) e;
+        logconsole("rid %s", lookupText(s->ref, sched->rid));
+        logconsole("rid %s", lookupText(s->ref, es->rid));
+
+        exit(30);
+    }
 
     return sched;
 }
@@ -62,8 +70,8 @@ static void addLoc(struct Schedule *sched, struct Schedules *s, xmlTextReaderPtr
 
     l->type = type;
     l->tpl = attr(s, reader, "tpl");
-    l->act = attr(s, reader, "tpl");
-    l->plat = attr(s, reader, "tpl");
+    l->act = attr(s, reader, "act");
+    l->plat = attr(s, reader, "plat");
     l->pta = tim(reader, "pta");
     l->ptd = tim(reader, "ptd");
     l->wta = tim(reader, "wta");
@@ -95,13 +103,19 @@ struct Schedules *importSchedules(struct Reference *ref, char *filename) {
             if (name != NULL) {
 
                 if (strcmp("Journey", name) == 0)
-                    sched = addJourney(s, reader);
+                    if (sched)
+                        sched = NULL;
+                    else
+                        sched = addJourney(s, reader);
                 else
                     if (strcmp("OR", name) == 0)
                     addLoc(sched, s, reader, LOC_OR);
                 else
                     if (strcmp("IP", name) == 0)
                     addLoc(sched, s, reader, LOC_IP);
+                else
+                    if (strcmp("PP", name) == 0)
+                    addLoc(sched, s, reader, LOC_PP);
                 else
                     if (strcmp("DT", name) == 0)
                     addLoc(sched, s, reader, LOC_DT);

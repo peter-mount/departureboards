@@ -8,19 +8,6 @@
 #include <libxml/xmlreader.h>
 #include <nre/reference.h>
 
-static char *attr(xmlTextReaderPtr reader, char *n) {
-    const xmlChar *v = xmlTextReaderGetAttribute(reader, n);
-    return v ? strdup(v) : NULL;
-}
-
-static void attrC(xmlTextReaderPtr reader, char *n, char *d, int l) {
-    const xmlChar *v = xmlTextReaderGetAttribute(reader, n);
-    if (v)
-        strncpy(d, v, l);
-    else
-        *d = 0;
-}
-
 static void addLocation(struct Reference *ref, xmlTextReaderPtr reader) {
     struct LocationRef *loc = malloc(sizeof (struct LocationRef));
     if (!loc)
@@ -28,10 +15,10 @@ static void addLocation(struct Reference *ref, xmlTextReaderPtr reader) {
 
     memset(loc, 0, sizeof (struct LocationRef));
 
-    loc->tiploc = normaliseText(ref, attr(reader, "tpl"));
-    loc->crs = normaliseText(ref, attr(reader, "crs"));
-    loc->name = normaliseText(ref, attr(reader, "locname"));
-    loc->toc = normaliseText(ref, attr(reader, "toc"));
+    loc->tiploc = normaliseText(ref, xmlTextReaderGetAttribute(reader, "tpl"));
+    loc->crs = normaliseText(ref, xmlTextReaderGetAttribute(reader, "crs"));
+    loc->name = normaliseText(ref, xmlTextReaderGetAttribute(reader, "locname"));
+    loc->toc = normaliseText(ref, xmlTextReaderGetAttribute(reader, "toc"));
 
     list_addTail(&ref->locations, &loc->node);
 
@@ -45,10 +32,10 @@ static void addLocation(struct Reference *ref, xmlTextReaderPtr reader) {
 
 static void add(struct Reference *ref, Hashmap *m, char *k, char *v, xmlTextReaderPtr reader) {
     int *id = malloc(sizeof (int));
-    *id = normaliseText(ref, attr(reader, k));
+    *id = normaliseText(ref, xmlTextReaderGetAttribute(reader, k));
 
     int *name = malloc(sizeof (int));
-    *name = normaliseText(ref, attr(reader, v));
+    *name = normaliseText(ref, xmlTextReaderGetAttribute(reader, v));
     hashmapPut(m, id, name);
 }
 
@@ -68,11 +55,11 @@ static void addVia(struct Reference *ref, xmlTextReaderPtr reader) {
     struct Via *v = malloc(sizeof (struct Via));
     memset(v, 0, sizeof (struct Via));
 
-    v->at = normaliseText(ref, attr(reader, "at"));
-    v->dest = normaliseText(ref, attr(reader, "dest"));
-    v->loc1 = normaliseText(ref, attr(reader, "loc1"));
-    v->loc2 = normaliseText(ref, attr(reader, "loc2"));
-    v->text = normaliseText(ref, attr(reader, "viatext"));
+    v->at = normaliseText(ref, xmlTextReaderGetAttribute(reader, "at"));
+    v->dest = normaliseText(ref, xmlTextReaderGetAttribute(reader, "dest"));
+    v->loc1 = normaliseText(ref, xmlTextReaderGetAttribute(reader, "loc1"));
+    v->loc2 = normaliseText(ref, xmlTextReaderGetAttribute(reader, "loc2"));
+    v->text = normaliseText(ref, xmlTextReaderGetAttribute(reader, "viatext"));
 
     Hashmap *m = hashmapGet(ref->via, &v->at);
     if (!m) {
