@@ -24,13 +24,24 @@ module.exports = function (grunt) {
                     "public_html/js/typeahead.min.js",
                     "public_html/js/departure.js"
                 ],
-                dest: "public_html/departure.js"
+                dest: "dist/departure.js"
             }
         },
         uglify: {
             mobile: {
-                src: "public_html/departure.js",
-                dest: "public_html/departure-min.js"
+                src: "dist/departure.js",
+                dest: "dist/departure-min.js"
+            }
+        },
+        htmlmin: {
+            dist: {
+                options: {
+                    removeComments: true,
+                    collapseWhitespace: true
+                },
+                files: {
+                    "dist/index.html": "public_html/index.html"
+                }
             }
         }
     });
@@ -38,6 +49,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-cssmin');
     grunt.loadNpmTasks('grunt-contrib-uglify');
+    grunt.loadNpmTasks('grunt-contrib-htmlmin');
 
-    grunt.registerTask('build', ['cssmin', 'concat', 'uglify']);
+    grunt.registerTask('build', ['cssmin', 'concat', 'uglify', 'htmlmin']);
 };
