@@ -1,0 +1,15 @@
+MODULE = darwin
+
+OBJS =	api/boards.o
+
+OBJS +=	reference/import.o \
+	reference/normal.o \
+	
+OBJS +=	schedule/expire.o \
+	schedule/free.o \
+	schedule/import.o \
+	schedule/index.o \
+	schedule/lock.o \
+	schedule/updateStatus.o
+
+include ../SubMakefile
