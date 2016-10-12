@@ -8,7 +8,7 @@ module.exports = function (grunt) {
             },
             target: {
                 files: {
-                    "public_html/departure-min.css": [
+                    "dist/departure-min.css": [
                         "public_html/css/bootstrap.min.css",
                         "public_html/css/ldb.css",
                         "public_html/css/mobile.css"
@@ -33,6 +33,13 @@ module.exports = function (grunt) {
                 dest: "dist/departure-min.js"
             }
         },
+        processhtml: {
+            build: {
+                files: {
+                    "dist/index.html": "public_html/index.html"
+                }
+            }
+        },
         htmlmin: {
             dist: {
                 options: {
@@ -40,7 +47,7 @@ module.exports = function (grunt) {
                     collapseWhitespace: true
                 },
                 files: {
-                    "dist/index.html": "public_html/index.html"
+                    "dist/index.html": "dist/index.html"
                 }
             }
         }
@@ -50,6 +57,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-cssmin');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-htmlmin');
+    grunt.loadNpmTasks('grunt-processhtml');
 
-    grunt.registerTask('build', ['cssmin', 'concat', 'uglify', 'htmlmin']);
+    grunt.registerTask('build', ['cssmin', 'concat', 'uglify', 'processhtml', 'htmlmin']);
 };
