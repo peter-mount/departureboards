@@ -1,15 +1,15 @@
 # Maintainer: Peter Mount <peter@retep.org>
 
-pkgname="nrod-timetable"
-pkgver="0.2"
-pkgrel="4"
-pkgdesc="Area51 Network Rail Timetable"
+pkgname="nre-darwin"
+pkgver="0.1"
+pkgrel="2"
+pkgdesc="Area51 NRE Darwin"
 arch="x86_64"
 url="https://area51.onl/"
 license="ASL 2.0"
 source=""
 subpackages="$pkgname-dev"
-depends="libarea51 libarea51-rest libarea51-httpd json-c libmicrohttpd curl libxml2"
+depends="libarea51 libarea51-rest libarea51-httpd json-c libmicrohttpd curl libxml2 tzdata"
 depends_dev="libarea51-dev libarea51-rest-dev libarea51-httpd-dev json-c-dev libmicrohttpd-dev curl-dev libxml2-dev"
 #triggers="$pkgname-bin.trigger=/lib:/usr/lib:/usr/glibc-compat/lib"
 
