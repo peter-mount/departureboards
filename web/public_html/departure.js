@@ -2,20 +2,17 @@ var UI = (function () {
     function UI() {
 
     }
+    UI.urlChange = function (l) {
+        // Comment out when running within NetBeans
+        //history.pushState(history.state, null, l);
+    };
 
-    var panes = ['#searchPane'];
+    var panes = ['#searchPane', '#boardPane'];
     UI.show = function (id) {
         console.log("show", id);
         $.each(panes, function (i, p) {
             $(p).css({display: p === id ? "block" : "none"});
         });
-    };
-
-    UI.showSearch = function () {
-        UI.show("#searchPane");
-        setTimeout(function () {
-            $('#stations').val('').focus();
-        }, 250);
     };
 
     UI.showAbout = function () {
@@ -24,6 +21,44 @@ var UI = (function () {
 
     UI.showContact = function () {
         $("#contactus").modal();
+    };
+
+    // ==== Station search ====
+    // Last received station results
+    var stationResults = {};
+    // Show the station page
+    UI.showSearch = function () {
+        UI.urlChange('/');
+        UI.show("#searchPane");
+        setTimeout(function () {
+            $('#stations').val('').focus();
+        }, 250);
+    };
+
+    // Parse received json into stationResults & typeahead
+    UI.stationSearch = function (parsedResponse) {
+        stationResults = {};
+        var ary = $.map(parsedResponse, function (loc) {
+            loc.text = loc.name + " [" + loc.crs + "]";
+            stationResults[loc.text] = loc;
+            return loc.text;
+        });
+        return ary;
+    };
+
+    // Select station
+    UI.stationSearchOn = function (e) {
+        var t = $('#stations').val();
+        var loc = stationResults[t];
+        if (loc && loc.crs && loc.crs !== '')
+            UI.showCRS(loc.crs);
+    };
+
+    // ===== Station page =====
+    UI.showCRS = function (crs) {
+        crs = crs.toUpperCase();
+        UI.urlChange('/' + crs);
+        UI.show("#boardPane");
     };
 
     return UI;
@@ -37,44 +72,20 @@ $(document).ready(function () {
             url: '//api.area51.onl/darwin/search?term=%QUERY',
             dataType: 'json',
             cache: false,
-            filter: function (parsedResponse) {
-                var ary = $.map(parsedResponse, function (loc) {
-                    return loc.name;
-                });
-                console.log("ary", ary);
-                return ary;
-            }
+            filter: UI.stationSearch
         }
-    }).on("typeahead:selected",function(e){
-        console.log("selected", $('#stations').val());
-    });
-//    $('#stations').typeahead({
-//        hint: true,
-//        highlight: true,
-//        minLength: 3,
-//        async: true
-//    },{
-//        name: "stations",
-//        source: function (query, syncResult, asyncResult) {
-//            console.log(query);
-//            return $.get('//api.area51.onl/darwin/search',
-//                    {term: query},
-//                    function (d) {
-//                        console.log(d);
-//                        return asyncResult({"mde":"d"});
-//                    });
-//        }
-//    });
+    }).on("typeahead:selected", UI.stationSearchOn);
 
-//    $("#stations").autocomplete({
-//        source: "//api.area51.onl/darwin/search",
-//        minLength: 3,
-//        autoFocus: true,
-//        select: function (event, ui) {
-//            console.log(ui.item);
-//            //document.location = "/mldb/" + ui.item.crs;
-//        }
-//    });
+    // Get the page url, remove any / or /index.html
+    var l = location.pathname;
+    while (l.endsWith("/index.html"))
+        l = l.substr(0, l.length - "/index.html".length);
+    while (l.endsWith("/"))
+        l = l.substr(0, l.length - 1);
 
-    UI.showSearch();
+    // Show station page based on crs code in url, otherwise the search page
+    if (l.match("/[a-zA-Z]{3}"))
+        UI.showCRS(l.substr(1));
+    else
+        UI.showSearch();
 });
