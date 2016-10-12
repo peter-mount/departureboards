@@ -86,9 +86,13 @@ var UI = (function () {
     var span = function () {
         return $('<span></span>');
     };
-    var parseTime = function(t) {
-        var a=t.split(':');
-        return (+a[0]*60)+(+a[1]);
+    var parseTime = function (d, t) {
+        //var a=t.split(':');
+        //return (+a[0]*60)+(+a[1]);
+        return Date.parse(d + "T" + t);
+    };
+    var parseLocTime = function (a) {
+        return parseTime(a.ssd, a.loc.ptd ? a.loc.ptd : a.loc.pta ? a.loc.pta : a.loc.wtd ? a.loc.wtd : a.loc.wta);
     };
     var showCrsBoard = function (data) {
         $('#boardName').empty().append(data.station.name);
@@ -100,14 +104,19 @@ var UI = (function () {
             div().appendTo(tab).append("No data available");
         } else {
             var altrow = 0;
-            
-            data.departures.sort(function(a,b){
-                var at=parseTime(a.loc.ptd?a.loc.ptd:a.loc.pta?a.loc.pta:a.loc.wtd?a.loc.wtd:a.loc.wta);
-                var bt=parseTime(b.loc.ptd?b.loc.ptd:b.loc.pta?b.loc.pta:b.loc.wtd?b.loc.wtd:b.loc.wta);
-                return at-bt;
+
+            // sort
+            data.departures.sort(function (a, b) {
+                return parseLocTime(a) - parseLocTime(b);
             });
-            var lrid="";
+
+            // Don't show too far in the future (we could see tomorrows data in here)
+            var now = Date.now() + 86400000 - 3600000;
             $.each(data.departures, function (i, v) {
+                // Don't go too far ahead
+                if (parseLocTime(v) >= now)
+                    return;
+
                 // Hide non-public trains unless we want them
                 if (!v.loc.pta && !v.loc.ptd)
                     return;
@@ -133,7 +142,9 @@ var UI = (function () {
                             .append(span().addClass("ldbHeader").addClass("callList").append("Calling at:"));
                     // todo add cp list to api output, for now just the dest
                     d.append(span().addClass("callList").append(" ")
-                            .append(a().append(v.dest.tpl.name))
+                            .append(a().append(a().append(v.dest.tpl.name).click(function (e) {
+                                UI.showCRS(v.dest.tpl.crs);
+                            })))
                             .append(" (").append((v.dest.pta ? v.dest.pta : v.dest.wta).substr(0, 5)).append(")"));
                 }
 
