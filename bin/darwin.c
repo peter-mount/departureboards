@@ -77,6 +77,10 @@ int main(int argc, char** argv) {
     if (argc < 3) {
         return about(argv[0]);
     }
+    
+    // We must run in UK time regardless of the underlying timezone
+    // If we don't then we could show the wrong date/time's
+    putenv("TZ=Europe/London");
 
     struct Schedules *schedules = importAll(argv);
 
