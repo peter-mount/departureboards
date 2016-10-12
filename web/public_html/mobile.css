@@ -31,6 +31,23 @@ p {text-align: justify;}
     padding-right: 5px;
 }
 
+#boardTop {
+    font-size: 70%;
+    border-bottom: 1px solid white;
+}
+
+#outer-footer {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 3em;
+    z-index: 10;
+    border-top: 1px solid white;
+    margin: 1px;
+    font-size: 60%;
+}
+
 .tt-hint {
     display: block;
     width: 100%;

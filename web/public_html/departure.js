@@ -9,7 +9,6 @@ var UI = (function () {
 
     var panes = ['#searchPane', '#boardPane'];
     UI.show = function (id) {
-        console.log("show", id);
         $.each(panes, function (i, p) {
             $(p).css({display: p === id ? "block" : "none"});
         });
@@ -55,10 +54,81 @@ var UI = (function () {
     };
 
     // ===== Station page =====
+    var stationCrs;
     UI.showCRS = function (crs) {
-        crs = crs.toUpperCase();
-        UI.urlChange('/' + crs);
+        stationCrs = crs.toUpperCase();
+        UI.urlChange('/' + stationCrs);
+        // Clear any existing data
+        $('#boardName').empty();
+        $('#boardTable').empty();
+        // Show the boards and refresh
         UI.show("#boardPane");
+        UI.refreshBoard();
+    };
+    UI.refreshBoard = function () {
+        if (!stationCrs)
+            UI.showSearch();
+        else
+            $.ajax({
+                url: "//api.area51.onl/darwin/departures/" + stationCrs,
+                dataType: 'json',
+                cache: false,
+                success: showCrsBoard
+            });
+    };
+
+    var a = function () {
+        return $('<a></a>');
+    };
+    var div = function () {
+        return $('<div></div>');
+    };
+    var span = function () {
+        return $('<span></span>');
+    };
+    var showCrsBoard = function (data) {
+        $('#boardName').empty().append(data.station.name);
+        var tab = $('#boardTable');
+        tab.empty();
+        var altrow = 0;
+        $.each(data.departures, function (i, v) {
+            
+            // Hide non-public trains unless we want them
+            if(!v.loc.pta&&!v.loc.ptd)
+                return ;
+            
+            var row = div().appendTo(tab);
+            altrow = 1 - altrow;
+            if (altrow)
+                row.addClass("altrow");
+
+            var terminates = v.dest.tpl.tiploc === v.loc.tpl.tiploc;
+
+            var d = div().addClass("ldb-enttop").appendTo(row)
+                    .append(div().addClass("ldbCol").addClass("ldbForecast"))
+                    .append(div().addClass("ldbCol").addClass("ldbSched").append(v.loc.ptd ? v.loc.ptd : v.loc.pta))
+                    .append(div().addClass("ldbCol").addClass("ldbPlat").append(v.loc.plat ? v.loc.plat : ""));
+            var cont = div().addClass("ldbCont").appendTo(d)
+                    .append(a().append(terminates ? "Terminates here" : v.dest.tpl.name));
+            if (v.via)
+                cont.append(span().addClass("ldbVia").append(" via " + v.via));
+
+            if (!terminates) {
+                d = div().addClass("ldb-entbot").appendTo(row)
+                        .append(span().addClass("ldbHeader").addClass("callList").append("Calling at:"));
+                // todo add cp list to api output, for now just the dest
+                d.append(span().addClass("callList").append(" ")
+                        .append(a().append(v.dest.tpl.name))
+                        .append(" (" ).append( v.dest.pta+" "+v.dest.wta ).append( ")"));
+            }
+
+            // Operator and last report lines
+            d = div().addClass("ldb-entbot").appendTo(row);
+            if (v.toc)
+                d.append(span().append(v.toc).append("&nbsp;service. "));
+            d.append(span().addClass("ldbHeader").append("Last report: "))
+                    .append(span().addClass("ldbDest").append(v.loc.tpl).append(" 00:00 "));
+        });
     };
 
     return UI;
@@ -84,8 +154,9 @@ $(document).ready(function () {
         l = l.substr(0, l.length - 1);
 
     // Show station page based on crs code in url, otherwise the search page
-    if (l.match("/[a-zA-Z]{3}"))
-        UI.showCRS(l.substr(1));
-    else
-        UI.showSearch();
+//    if (l.match("/[a-zA-Z]{3}"))
+//        UI.showCRS(l.substr(1));
+//    else
+//        UI.showSearch();
+    UI.showCRS('MDE');
 });

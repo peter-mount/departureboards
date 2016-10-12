@@ -7,16 +7,18 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
         <meta name="description" content="UK Train Departure Boards"/>
         <meta name="author" content="Peter Mount"/>
-        <link rel="icon" href="/favicon.ico"/>
+        <link rel="icon" href="//d2n6o1jfdmw4z0.cloudfront.net/images/fav/favicon.ico"/>
 
         <link rel="stylesheet" href="//d2n6o1jfdmw4z0.cloudfront.net/bootstrap/3.3.7/css/bootstrap.min.css"/>
-        <link rel="stylesheet" href="departure-min.css" />
+        <!--link rel="stylesheet" href="departure-min.css" /-->
+        <link rel="stylesheet" href="ldb.css" />
+        <link rel="stylesheet" href="mobile.css" />
 
         <script src="//d2n6o1jfdmw4z0.cloudfront.net/js/jquery/jquery-3.1.1.min.js"></script>
         <script src="//d2n6o1jfdmw4z0.cloudfront.net/bootstrap/3.3.7/js/bootstrap.min.js"></script>
         <script src="//d2n6o1jfdmw4z0.cloudfront.net/js/typeahead.min.js"></script>
 
-        <script src="departure-min.js"></script>
+        <script src="departure.js"></script>
     </head>
     <body>
         <nav class="navbar navbar-default">
@@ -57,8 +59,65 @@
                     By clicking the destination name on those boards you will be able to view the current progress of that service.
                 </p>
             </div>
+            <div id="boardPane">
+                <div id="boardTop" class="ldbWrapper">
+                    <div class="ldbTable">
+                        <div class="ldbLoc">
+                            <div id="boardName" class="ldbCont"></div>
+                        </div>
+                        <div class="ldbHead">
+                            <div class="ldbCol ldbForecast">Expected</div>
+                            <div class="ldbCol ldbSched">Departs</div>
+                            <div class="ldbCol ldbPlat">Plat.</div>
+                            <div class="ldbCont">Destination</div>
+                        </div>
+                    </div>
+                </div>
+                <div id="boardBody">
+                    <div class="ldbWrapper">
+                        <div id="boardTable" class="ldbTable">
+                            <div class="row altrow">
+                                <div class="ldb-enttop">
+                                    <div class="ldbCol ldbForecast"> 17:34 </div>
+                                    <div class="ldbCol ldbSched"> 17:33 </div>
+                                    <div class="ldbCol ldbPlat"> 1 </div>
+                                    <div class="ldbCont">
+                                        <a onclick="document.location = '/train/201610128746731';"> London Victoria </a>
+                                        <span class="ldbVia">via Maidstone East</span>
+                                    </div>
+                                </div>
+                                <div class="ldb-entbot">
+                                    <span class="ldbHeader callList" style="display: inline-block;"> Calling at: </span>
+                                    <span class="callList" style="display: inline-block;">
+                                        <a href="/mldb/MDE">Maidstone&nbsp;East</a> (17:34) </span>
+                                    <span class="callList" style="display: inline-block;"> <a href="/mldb/BMG">Barming</a> (17:39) </span>
+                                    <span class="callList" style="display: inline-block;"> <a href="/mldb/EML">East&nbsp;Malling</a> (17:42) </span>
+                                    <span class="callList" style="display: inline-block;"> <a href="/mldb/WMA">West&nbsp;Malling</a> (17:45) </span>
+                                    <span class="callList" style="display: inline-block;"> <a href="/mldb/BRG">Borough&nbsp;Green&nbsp;&amp;&nbsp;Wrotham</a> (17:51) </span>
+                                    <span class="callList" style="display: inline-block;"> <a href="/mldb/KMS">Kemsing</a> (17:55) </span>
+                                    <span class="callList" style="display: inline-block;"> <a href="/mldb/OTF">Otford</a> (18:01) </span>
+                                    <span class="callList" style="display: inline-block;"> <a href="/mldb/SAY">Swanley</a> (18:09) </span>
+                                    <span class="callList" style="display: inline-block;"> <a href="/mldb/SMY">St&nbsp;Mary&nbsp;Cray</a> (18:13) </span>
+                                    <span class="callList" style="display: inline-block;"> <a href="/mldb/BMS">Bromley&nbsp;South</a> (18:20) </span>
+                                    <span class="callList" style="display: inline-block;"> <a href="/mldb/VIC">London&nbsp;Victoria</a> (18:37) </span>
+                                </div> <div class="ldb-entbot"> <span> Southeastern&nbsp;service. </span> <span class="ldbHeader">Last report:</span>
+                                    <span class="ldbDest"> Ashford International 17:03 </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-
+        <div id="outer-footer">
+            <div id="inner-footer">
+                ©2011-2016 Peter Mount, All Rights Reserved.<br/>
+                Contains data provided by <a href="http://www.networkrail.co.uk/">Network Rail</a>,
+                <a href="http://www.nationalrail.co.uk/">National Rail Enquiries</a><!--,
+                <a href="">Transport for London</a>-->
+                and other public sector information licensed under the Open Government Licence.
+            </div>
+        </div>
         <div id="about" class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
