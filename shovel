@@ -1,6 +1,0 @@
-nre.pushPort
-amqp://dev:aardvark@[2A01:7E00:E000:A7::2]/
-dev.nre.push
-ampq://
-Exchange: amq.topic nre.push
-
