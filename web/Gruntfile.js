@@ -1,8 +1,3 @@
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 module.exports = function (grunt) {
     // Project configuration.
     grunt.initConfig({
@@ -21,7 +16,7 @@ module.exports = function (grunt) {
                 }
             }
         },
-        concat:{
+        concat: {
             dist: {
                 src: [
                     "public_html/js/jquery-3.1.1.min.js",
@@ -44,5 +39,5 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-cssmin');
     grunt.loadNpmTasks('grunt-contrib-uglify');
 
-    grunt.registerTask('build', ['cssmin','concat','uglify']);
+    grunt.registerTask('build', ['cssmin', 'concat', 'uglify']);
 };

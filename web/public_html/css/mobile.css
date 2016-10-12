@@ -4,18 +4,48 @@ body {
     color: #fff;
     margin:0;
     padding: 0;
-    overflow: hidden;
-    overflow-y: hidden;
+    xoverflow: hidden;
+    xoverflow-y: hidden;
 }
 
 a {color: #fff;}
 a:hover {color: #ff0;}
 a:visited {color: #fff;}
 
+/* Dialogs need black text */
 .modal-dialog {color:#000;}
 .modal-dialog a,
 .modal-dialog a:hover,
 .modal-dialog a:visited {color:#00F;}
+
+#body {
+    margin-top: 4em;
+}
+
+/* Set navbar colours */
+.navbar-default {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 1em;
+    max-height: 1em;
+    background-color: #000;
+    border-color: #e7e7e7;
+    border-top: 0;
+    border-right: 0;
+    border-left: 0;
+    border-radius: initial;
+}
+.navbar-default .navbar-nav>li>a {color: #fff;}
+.navbar-default .navbar-nav>li>a:hover {color: #ccc;}
+
+/* Prevent navbar collapse */
+.navbar-header {display:none;}
+.navbar-collapse.collapse {display: block!important;}
+.navbar-nav>li, .navbar-nav {float: left !important;}
+.navbar-nav.navbar-right:last-child {margin-right: -15px !important;}
+.navbar-right {float: right!important;}
 
 h1 {text-align: center;}
 
@@ -37,7 +67,9 @@ p {text-align: justify;}
 }
 
 #outer-footer {
-    position: absolute;
+    position: fixed;
+    background: #000;
+    color: #fff;
     left: 0;
     right: 0;
     bottom: 0;

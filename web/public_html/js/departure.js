@@ -37,20 +37,30 @@ var UI = (function () {
 
     // Parse received json into stationResults & typeahead
     UI.stationSearch = function (parsedResponse) {
-        stationResults = {};
-        var ary = $.map(parsedResponse, function (loc) {
-            loc.text = loc.name + " [" + loc.crs + "]";
-            stationResults[loc.text] = loc;
-            return loc.text;
+        var t = $('#stations').val().toUpperCase();
+        parsedResponse.sort(t.length === 3 ? function (a, b) {
+            return a.crs === t ? -2 : b.crs === t ? 2 : a.name < b.name ? -1 : 1;
+        } : function (a, b) {
+            return a.name < b.name ? -1 : 1;
         });
+        stationResults = {};
+        var ary = [];
+        $.each(parsedResponse, function (i, loc) {
+            if (loc.tiploc !== loc.name) {
+                loc.text = loc.name + " [" + loc.crs + "]";
+                stationResults[loc.text] = loc;
+                ary.push(loc.text);
+            }
+        });
+        console.log(stationResults);
         return ary;
     };
 
     // Select station
     UI.stationSearchOn = function (e) {
         var t = $('#stations').val();
-        $('#stations').typeahead('setQuery', '');
         var loc = stationResults[t];
+        $('#stations').typeahead('setQuery', '');
         if (loc && loc.crs && loc.crs !== '')
             UI.showCRS(loc.crs);
     };
@@ -167,8 +177,14 @@ var UI = (function () {
 })();
 
 $(document).ready(function () {
-    console.log("init");
+    // Collapse the nav bar on small devices when option selected
+    $(document).on('click','.navbar-collapse.in',function(e){
+        $(this).collapse('hide');
+    });
+    
+    // Station search component
     $('#stations').typeahead({
+        limit: 10,
         name: "search",
         remote: {
             url: '//api.area51.onl/darwin/search?term=%QUERY',
