@@ -11,7 +11,9 @@ var UI = (function () {
     var panes = ['#searchPane', '#boardPane'];
     UI.show = function (id) {
         $.each(panes, function (i, p) {
-            $(p).css({display: p === id ? "block" : "none"});
+            var f = p === id;
+            $(p).addClass(f ? "paneVisible" : "paneInvisible")
+                    .removeClass(f ? "paneInvisible" : "paneVisible");
         });
     };
 
@@ -203,6 +205,9 @@ $(document).ready(function () {
 
     // Show station page based on crs code in url, otherwise the search page
     // /mldb/ is to support old url's from the old app
+    if (1)
+        UI.showCRS('VIC');
+    else
     if (l.match("/mldb/[a-zA-Z]{3}"))
         UI.showCRS(l.substr(6));
     else if (l.match("/[a-zA-Z]{3}"))

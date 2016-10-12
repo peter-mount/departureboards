@@ -14,14 +14,14 @@
         <link rel="stylesheet" href="/css/ldb.css" />
         <link rel="stylesheet" href="/css/mobile.css" />
         <!-- /build -->
-        
+
         <!-- build:js departure-min.js -->
         <script src="/js/jquery-3.1.1.min.js"></script>
         <script src="/js/bootstrap.min.js"></script>
         <script src="/js/typeahead.min.js"></script>
         <script src="/js/departure.js"></script>
         <!-- /build -->
-        
+
         <!-- production
         <link rel="stylesheet" href="departure-min.css" />
         <script src="departure-min.js"></script>
@@ -49,7 +49,7 @@
             </div>
         </nav>
         <div id="body">
-            <div id="searchPane">
+            <div id="searchPane" class="paneInvisible">
                 <h1>Realtime Departure Boards</h1>
                 <div style="height: 4.5em;">
                     <div style="text-align:center;">
@@ -68,7 +68,7 @@
                     By clicking the destination name on those boards you will be able to view the current progress of that service.
                 </p>
             </div>
-            <div id="boardPane">
+            <div id="boardPane" class="paneInvisible">
                 <div id="boardTop" class="ldbWrapper">
                     <div class="ldbTable">
                         <div class="ldbLoc">
@@ -85,6 +85,7 @@
                 <div id="boardBody">
                     <div class="ldbWrapper">
                         <div id="boardTable" class="ldbTable">
+                            <!-- Copy of a full entry from the old site
                             <div class="row altrow">
                                 <div class="ldb-enttop">
                                     <div class="ldbCol ldbForecast"> 17:34 </div>
@@ -113,6 +114,7 @@
                                     <span class="ldbDest"> Ashford International 17:03 </span>
                                 </div>
                             </div>
+                            -->
                         </div>
                     </div>
                 </div>

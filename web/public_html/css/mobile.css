@@ -56,6 +56,10 @@ p {text-align: justify;}
     margin-bottom: 0;
 }
 
+/* Pane visibility */
+.paneInvisible{display:none;}
+.paneVisible{display:block;}
+
 #stations {
     padding-left: 5px;
     padding-right: 5px;
