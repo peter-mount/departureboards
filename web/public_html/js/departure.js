@@ -178,10 +178,10 @@ var UI = (function () {
 
 $(document).ready(function () {
     // Collapse the nav bar on small devices when option selected
-    $(document).on('click','.navbar-collapse.in',function(e){
+    $(document).on('click', '.navbar-collapse.in', function (e) {
         $(this).collapse('hide');
     });
-    
+
     // Station search component
     $('#stations').typeahead({
         limit: 10,
@@ -202,7 +202,10 @@ $(document).ready(function () {
         l = l.substr(0, l.length - 1);
 
     // Show station page based on crs code in url, otherwise the search page
-    if (l.match("/[a-zA-Z]{3}"))
+    // /mldb/ is to support old url's from the old app
+    if (l.match("/mldb/[a-zA-Z]{3}"))
+        UI.showCRS(l.substr(6));
+    else if (l.match("/[a-zA-Z]{3}"))
         UI.showCRS(l.substr(1));
     else
         UI.showSearch();
