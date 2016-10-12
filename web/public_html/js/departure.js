@@ -1,10 +1,11 @@
+/* http://DepartureBoards.mobi (C) 2016 Peter Mount */
 var UI = (function () {
     function UI() {
 
     }
     UI.urlChange = function (l) {
         // Comment out when running within NetBeans
-        //history.pushState(history.state, null, l);
+        history.pushState(history.state, null, l);
     };
 
     var panes = ['#searchPane', '#boardPane'];
@@ -30,7 +31,7 @@ var UI = (function () {
         UI.urlChange('/');
         UI.show("#searchPane");
         setTimeout(function () {
-            $('#stations').val('').focus();
+            $('#stations').focus();
         }, 250);
     };
 
@@ -48,6 +49,7 @@ var UI = (function () {
     // Select station
     UI.stationSearchOn = function (e) {
         var t = $('#stations').val();
+        $('#stations').typeahead('setQuery', '');
         var loc = stationResults[t];
         if (loc && loc.crs && loc.crs !== '')
             UI.showCRS(loc.crs);
@@ -87,8 +89,6 @@ var UI = (function () {
         return $('<span></span>');
     };
     var parseTime = function (d, t) {
-        //var a=t.split(':');
-        //return (+a[0]*60)+(+a[1]);
         return Date.parse(d + "T" + t);
     };
     var parseLocTime = function (a) {
@@ -121,12 +121,15 @@ var UI = (function () {
                 if (!v.loc.pta && !v.loc.ptd)
                     return;
 
+                // Optional hide terminating trains
+                var terminates = v.dest.tpl.tiploc === v.loc.tpl.tiploc;
+                if (terminates)
+                    return;
+
                 var row = div().appendTo(tab);
                 altrow = 1 - altrow;
                 if (altrow)
                     row.addClass("altrow");
-
-                var terminates = v.dest.tpl.tiploc === v.loc.tpl.tiploc;
 
                 var d = div().addClass("ldb-enttop").appendTo(row)
                         .append(div().addClass("ldbCol").addClass("ldbForecast"))
