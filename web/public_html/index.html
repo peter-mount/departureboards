@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>UK Departure Boards</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+        <meta name="description" content="UK Train Departure Boards"/>
+        <meta name="author" content="Peter Mount"/>
+        <link rel="icon" href="/favicon.ico"/>
+
+        <link rel="stylesheet" href="//d2n6o1jfdmw4z0.cloudfront.net/bootstrap/3.3.7/css/bootstrap.min.css"/>
+        <link rel="stylesheet" href="mobile.css" />
+        <link rel="stylesheet" href="ldb.css" />
+
+        <script src="//d2n6o1jfdmw4z0.cloudfront.net/js/jquery/jquery-3.1.1.min.js"></script>
+        <script src="//d2n6o1jfdmw4z0.cloudfront.net/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <script src="//d2n6o1jfdmw4z0.cloudfront.net/js/typeahead.min.js"></script>
+
+        <script src="departure.js"></script>
+    </head>
+    <body>
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="#">DepartureBoards.mobi</a>
+                </div>
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav">
+                        <li><a onclick="UI.showSearch();">Choose a Station</a></li>
+                        <li><a onclick="UI.showAbout();">About</a></li>
+                        <li><a onclick="UI.showContact();">Contact Us</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <div id="body">
+            <div id="searchPane">
+                <h1>Realtime Departure Boards</h1>
+                <div class="ui-widget">
+                    <label id="stationlabel" for="stations">Please enter the station you want to view below: </label>
+                    <input id="stations" type="text" class="no-clear search-typeahead"/>
+                </div>
+                <p>
+                    Live departure boards for every UK Rail Station in a mobile friendly format by the
+                    team behind <a href="https://twitter.com/TrainWatch">@TrainWatch</a> and <a href="//uktra.in/">uktra.in</a>.
+                </p>
+                <p>
+                    To use simply enter the UK Rail station name in the box above and you will be shown the current boards for that station.
+                </p>
+                <p>
+                    By clicking the destination name on those boards you will be able to view the current progress of that service.
+                </p>
+            </div>
+        </div>
+
+        <div id="about" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">About Departure Boards</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            This application provides real time departure board information for every railway station in
+                            England, Scotland and Wales<!-- as well as every station on the London Underground-->.
+                            When you navigate through the site, you will be shown the trains for up to the next hour.
+                        </p>
+                        <p>
+                            For the mainline stations, the application is a view on the Darwin Push Port real time feed from National Rail Enquiries.
+                        </p>
+                        <p>
+                            This feed provides both the timetabled times as well as the predicted arrival &amp; departure times for services,
+                            so when a service is delayed then we will show the same predicted times as National Rail Enquiries have access to.
+                        </p>
+                        <p>
+                            For more information on the open data:
+                        </p>
+                        <ul>
+                            <li><a href="//uktra.in">Parent uktra.in website.</a></li>
+                            <li><a href="http://nrodwiki.rockshore.net/index.php/Main_Page">Open Rail Data wiki.</a></li>
+                            <li><a href="http://nrodwiki.rockshore.net/index.php/Darwin:Push_Port">Darwin Push Port feed details.</a></li>
+                            <li><a href="https://groups.google.com/forum/#!forum/openraildata-talk">Open Rail Data forum</a></li>
+                        </ul>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- contact us -->
+        <div id="contactus" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Contact Us</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            For more information please feel free to contact me via twitter
+                            <a href="https://twitter.com/peter_mount" target="_top">@Peter_Mount</a>,
+                            <a href="https://twitter.com/TrainWatch" target="_top">@TrainWatch</a> or
+                            <a href="https://twitter.com/ProjectArea51" target="_top">@ProjectArea51</a>.
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </body>
+</html>

@@ -1,0 +1,241 @@
+body {
+    font-family: Verdana,Helvetica,Arial,sans-serif;
+    background: #000;
+    color: #fff;
+    margin:0;
+    padding: 0;
+    overflow: hidden;
+    overflow-y: hidden;
+}
+
+a {color: #fff;}
+a:hover {color: #ff0;}
+a:visited {color: #fff;}
+
+.modal-dialog {color:#000;}
+.modal-dialog a,
+.modal-dialog a:hover,
+.modal-dialog a:visited {color:#00F;}
+
+h1 {text-align: center;}
+
+p {text-align: justify;}
+
+.twitter-typeahead .tt-query,
+.twitter-typeahead .tt-hint {
+    margin-bottom: 0;
+}
+
+#stations {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.tt-hint {
+    display: block;
+    width: 100%;
+    height: 38px;
+    padding: 8px 12px;
+    font-size: 14px;
+    line-height: 1.428571429;
+    color: #999;
+    vertical-align: middle;
+    background-color: #ffffff;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    -webkit-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+    transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+}
+.tt-dropdown-menu {
+    min-width: 160px;
+    margin-top: 2px;
+    padding: 5px 0;
+    background-color: #ffffff;
+    border: 1px solid #cccccc;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
+    -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+    background-clip: padding-box;
+    color: #000;
+}
+.tt-suggestion {
+    display: block;
+    padding: 3px 20px;
+}
+.tt-suggestion.tt-is-under-cursor {
+    color: #fff;
+    background-color: #428bca;
+}
+.tt-suggestion.tt-is-under-cursor a {
+    color: #fff;
+}
+.tt-suggestion p {
+    margin: 0;
+}
+
+#eu_cookie_notice {
+    position: absolute;
+    xbottom: 3em;
+    top: 0;
+    background: #ccc;
+    color: #000;
+    padding: 0.25em;
+}
+#eu_cookie_notice { display: hidden; }
+#eu_cookie_notice img { float: left; }
+#eu_cookie_notice a { color: #00f;}
+#eu_cookie_notice a:visited { color: #00f;}
+#eu_cookie_notice a:hover { color: #00f;}
+
+.ui-icon-loading {
+    background: url(//ajax.googleapis.com/ajax/libs/jquerymobile/1.4.5/images/ajax-loader.gif);
+}
+
+input {
+    color: #fff;
+    font-size: 14pt;
+    display: block;
+    border: 1px solid white;
+    background: #000;
+    color: #fff;
+    margin: 0 2em;
+    height: 1.2em;
+    width: 80%;
+}
+
+#stationlabel {
+
+}
+
+#loading {
+    display: none;
+    background-image: url(//ajax.googleapis.com/ajax/libs/jquerymobile/1.4.5/images/ajax-loader.gif);
+    background-position: center;
+    background-repeat: no-repeat;
+    position: absolute;
+    top:0;
+    bottom:0;
+    left:0;
+    right:0;
+    z-index: -1;
+    opacity: 0.3;
+}
+
+/* Hidden on mobile site */
+#trainTop {
+    display: none;
+}
+
+#home { padding: 0.5em; }
+#home h3 { text-align: center; }
+
+.logo-container { text-align: center; }
+.logo-nre {
+    width: 80%;
+    max-width: 300px;
+    height: auto;
+}
+
+/* iPhone 3GS */
+@media all and ( max-width: 320px ) {
+    .ldbbutton {
+        font-size: 130%;
+        top: 5pt;
+    }
+    h1 {
+        font-size: 110%;
+        margin: 0;
+        -webkit-margin-before: 0;
+        -webkit-margin-after: 0.67em;
+    }
+    #stationlabel { font-size: 80%; }
+    .ui-autocomplete li { font-size: 12pt; }
+}
+
+/* Samsung Note 3 Portrait */
+@media all and (min-width: 321px) and ( max-width: 443px ) {
+    .ldbbutton {
+        font-size: 150%;
+        top: 3pt;
+    }
+    h1 {
+        font-size: 130%;
+        margin: 0;
+        -webkit-margin-before: 0;
+        -webkit-margin-after: 0.67em;
+    }
+    #stationlabel { font-size: 90%; }
+    .ui-autocomplete li { font-size: 12pt; }
+}
+
+/* Samsung Note 3 Landscape */
+@media all and ( min-width: 444px ) and ( max-width: 640px ) {
+    .ldbbutton { font-size: 80% }
+    h1 {
+        font-size: 130%;
+        margin: 0;
+        -webkit-margin-before: 0;
+        -webkit-margin-after: 0.67em;
+    }
+    #stationlabel { font-size: 90%; }
+    .ui-autocomplete li { font-size: 12pt; }
+}
+
+/* Samsung Tab 7.7+ */
+@media all and (min-width: 641px ) and (max-width: 1023px){
+    .ldbbutton { font-size: 80% }
+    h1 {
+        font-size: 130%;
+        margin: 0;
+        -webkit-margin-before: 0;
+        -webkit-margin-after: 0.67em;
+    }
+    #stationlabel { font-size: 90%; }
+    .ui-autocomplete li { font-size: 12pt; }
+}
+
+/* iPad 3/4 */
+@media all and (min-width: 1024px) and (max-width: 1599px){
+    .ldbbutton { font-size: 150% }
+    h1 {
+        font-size: 130%;
+        margin: 0;
+        -webkit-margin-before: 0;
+        -webkit-margin-after: 0.67em;
+    }
+    #stationlabel { font-size: 90%; }
+    .ui-autocomplete li { font-size: 12pt; }
+}
+
+/* Kindle Fire HDX - Massive resolution 2560x1600 */
+@media all and (min-width: 1600px){
+    .ldbbutton { font-size: 350% }
+    h1 {
+        font-size: 130%;
+        margin: 0;
+        -webkit-margin-before: 0;
+        -webkit-margin-after: 0.67em;
+    }
+    #stationlabel { font-size: 90%; }
+    .ui-autocomplete li { font-size: 12pt; }
+
+    #outer-body { top: 10em; }
+    #outer-footer { font-size: 240%; }
+    #home { font-size: 240%; }
+    #eu_cookie_notice { font-size: 250%; }
+    #eu_cookie_notice img {
+        width: 96px;
+        height: 96px;
+    }
+
+    .ui-widget input {
+        font-size: 150%;
+        width: 90%;
+    }
+    .ui-autocomplete li { font-size: 250%; }
+    .logo-nre { max-width: 600px; }
+
+}
