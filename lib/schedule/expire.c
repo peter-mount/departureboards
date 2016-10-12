@@ -14,6 +14,7 @@ struct ctx {
     struct Schedules *s;
     int cutoff;
     List remove;
+    time_t tomorrow;
 };
 
 static bool scan(void *k, void *v, void *c) {
@@ -27,8 +28,20 @@ static bool scan(void *k, void *v, void *c) {
         if (t < 1) t = sl->wtd;
         if (t < 1) t = sl->wta;
         if (t < 1) t = sl->wtp;
+        
         // keep if before 2am or after the cutoff
-        if (t < 7200 || t >= ctx->cutoff)
+        if (t < 7200 )
+            return true;
+        
+        struct tm tm;
+        gmtime_r(&s->ssd,&tm);
+        tm.tm_hour=t/3600;
+        tm.tm_min=(t/60)%60;
+        tm.tm_sec=t%60;
+        time_t t1 = mktime(&tm);
+        
+        // keep if after the cutoff but not tomorrow
+        if (t1<ctx->tomorrow && t >= ctx->cutoff)
             return true;
     }
 
@@ -60,6 +73,7 @@ void expireSchedules(struct Schedules *s) {
     struct ctx ctx;
     ctx.s = s;
     ctx.cutoff = ((tm.tm_hour - 1)*3600) + (tm.tm_min * 60) + tm.tm_sec;
+    ctx.tomorrow = now+86400;
     list_init(&ctx.remove);
 
     hashmapForEach(s->schedules, scan, &ctx);

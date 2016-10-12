@@ -2,7 +2,7 @@
 
 pkgname="nrod-timetable"
 pkgver="0.2"
-pkgrel="3"
+pkgrel="4"
 pkgdesc="Area51 Network Rail Timetable"
 arch="x86_64"
 url="https://area51.onl/"

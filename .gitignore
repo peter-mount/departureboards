@@ -58,3 +58,5 @@ config.cache
 /include/networkrail/corpus/version.h
 
 core
+/web/nbproject/private/
+/web/node_modules/

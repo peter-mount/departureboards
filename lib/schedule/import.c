@@ -33,6 +33,22 @@ static int tim(xmlTextReaderPtr reader, char *n) {
     return t;
 }
 
+static time_t dt(xmlTextReaderPtr reader, char *n) {
+    const xmlChar *ssd = xmlTextReaderGetAttribute(reader, n);
+    if (ssd) {
+        char tmp[16];
+        strncpy(tmp, ssd, 10);
+        tmp[4] = tmp[7] = 0;
+        struct tm tm;
+        memset(&tm, 0, sizeof (struct tm));
+        tm.tm_year = atoi(tmp) - 1900;
+        tm.tm_mon = atoi(&tmp[5]) - 1;
+        tm.tm_mday = atoi(&tmp[8]) - 1;
+        return mktime(&tm);
+    }
+    return 0;
+}
+
 static struct Schedule *addJourney(struct Schedules *s, xmlTextReaderPtr reader) {
     struct Schedule *sched = malloc(sizeof (struct Schedule));
     if (!sched)
@@ -43,7 +59,7 @@ static struct Schedule *addJourney(struct Schedules *s, xmlTextReaderPtr reader)
     sched->rid = attr(s, reader, "rid");
     sched->uid = attr(s, reader, "uid");
     sched->trainId = attr(s, reader, "trainId");
-    sched->ssd = attr(s, reader, "ssd");
+    sched->ssd = dt(reader, "ssd");
     sched->toc = attr(s, reader, "toc");
 
     list_init(&sched->locations);
