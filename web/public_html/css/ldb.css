@@ -88,8 +88,10 @@
 .detailArrived div {
     opacity: 1.0;
 }
-.detailCurrent {
-    background: #121d34;
+.detailCurrent,
+.detailCurrent a {
+    background: grey;
+    color: black;
 }
 
 .ldbCol {

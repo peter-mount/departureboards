@@ -22,6 +22,11 @@ a:visited {color: #fff;}
     margin-top: 4em;
 }
 
+/* Prevent content to be visible under the nav bar */
+.navbar {
+    z-index: 1000;
+}
+
 /* Set navbar colours */
 .navbar-default {
     position: fixed;
