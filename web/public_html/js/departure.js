@@ -306,9 +306,10 @@ var UI = (function () {
         if (data.via)
             d.append('<div class="ldbVia">' + data.via + '</div>');
 
-        if (data.movement)
+        if (data.movement) {
             data.movement.forEach(function (loc) {
                 var row = div().appendTo(tab);
+                loc.sep=row;
                 d = div().addClass('ldb-enttop').appendTo(row);
                 if (loc.wtp)
                     d.addClass('detailPass');
@@ -341,9 +342,20 @@ var UI = (function () {
 
                 d = div().appendTo(row)
                         .addClass("ldb-entbot")
-                        .addClass('ldb_entbot-blank')
-                        .append('&nbsp;');
+                        .append('&nbsp;')
+                        .addClass('ldb_entbot-blank');
             });
+
+            // Look for the last movement & if found highlight it
+            for (var i = data.movement.length - 1; i > -1; i--) {
+                var loc = data.movement[i];
+                if(loc.arr||loc.dep||loc.pass) {
+                    console.log(loc.tpl);
+                    loc.sep.addClass('detailCurrent');
+                    break;
+                }
+            }
+        }
 
         // Padd bottom so scrolling doesn't block page bottom
         div().appendTo(tab)
@@ -408,9 +420,9 @@ $(document).ready(function () {
 
     // Show station page based on crs code in url, otherwise the search page
     // /mldb/ is to support old url's from the old app
-    if (1)
-        UI.showCRS('MDE');
-    else
+    //if (1)
+    //    UI.showCRS('MDE');
+    //else
     if (l.match("/mldb/[a-zA-Z]{3}"))
         UI.showCRS(l.substr(6));
     else if (l.match("/[a-zA-Z]{3}"))

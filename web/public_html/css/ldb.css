@@ -88,6 +88,9 @@
 .detailArrived div {
     opacity: 1.0;
 }
+.detailCurrent {
+    background: #121d34;
+}
 
 .ldbCol {
     text-align: center;
