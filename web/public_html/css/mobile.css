@@ -201,6 +201,10 @@ input {
 
 /* iPhone 3GS */
 @media all and ( max-width: 320px ) {
+    /* Ensure navbar fits screen */
+    .navbar {
+        font-size: 70%;
+    }
     .ldbbutton {
         font-size: 130%;
         top: 5pt;
@@ -217,6 +221,10 @@ input {
 
 /* Samsung Note 3 Portrait */
 @media all and (min-width: 321px) and ( max-width: 443px ) {
+    /* Ensure navbar fits screen */
+    .navbar {
+        font-size: 80%;
+    }
     .ldbbutton {
         font-size: 150%;
         top: 3pt;

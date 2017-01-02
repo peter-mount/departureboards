@@ -26,9 +26,8 @@ var UI = (function () {
     var timer;
 
     UI.urlChange = function (l) {
-        // Comment out when running within NetBeans
-        if (window.location.hostname !== 'localhost')
-            history.pushState(history.state, null, l);
+        if (location.pathname !== l)
+            history.pushState(l, null, l);
     };
 
     var panes = ['#searchPane', '#boardPane', '#detailPane', '#perfPane'];
@@ -190,20 +189,6 @@ var UI = (function () {
                         else
                             fd.append(v.status.time);
 
-                        /*
-                         <div class="row altrow">
-                         <div class="ldb-enttop"> 
-                         <div class="ldbCol ldbForecast ldbCancelled">Cancelled</div>
-                         <div class="ldbCol ldbSched"> 15:51 </div> 
-                         <div class="ldbCol ldbPlat"> </div>
-                         <div class="ldbCont"> <a onclick="document.location = '/train/201611218773822';"> London Bridge </a> 
-                         <span class="ldbVia">via Crystal Palace</span> </div> </div> 
-                         
-                         <div class="ldb-entbot"> <div class="ldbCancelled">This train has been cancelled because of a member of train crew being unavailable</div> </div>
-                         <div class="ldb-entbot"> <span> Formed&nbsp;of&nbsp;4&nbsp;coaches. </span> <span> Southern&nbsp;service. </span> </div>
-                         </div>
-                         */
-                        // make easier
                         d.append(div().addClass("ldbCol").addClass("ldbSched").append(v.forecast.ptd ? v.forecast.ptd : v.forecast.pta))
                                 .append(div().addClass("ldbCol").addClass("ldbPlat").append(v.status.platform));
                         var cont = div().addClass("ldbCont").appendTo(d)
@@ -267,6 +252,7 @@ var UI = (function () {
     };
 
     UI.showPerformance = function () {
+        UI.urlChange('/performance');
         UI.show("#perfPane");
         if (timer)
             clearTimeout(timer);
@@ -296,6 +282,7 @@ var UI = (function () {
     };
 
     UI.showDetail = function (rid) {
+        UI.urlChange('/' + rid);
         refreshDetail(rid);
         $('#detailName')
                 .empty()
@@ -328,7 +315,7 @@ var UI = (function () {
         if (data.movement) {
             data.movement.forEach(function (loc) {
                 var row = div().appendTo(tab);
-                loc.sep=row;
+                loc.sep = row;
                 d = div().addClass('ldb-enttop').appendTo(row);
                 if (loc.wtp)
                     d.addClass('detailPass');
@@ -368,8 +355,7 @@ var UI = (function () {
             // Look for the last movement & if found highlight it
             for (var i = data.movement.length - 1; i > -1; i--) {
                 var loc = data.movement[i];
-                if(loc.arr||loc.dep||loc.pass) {
-                    console.log(loc.tpl);
+                if (loc.arr || loc.dep || loc.pass) {
                     loc.sep.addClass('detailCurrent');
                     break;
                 }
@@ -430,22 +416,30 @@ $(document).ready(function () {
         }
     }).on("typeahead:selected", UI.stationSearchOn);
 
-    // Get the page url, remove any / or /index.html
-    var l = location.pathname;
-    while (l.endsWith("/index.html"))
-        l = l.substr(0, l.length - "/index.html".length);
-    while (l.endsWith("/"))
-        l = l.substr(0, l.length - 1);
+    function showPage(e) {
+        // Get the page url, remove any / or /index.html
+        var l = e && e.state ? e.state : location.pathname;
+        while (l.endsWith("/index.html"))
+            l = l.substr(0, l.length - "/index.html".length);
+        while (l.endsWith("/"))
+            l = l.substr(0, l.length - 1);
 
-    // Show station page based on crs code in url, otherwise the search page
-    // /mldb/ is to support old url's from the old app
-    //if (1)
-    //    UI.showCRS('MDE');
-    //else
-    if (l.match("/mldb/[a-zA-Z]{3}"))
-        UI.showCRS(l.substr(6));
-    else if (l.match("/[a-zA-Z]{3}"))
-        UI.showCRS(l.substr(1));
-    else
-        UI.showSearch();
+        // Show station page based on crs code in url, otherwise the search page
+        // /mldb/ is to support old url's from the old app
+        //if (1)
+        //    UI.showCRS('MDE');
+        //else
+        if (l.match("/mldb/[a-zA-Z]{3}"))
+            UI.showCRS(l.substr(6));
+        else if (l.match("/performance"))
+            UI.showPerformance();
+        else if (l.match("/[a-zA-Z]{3}"))
+            UI.showCRS(l.substr(1));
+        else if (l.match("/[0-9a-zA-Z]{4,}"))
+            UI.showDetail(l.substr(1));
+        else
+            UI.showSearch();
+    }
+    window.addEventListener('popstate', showPage);
+    showPage(null);
 });
