@@ -71,6 +71,7 @@ p {text-align: justify;}
 }
 
 #detailTop,
+#perfTop,
 #boardTop {
     font-size: 70%;
     border-bottom: 1px solid white;
