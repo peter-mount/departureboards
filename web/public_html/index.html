@@ -43,7 +43,7 @@
                     <ul class="nav navbar-nav">
                         <li><a onclick="UI.showSearch();">Choose a Station</a></li>
                         <li><a onclick="UI.showAbout();">About</a></li>
-                        <li><a onclick="UI.showPerformance();">Performance</a></li>
+                        <!--<li><a onclick="UI.showPerformance();">Performance</a></li>-->
                         <li><a onclick="UI.showContact();">Contact Us</a></li>
                     </ul>
                 </div>
@@ -90,6 +90,28 @@
                     </div>
                 </div>
             </div>
+            <div id="detailPane" class="paneInvisible">
+                <div id="detailTop" class="ldbWrapper">
+                    <div class="ldbTable">
+                        <div class="ldbLoc">
+                            <div id="detailName" class="ldbCont"></div>
+                        </div>
+                        <div class="ldbHead">
+                            <div class="ldbCol ldbForecast">Delay</div>
+                            <div class="ldbCol ldbSched">Time</div>
+                            <div class="ldbCol ldbPlat">Plat.</div>
+                            <div class="ldbCont">Destination</div>
+                        </div>
+                    </div>
+                </div>
+                <div id="detailBody">
+                    <div class="ldbWrapper">
+                        <div id="detailTable" class="ldbTable">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--
             <div id="perfPane" class="paneInvisible">
                 <div id="perfTop" class="ldbWrapper">
                     <div class="ldbTable">
@@ -113,6 +135,7 @@
                     </div>
                 </div>
             </div>
+            -->
         </div>
         <div id="outer-footer">
             <div id="inner-footer">

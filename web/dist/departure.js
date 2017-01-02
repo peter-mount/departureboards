@@ -31,7 +31,7 @@ var UI = (function () {
             history.pushState(history.state, null, l);
     };
 
-    var panes = ['#searchPane', '#boardPane'];
+    var panes = ['#searchPane', '#boardPane', '#detailPane'/*, '#perfPane'*/];
     UI.show = function (id) {
         $.each(panes, function (i, p) {
             var f = p === id;
@@ -167,102 +167,167 @@ var UI = (function () {
                     d = div().addClass("ldb-entbot").appendTo(row).append('&nbsp;');
                 });
 
-            // sort
-            //data.departures.sort(function (a, b) {                return parseLocTime(a) - parseLocTime(b);            });
+            data.departures
+                    .filter(function (v) {
+                        return !v.status.terminatesHere;
+                    })
+                    .forEach(function (v) {
+                        var row = div().appendTo(tab);
+                        altrow = 1 - altrow;
+                        if (altrow)
+                            row.addClass("altrow");
 
-            // Don't show too far in the future (we could see tomorrows data in here)
-            var now = Date.now() + 86400000 - 3600000;
-            data.departures.forEach(function (v) {
-                // Don't go too far ahead
-                //if (parseLocTime(v) >= now)                    return;
+                        var d = div().addClass("ldb-enttop").appendTo(row);
+                        var fd = div().appendTo(d).addClass("ldbCol").addClass("ldbForecast");
+                        if (v.status.cancelled)
+                            fd.append('Cancelled').addClass('ldbCancelled');
+                        else if (v.status.arrived)
+                            fd.append('Arrived');
+                        else if (v.status.delayed)
+                            fd.append('Delayed');
+                        else if (v.status.time === v.forecast.ptd || v.status.time === v.forecast.pta)
+                            fd.append('On&nbsp;Time');
+                        else
+                            fd.append(v.status.time);
 
-                // Optional hide terminating trains
-                //if (v.status.terminatesHere)                    return;
+                        /*
+                         <div class="row altrow">
+                         <div class="ldb-enttop"> 
+                         <div class="ldbCol ldbForecast ldbCancelled">Cancelled</div>
+                         <div class="ldbCol ldbSched"> 15:51 </div> 
+                         <div class="ldbCol ldbPlat"> </div>
+                         <div class="ldbCont"> <a onclick="document.location = '/train/201611218773822';"> London Bridge </a> 
+                         <span class="ldbVia">via Crystal Palace</span> </div> </div> 
+                         
+                         <div class="ldb-entbot"> <div class="ldbCancelled">This train has been cancelled because of a member of train crew being unavailable</div> </div>
+                         <div class="ldb-entbot"> <span> Formed&nbsp;of&nbsp;4&nbsp;coaches. </span> <span> Southern&nbsp;service. </span> </div>
+                         </div>
+                         */
+                        // make easier
+                        d.append(div().addClass("ldbCol").addClass("ldbSched").append(v.forecast.ptd ? v.forecast.ptd : v.forecast.pta))
+                                .append(div().addClass("ldbCol").addClass("ldbPlat").append(v.status.platform));
+                        var cont = div().addClass("ldbCont").appendTo(d)
+                                .append(a()
+                                        .on('click', function () {
+                                            UI.showDetail(v.train.rid);
+                                        })
+                                        .append(v.status.terminatesHere ? "Terminates here" : v.train.dest)
+                                        );
+                        if (v.status.via)
+                            cont.append(span().addClass("ldbVia").append(' ').append(v.status.via));
 
-                var row = div().appendTo(tab);
-                altrow = 1 - altrow;
-                if (altrow)
-                    row.addClass("altrow");
+                        if (v.status.reason)
+                            d = div().appendTo(row)
+                                    .addClass("ldb-entbot")
+                                    .append(div().addClass(v.status.cancelled ? 'ldbCancelled' : 'ldbLate').append(v.status.reason));
 
-                var d = div().addClass("ldb-enttop").appendTo(row);
-                var fd = div().appendTo(d).addClass("ldbCol").addClass("ldbForecast");
-                if (v.status.cancelled)
-                    fd.append('Cancelled').addClass('ldbCancelled' );
-                else if (v.status.arrived)
-                    fd.append('Arrived');
-                else if (v.status.delayed)
-                    fd.append('Delayed');
-                else if (v.status.time === v.forecast.ptd || v.status.time === v.forecast.pta)
-                    fd.append('On&nbsp;Time');
-                else
-                    fd.append(v.status.time);
+                        if (!v.status.terminatesHere && !v.status.cancelled && v.calling && v.calling.length > 0) {
+                            d = div().addClass("ldb-entbot").appendTo(row).append("Calling at:");
+                            v.calling.forEach(function (cp) {
+                                d.append(span().addClass("callList").append(" ")
+                                        .append(a().append(a().append(cp.name).click(function (e) {
+                                            UI.showCRS(cp.crs);
+                                        })))
+                                        .append("&nbsp;(").append(cp.time).append(")"));
+                            });
+                        }
 
-                /*
-                 <div class="row altrow">
-                 <div class="ldb-enttop"> 
-                 <div class="ldbCol ldbForecast ldbCancelled">Cancelled</div>
-                 <div class="ldbCol ldbSched"> 15:51 </div> 
-                 <div class="ldbCol ldbPlat"> </div>
-                 <div class="ldbCont"> <a onclick="document.location = '/train/201611218773822';"> London Bridge </a> 
-                 <span class="ldbVia">via Crystal Palace</span> </div> </div> 
-                
-                 <div class="ldb-entbot"> <div class="ldbCancelled">This train has been cancelled because of a member of train crew being unavailable</div> </div>
-                  <div class="ldb-entbot"> <span> Formed&nbsp;of&nbsp;4&nbsp;coaches. </span> <span> Southern&nbsp;service. </span> </div>
-                   </div>
-                 */
-                // make easier
-                d.append(div().addClass("ldbCol").addClass("ldbSched").append(v.forecast.ptd ? v.forecast.ptd : v.forecast.pta))
-                        .append(div().addClass("ldbCol").addClass("ldbPlat").append(v.status.platform));
-                var cont = div().addClass("ldbCont").appendTo(d)
-                        .append(a().append(v.status.terminatesHere ? "Terminates here" : v.train.dest));
-                if (v.status.via)
-                    cont.append(span().addClass("ldbVia").append(" via " + v.status.via));
+                        // Operator and last report lines
+                        d = div().addClass("ldb-entbot").appendTo(row);
+                        // todo add full name to toc
+                        if (v.train.toc)
+                            span().appendTo(d).append(v.train.toc).append("&nbsp;service. ");
 
-                if (v.status.reason)
-                    d = div().appendTo(row)
-                            .addClass("ldbEntBot")
-                            .append(div().addClass(v.status.cancelled ? 'ldbCancelled' : 'ldbLate').append(v.status.reason));
+                        if (v.status.length)
+                            d.append(span().addClass("ldbHeader").append(" Formed&nbsp;of&nbsp;"))
+                                    .append(v.status.length)
+                                    .append(span().addClass("ldbDest").append(" coaches"));
 
-                if (!v.status.terminatesHere && !v.status.cancelled && v.calling && v.calling.length > 0) {
-                    d = div().addClass("ldb-entbot").appendTo(row).append("Calling at:");
-                    v.calling.forEach(function (cp) {
-                        d.append(span().addClass("callList").append(" ")
-                                .append(a().append(a().append(cp.name).click(function (e) {
-                                    UI.showCRS(cp.crs);
-                                })))
-                                .append("&nbsp;(").append(cp.time).append(")"));
+                        d = div().addClass("ldb-entbot").appendTo(row);
+                        if (v.status.lastReport)
+                            d.append("Last report: ")
+                                    .append(span().addClass("ldbDest").append(v.status.lastReport.name)
+                                            .append("&nbsp;").append(v.status.lastReport.time)
+                                            );
+
+                        if (v.status.delay)
+                            d.append(" Delayed&nbsp;by&nbsp;")
+                                    .append(span().addClass("ldbHeader")
+                                            .append(v.status.delay)
+                                            .append(Math.abs(v.status.delay) === 1 ? " minute" : " minutes")
+                                            );
+
                     });
-                }
-
-                // Operator and last report lines
-                d = div().addClass("ldb-entbot").appendTo(row);
-                // todo add full name to toc
-                if (v.train.toc)
-                    span().appendTo(d).append(v.train.toc).append("&nbsp;service. ");
-
-                if (v.status.length)
-                    d.append(span().addClass("ldbHeader").append(" Formed&nbsp;of&nbsp;"))
-                            .append(v.status.length)
-                            .append(span().addClass("ldbDest").append("coaches"));
-
-                if (v.status.delay)
-                    d.append(span().addClass("ldbHeader").append("Delayed&nbsp;by&nbsp;"))
-                            .append(v.status.delay)
-                            .append(span().addClass("ldbHeader").append(Math.abs(v.status.delay) === 1 ? " minute" : " minutes"));
-
-                d = div().addClass("ldb-entbot").appendTo(row);
-                if (v.status.lastReport)
-                    d.append("Last report: ")
-                            .append(span().addClass("ldbDest").append(v.status.lastReport.name))
-                            .append("&nbsp;(").append(v.status.lastReport.time).append(') ');
-
-            });
 
             // FIXME adds padding to bottom of page, scrolling hides otherwise with the footer
-            div().appendTo(tab).append('&nbsp;');
+            //div().appendTo(tab).append('&nbsp;');
+            div().appendTo(tab)
+                    .append(div().addClass("ldb-enttop").append('<br/><br/>'));
         }
     };
 
+    /* Removed but may reinstate later...
+     UI.showPerformance = function () {
+     UI.show("#perfPane");
+     if (timer)
+     clearTimeout(timer);
+     timer = setTimeout(UI.showPerformance, 60000);
+     var url = "//api.area51.onl/rail/1/rtppm";
+     $.ajax({
+     url: url,
+     dataType: 'json',
+     cache: true,
+     success: showPerformanceBoard
+     });
+     };
+     var showPerformanceBoard = function (data) {
+     var tab = $('#perfTable').empty(), cls = "ldb-enttop";
+     data.forEach(function (v) {
+     var row = div().appendTo(tab);
+     div().addClass(cls).appendTo(row).attr({style:'clear:both'})
+     .append(div().addClass("ldbCol").addClass("ldbSched").append(v.canc))
+     .append(div().addClass("ldbCol").addClass("ldbSched").append(v.late))
+     .append(div().addClass("ldbCol").addClass("ldbSched").append(v.ontime))
+     .append(div().addClass("ldbCol").addClass("ldbSched").append(v.run))
+     .append(div().addClass("ldbCol").addClass("ldbSched").append(v.ppm))
+     .append(div().append(v.operator.display));
+     cls="ldb-endbot";
+     });
+     div().addClass("ldb-enttop").appendTo(tab).append("<br/><br/>");
+     };
+     */
+
+    UI.showDetail = function (rid) {
+        console.log("Show detail " + rid);
+        UI.show("#detailPane");
+        if (timer)
+            clearTimeout(timer);
+        timer = setTimeout(function () {
+            UI.showDetail(rid);
+        }, 60000);
+        var url = "//api.area51.onl/rail/1/darwin/" + rid;
+        $.ajax({
+            url: url,
+            dataType: 'json',
+            cache: true,
+            success: showDetailBoard
+        });
+    };
+    var showDetailBoard = function (data) {
+        var d = $('#detailName')
+                .empty();
+        d.append(data.destination ? ridTiploc(data,data.destination.tpl) : 'Unknown');
+        if (data.via)
+            d.append('<div class="ldbVia">' + data.via + '</div>');
+
+        var tab = $('#detailTable').empty(), cls = "ldb-enttop";
+
+    };
+    var ridTiploc = function (data, tpl) {
+        if (data.tiploc && data.tiploc[tpl])
+            return data.tiploc[tpl].tpl;
+        return tpl+'X';
+    };
     return UI;
 })();
 
@@ -294,7 +359,7 @@ $(document).ready(function () {
     // Show station page based on crs code in url, otherwise the search page
     // /mldb/ is to support old url's from the old app
     if (1)
-        UI.showCRS('LBG');
+        UI.showCRS('MDE');
     else
     if (l.match("/mldb/[a-zA-Z]{3}"))
         UI.showCRS(l.substr(6));

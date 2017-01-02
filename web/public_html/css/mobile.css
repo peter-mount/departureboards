@@ -65,6 +65,7 @@ p {text-align: justify;}
     padding-right: 5px;
 }
 
+#detailTop,
 #boardTop {
     font-size: 70%;
     border-bottom: 1px solid white;
