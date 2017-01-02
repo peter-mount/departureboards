@@ -266,44 +266,48 @@ var UI = (function () {
         }
     };
 
-    /* Removed but may reinstate later...
-     UI.showPerformance = function () {
-     UI.show("#perfPane");
-     if (timer)
-     clearTimeout(timer);
-     timer = setTimeout(UI.showPerformance, 60000);
-     var url = "//api.area51.onl/rail/1/rtppm";
-     $.ajax({
-     url: url,
-     dataType: 'json',
-     cache: true,
-     success: showPerformanceBoard
-     });
-     };
-     var showPerformanceBoard = function (data) {
-     var tab = $('#perfTable').empty(), cls = "ldb-enttop";
-     data.forEach(function (v) {
-     var row = div().appendTo(tab);
-     div().addClass(cls).appendTo(row).attr({style:'clear:both'})
-     .append(div().addClass("ldbCol").addClass("ldbSched").append(v.canc))
-     .append(div().addClass("ldbCol").addClass("ldbSched").append(v.late))
-     .append(div().addClass("ldbCol").addClass("ldbSched").append(v.ontime))
-     .append(div().addClass("ldbCol").addClass("ldbSched").append(v.run))
-     .append(div().addClass("ldbCol").addClass("ldbSched").append(v.ppm))
-     .append(div().append(v.operator.display));
-     cls="ldb-endbot";
-     });
-     div().addClass("ldb-enttop").appendTo(tab).append("<br/><br/>");
-     };
-     */
+    UI.showPerformance = function () {
+        UI.show("#perfPane");
+        if (timer)
+            clearTimeout(timer);
+        timer = setTimeout(UI.showPerformance, 60000);
+        var url = "//api.area51.onl/rail/1/rtppm";
+        $.ajax({
+            url: url,
+            dataType: 'json',
+            cache: true,
+            success: showPerformanceBoard
+        });
+    };
+    var showPerformanceBoard = function (data) {
+        var tab = $('#perfTable').empty(), cls = "ldb-enttop";
+        data.forEach(function (v) {
+            var row = div().appendTo(tab);
+            div().addClass(cls).appendTo(row).attr({style: 'clear:both'})
+                    .append(div().addClass("ldbCol").addClass("ldbSched").append(v.canc))
+                    .append(div().addClass("ldbCol").addClass("ldbSched").append(v.late))
+                    .append(div().addClass("ldbCol").addClass("ldbSched").append(v.ontime))
+                    .append(div().addClass("ldbCol").addClass("ldbSched").append(v.run))
+                    .append(div().addClass("ldbCol").addClass("ldbSched").append(v.ppm))
+                    .append(div().append(v.operator.display));
+            cls = "ldb-endbot";
+        });
+        div().addClass("ldb-enttop").appendTo(tab).append("<br/><br/>");
+    };
 
     UI.showDetail = function (rid) {
-        console.log("Show detail " + rid);
+        refreshDetail(rid);
+        $('#detailName')
+                .empty()
+                .append('Retrieving ' + rid);
+        $('#detailTable').empty();
+    };
+    var refreshDetail = function (rid) {
         UI.show("#detailPane");
         if (timer)
             clearTimeout(timer);
         timer = setTimeout(function () {
-            UI.showDetail(rid);
+            refreshDetail(rid);
         }, 60000);
         var url = "//api.area51.onl/rail/1/darwin/" + rid;
         $.ajax({
@@ -314,20 +318,85 @@ var UI = (function () {
         });
     };
     var showDetailBoard = function (data) {
-        var d = $('#detailName')
-                .empty();
-        d.append(data.destination ? ridTiploc(data,data.destination.tpl) : 'Unknown');
+        var d = $('#detailName').empty(),
+                tab = $('#detailTable').empty(),
+                cls = "ldb-enttop";
+        d.append(data.destination ? ridTiploc(data, data.destination.tpl) : 'Unknown');
         if (data.via)
             d.append('<div class="ldbVia">' + data.via + '</div>');
 
-        var tab = $('#detailTable').empty(), cls = "ldb-enttop";
+        if (data.movement)
+            data.movement.forEach(function (loc) {
+                var row = div().appendTo(tab);
+                d = div().addClass('ldb-enttop').appendTo(row);
+                if (loc.wtp)
+                    d.addClass('detailPass');
+                else if (loc.arr || loc.dep)
+                    d.addClass('detailArrived');
+                else
+                    d.addClass('detailExpected');
 
+                var fd = div().appendTo(d)
+                        .addClass('ldbCol').addClass('ldbForecast');
+                fd.append(getDelay(loc.delay));
+
+                fd = div().appendTo(d)
+                        .addClass("ldbCol").addClass("ldbSched")
+                        .append(loc.actualTime ? loc.actualTime : loc.expectedTime);
+
+                fd = div().appendTo(d)
+                        .addClass("ldbCol").addClass("ldbSched")
+                        .append(loc.plat ? loc.plat : '');
+
+                var fa = a()
+                        .append(ridTiploc(data, loc.tpl));
+                if (data.tiploc[loc.tpl] && data.tiploc[loc.tpl].crs)
+                    fa.on('click', function () {
+                        UI.showCRS(data.tiploc[loc.tpl].crs);
+                    });
+                fd = div().appendTo(d)
+                        .addClass('ldbCont')
+                        .append(fa);
+
+                d = div().appendTo(row)
+                        .addClass("ldb-entbot")
+                        .addClass('ldb_entbot-blank')
+                        .append('&nbsp;');
+            });
+
+        // Padd bottom so scrolling doesn't block page bottom
+        div().appendTo(tab)
+                .append(div().addClass("ldb-enttop").append('<br/><br/>'));
     };
     var ridTiploc = function (data, tpl) {
         if (data.tiploc && data.tiploc[tpl])
-            return data.tiploc[tpl].tpl;
-        return tpl+'X';
+            return data.tiploc[tpl].name;
+        return tpl;
     };
+    var getDelay = function (d) {
+        var early = d.startsWith('-');
+        if (early)
+            d = d.substr(1);
+        d = d.split(':');
+        var s = [];
+        var del = (Number.parseInt(d[0]) * 3600)
+                + (Number.parseInt(d[1]) * 60)
+                + Number.parseInt(d[2]);
+        if (Math.floor(del / 3600) >= 1)
+            s.push(Math.floor(del / 3600) + 'h');
+        del = del % 3600;
+        if (Math.floor(del / 60) >= 1)
+            s.push(Math.floor(del / 60) + 'm');
+        del = del % 60;
+        if (del > 30)
+            s.push(Math.floor(del) + 's');
+        if (s.length) {
+            s.push(early ? 'E' : 'L');
+            return s.join(' ');
+        }
+        return 'O/T';
+    };
+
     return UI;
 })();
 
