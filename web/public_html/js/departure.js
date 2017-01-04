@@ -310,8 +310,13 @@ var UI = (function () {
                 fd.append(getDelay(loc.delay));
 
                 fd = div().appendTo(d)
-                        .addClass("ldbCol").addClass("ldbSched")
-                        .append(loc.actualTime ? loc.actualTime : loc.expectedTime);
+                        .addClass("ldbCol").addClass("ldbSched");
+                if(loc.dep)
+                    fd.append(loc.dep);
+                else if(loc.arr)
+                    fd.append(loc.arr+"a");
+                else
+                    fd.append(loc.expectedTime);
 
                 fd = div().appendTo(d)
                         .addClass("ldbCol").addClass("ldbSched")
