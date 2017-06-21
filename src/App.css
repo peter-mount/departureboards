@@ -1,0 +1,39 @@
+.App {
+}
+
+.App-header {
+    background-color: #222;
+    height: 3.5em;
+    padding: 2px;
+    color: white;
+    text-align: center;
+}
+.App-header h2 {
+    margin: 0;
+    color: white;
+}
+.App-header button {
+    margin-top: 0.25em;
+    margin-left: 0.25em;
+}
+.App-intro {
+    font-size: large;
+    background: black;
+}
+
+.leftButton {
+    position: absolute;
+    left: 0;
+}
+
+.station-form {
+    height: 4.5em;
+}
+.station-form div {
+    text-align:center;
+}
+
+.ldb-message i {
+    float:left;
+    padding: 0.125em;
+}

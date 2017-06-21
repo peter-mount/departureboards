@@ -1,22 +1,22 @@
 {
-  "name": "web",
-  "version": "1.0.0",
-  "keywords": [
-    "util",
-    "functional",
-    "server",
-    "client",
-    "browser"
-  ],
-  "author": "peter",
-  "contributors": [],
-  "dependencies": {},
+  "name": "departureboards",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "jquery": "^3.2.1",
+    "react": "^15.6.1",
+    "react-bootstrap": "^0.31.0",
+    "react-bootstrap-typeahead": "^1.4.0",
+    "react-dom": "^15.6.1",
+    "react-timer-mixin": "^0.13.3"
+  },
   "devDependencies": {
-    "grunt": "^1.0.1",
-    "grunt-contrib-concat": "^1.0.1",
-    "grunt-contrib-cssmin": "^1.0.2",
-    "grunt-contrib-htmlmin": "^2.0.0",
-    "grunt-contrib-uglify": "^2.0.0",
-    "grunt-processhtml": "^0.4.1"
+    "react-scripts": "0.9.5"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
   }
 }
