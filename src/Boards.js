@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
 
+/*
+ * Handles the display of an informational message from Darwin
+ */
 class MessageRow extends Component {
     
     render() {
@@ -7,19 +10,23 @@ class MessageRow extends Component {
         
         if(msg.category === 'System')
             icon = 'fa-linux';
-        else if(msg.category === 'PriorTrains'||msg.category === 'PriorOther')
+        else if(msg.category === 'Information'||msg.category === 'PriorTrains'||msg.category === 'PriorOther')
             icon = 'fa-info-circle';
 
         return (
-                    <div className={"ldb-enttop ldb-message " + (this.props.index % 2 === 0 ? "ldbRow altrow" : "ldbRow")}>
-        <i className={"fa " + icon + ' fa-3x'} aria-hidden="true"></i>
-        <span dangerouslySetInnerHTML={{__html: msg.message}}></span>
+                <div className={"ldb-enttop ldb-message " + (this.props.index % 2 === 0 ? "ldbRow altrow" : "ldbRow")}>
+                    <i className={"fa " + icon + ' fa-3x'} aria-hidden="true"></i>
+                    <span dangerouslySetInnerHTML={{__html: msg.message}}></span>
                     <div className="clearfix"></div>
                 </div>
                 );
     }
-}
+};
 
+/*
+ * Handles the display of a departure showing the trains state, platform,
+ * calling points etc
+ */
 class BoardRow extends Component {
     render() {
         var train = this.props.departure.train,
@@ -67,9 +74,9 @@ class BoardRow extends Component {
             calling = <div className="ldb-entbot">
                 <span className="ldbHeader callList" > Calling at:</span>
                 {
-                                this.props.departure.calling.reduce((a, cp) => {
-                                    a.push(<span className="callList" ><a href={"?" + cp.crs}>{cp.name}</a> ({cp.time}) </span>);
-                                    return a;
+                    this.props.departure.calling.reduce((a, cp) => {
+                        a.push(<span className="callList" ><a href={"?" + cp.crs}>{cp.name}</a> ({cp.time}) </span>);
+                        return a;
                 },[])}
             </div>;
 
@@ -87,8 +94,11 @@ class BoardRow extends Component {
                     </div>
                     );
     }
-}
+};
 
+/*
+ * Main class that handles the display of a stations departure board
+ */
 class Boards extends Component {
 
     state = {
@@ -108,7 +118,7 @@ class Boards extends Component {
 
     refresh(t) {
         t.timer = setTimeout( ()=>t.refresh(t), t.props.app.config.refreshRate );
-        fetch('https://api.area51.onl/rail/1/station/' + t.props.station.code + '/boards')
+        fetch('https://api.area51.onl/rail/2/station/' + t.props.station.code + '/boards')
                 .then(res => res.json())
                 .then(json => {
                     console.log(json);
@@ -119,40 +129,49 @@ class Boards extends Component {
     render() {
         var departures = null, messages = null, idx = 0;
 
-        if (this.state.data.messages && this.state.data.messages.length > 0) {
+        if (this.state.data.messages && this.state.data.messages.length > 0)
             messages = this.state.data.messages
                     .filter(msg=>!msg.suppress)
                     .map((msg, ind) => {
                         idx++;
-                        return <MessageRow
-                            key={'row' + idx}
-                            app={this.props.app}
-                            board={this}
-                            index={idx}
-                            msg={msg}
-                            />
-
+                        return  <MessageRow
+                                    key={'row' + idx}
+                                    app={this.props.app}
+                                    board={this}
+                                    index={idx}
+                                    msg={msg}
+                                />;
                     });
-            idx += this.state.data.messages.length;
-        }
 
         if (this.state.data.departures && this.state.data.departures.length > 0)
             departures = this.state.data.departures
                     .filter(dep => !dep.status.terminatesHere)
                     .map((dep, ind) => {
                         idx++;
-                        return <BoardRow
+                        return  <BoardRow
+                                    key={'row' + idx}
+                                    app={this.props.app}
+                                    board={this}
+                                    index={idx}
+                                    departure={dep}
+                                />;
+                    });
+        
+        if( messages===null && departures===null )
+            messages =  <MessageRow
                             key={'row' + idx}
                             app={this.props.app}
                             board={this}
                             index={idx}
-                            departure={dep}
-                            />
+                            msg={{
+                                category: 'Information',
+                                message: 'No information is currently available for this station.',
+                                suppress: false,
+                                source: 'Local'
+                            }}
+                        />;
 
-                    });
-
-        return (
-                <div className="ldbWrapper">
+        return  <div className="ldbWrapper">
                     <div className="ldbTable">
                         <div className="ldbHead">
                             <div className="ldbCol ldbForecast">Expected</div>
@@ -160,39 +179,36 @@ class Boards extends Component {
                             <div className="ldbCol ldbPlat">Plat.</div>
                             <div className="ldbCont">Destination</div>
                         </div>
-                
                         {messages}
                         {departures}
-                
-                
-                        <div className="ldbRow altrow">
-                            <div className="ldb-enttop">
-                                <div className="ldbCol ldbForecast ldbOntime">On&nbsp;Time</div>
-                                <div className="ldbCol ldbSched"> 15:56 </div>
-                                <div className="ldbCol ldbPlat"> 2 </div>
-                                <div className="ldbCont"> <a > Ashford International </a>
-                                    <span className="ldbVia">via Maidstone East</span> </div>
-                            </div>
-                            <div className="ldb-entbot">
-                                <span className="ldbHeader callList" > Calling at: </span>
-                                <span className="callList" > <a href="/mldb/BSD">Bearsted</a> (16:02) </span>
-                                <span className="callList" > <a href="/mldb/HBN">Hollingbourne</a> (16:05) </span>
-                                <span className="callList" > <a href="/mldb/HRM">Harrietsham</a> (16:09) </span>
-                                <span className="callList" > <a href="/mldb/LEN">Lenham</a> (16:13) </span>
-                                <span className="callList" > <a href="/mldb/CHG">Charing</a> (16:18) </span> 
-                                <span className="callList" > <a href="/mldb/AFK">Ashford&nbsp;International</a> (16:27) </span>
-                            </div>
-                            <div className="ldb-entbot">
-                                <span> Southeastern&nbsp;service. </span>
-                                <span className="ldbHeader">Last report:</span>
-                                <span className="ldbDest"> Barming 15:50 </span>
-                            </div> 
-                        </div>
-                
                     </div>
-                </div>
-                );
+                </div>;
     }
 }
 
 export default Boards;
+
+//                        <div className="ldbRow altrow">
+//                            <div className="ldb-enttop">
+//                                <div className="ldbCol ldbForecast ldbOntime">On&nbsp;Time</div>
+//                                <div className="ldbCol ldbSched"> 15:56 </div>
+//                                <div className="ldbCol ldbPlat"> 2 </div>
+//                                <div className="ldbCont"> <a > Ashford International </a>
+//                                    <span className="ldbVia">via Maidstone East</span> </div>
+//                            </div>
+//                            <div className="ldb-entbot">
+//                                <span className="ldbHeader callList" > Calling at: </span>
+//                                <span className="callList" > <a href="/mldb/BSD">Bearsted</a> (16:02) </span>
+//                                <span className="callList" > <a href="/mldb/HBN">Hollingbourne</a> (16:05) </span>
+//                                <span className="callList" > <a href="/mldb/HRM">Harrietsham</a> (16:09) </span>
+//                                <span className="callList" > <a href="/mldb/LEN">Lenham</a> (16:13) </span>
+//                                <span className="callList" > <a href="/mldb/CHG">Charing</a> (16:18) </span> 
+//                                <span className="callList" > <a href="/mldb/AFK">Ashford&nbsp;International</a> (16:27) </span>
+//                            </div>
+//                            <div className="ldb-entbot">
+//                                <span> Southeastern&nbsp;service. </span>
+//                                <span className="ldbHeader">Last report:</span>
+//                                <span className="ldbDest"> Barming 15:50 </span>
+//                            </div> 
+//                        </div>
+                        

@@ -19,13 +19,15 @@ class App extends Component {
                     //station: {code: "VIC", name: "London Victoria", label: "London Victoria [VIC]"}
                     //station: {code: "CHX", name: "London Charing Cross", label: "London Charing Cross [CHX]"}
         };
+        
+        
 
         console.log(window.location.search);
         if (window.location.search) {
             if (window.location.search.length === 4) {
                 this.state = {};
-                fetch('https://api.area51.onl/rail/1/station/' + window.location.search.substr(1).toUpperCase())
-                        .then(res => res.json())
+                fetch('https://api.area51.onl/rail/2/station/' + window.location.search.substr(1).toUpperCase())
+                        .then(res => res.json()) 
                         .then(json => {
                             this.setState({
                                 station: {
