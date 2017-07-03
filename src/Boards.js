@@ -109,6 +109,7 @@ class Boards extends Component {
 
     constructor(props) {
         super(props);
+        window.history.replaceState({},'','/?'+props.station.code);
         this.refresh(this);
     }
     

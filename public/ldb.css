@@ -22,7 +22,7 @@
     color: #fff;
 }
 
-#inner-body .ldbTable {
+.ldbWrapper .ldbTable {
     border-bottom: 2px solid #ffffff;
 }
 

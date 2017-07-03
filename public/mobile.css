@@ -149,20 +149,6 @@ p {text-align: justify;}
     margin: 0;
 }
 
-#eu_cookie_notice {
-    position: absolute;
-    xbottom: 3em;
-    top: 0;
-    background: #ccc;
-    color: #000;
-    padding: 0.25em;
-}
-#eu_cookie_notice { display: hidden; }
-#eu_cookie_notice img { float: left; }
-#eu_cookie_notice a { color: #00f;}
-#eu_cookie_notice a:visited { color: #00f;}
-#eu_cookie_notice a:hover { color: #00f;}
-
 .ui-icon-loading {
     background: url(//ajax.googleapis.com/ajax/libs/jquerymobile/1.4.5/images/ajax-loader.gif);
 }

@@ -15,34 +15,35 @@ class App extends Component {
 
         this.state = {
             stations: true
-                    //station: {code: "MDE", name: "Maidstone East", label: "Maidstone East [MDE]"}
-                    //station: {code: "VIC", name: "London Victoria", label: "London Victoria [VIC]"}
-                    //station: {code: "CHX", name: "London Charing Cross", label: "London Charing Cross [CHX]"}
         };
-        
-        
 
         console.log(window.location.search);
-        if (window.location.search) {
-            if (window.location.search.length === 4) {
-                this.state = {};
-                fetch('https://api.area51.onl/rail/2/station/' + window.location.search.substr(1).toUpperCase())
-                        .then(res => res.json()) 
-                        .then(json => {
-                            this.setState({
-                                station: {
-                                    code: json.location.crs,
-                                    name: json.location.name,
-                                    label: json.location.name + ' [' + json.location.crs + ']'
-                                }
-                            });
-                        })
-                        .catch(e => {
-                            this.setState({
-                                stations: true
-                            });
+        console.log(window.location.hash);
+        var search = window.location.search ? window.location.search.substr(1)
+                : window.location.hash ? window.location.hash.substr(1)
+                : null;
+        if (search && search.length === 3) {
+            // CRS code
+            this.state = {};
+            fetch('https://api.area51.onl/rail/2/station/' + search.toUpperCase())
+                    .then(res => res.json())
+                    .then(json => {
+                        this.setState({
+                            station: {
+                                code: json.location.crs,
+                                name: json.location.name,
+                                label: json.location.name + ' [' + json.location.crs + ']'
+                            }
                         });
-            }
+                    })
+                    .catch(e => {
+                        window.history.replaceState({}, '', '/');
+                        this.setState({
+                            stations: true
+                        });
+                    });
+        } else {
+            window.history.replaceState({}, '', '/');
         }
     }
 
@@ -80,12 +81,19 @@ class App extends Component {
             body = <Boards app={this} station={this.state.station} />;
         }
 
-        return (
-                <div className="App">
-                    <div className="App-header">{button}<h2>{title}</h2></div>
-                    {body}
+        return  <div className="App">
+            <div className="App-header">{button}<h2>{title}</h2></div>
+            {body}
+            <div id="outer-footer">
+                <div id="inner-footer"> ©2011-2017 Peter Mount, All Rights Reserved.<br/>
+                    Contains data provided by
+                    <a href="http://www.networkrail.co.uk/">Network Rail</a>,
+                    <a href="http://www.nationalrail.co.uk/">National Rail Enquiries</a>,
+                    <a href="http://www.tfl.gov.uk">Transport for London</a>
+                    and other public sector information licensed under the Open Government Licence.
                 </div>
-                );
+            </div>
+        </div>;
     }
 }
 
