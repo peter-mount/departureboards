@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 //import logo from './logo.svg';
 import Stations from './Stations.js';
 import Boards from './Boards.js';
+import Train from './Train.js';
 import './App.css';
 
 class App extends Component {
@@ -22,6 +23,7 @@ class App extends Component {
         var search = window.location.search ? window.location.search.substr(1)
                 : window.location.hash ? window.location.hash.substr(1)
                 : null;
+        console.log(search ? search.length :null);
         if (search && search.length === 3) {
             // CRS code
             this.state = {};
@@ -42,6 +44,11 @@ class App extends Component {
                             stations: true
                         });
                     });
+        } else if (search && search.length === 15) {
+            this.state ={
+                stations: false,
+                rid: search
+            };
         } else {
             window.history.replaceState({}, '', '/');
         }
@@ -62,6 +69,14 @@ class App extends Component {
         });
     }
 
+    train(rid, t)
+    {
+        this.setState({
+            stations: false,
+            rid: rid
+        });
+    }
+
     render()
     {
         console.log(this.state);
@@ -75,10 +90,13 @@ class App extends Component {
 
         if (this.state.station) {
             title = this.state.station.name;
-            button = <button className="leftButton btn btn-primary"
-                    onClick={this.stations}
-                    >Select another station</button>;
+            button = <button className="leftButton btn btn-primary" onClick={this.stations}>Select another station</button>;
             body = <Boards app={this} station={this.state.station} />;
+        }
+        
+        if( this.state.rid) {
+            title = this.state.rid;
+            body = <Train app={this} rid={this.state.rid} />;
         }
 
         return  <div className="App">

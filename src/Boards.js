@@ -86,7 +86,9 @@ class BoardRow extends Component {
                             <div className="ldbCol ldbForecast ldbOntime">{expected}</div>
                             <div className="ldbCol ldbSched">{departs}</div>
                             <div className="ldbCol ldbPlat">{status.platform}</div>
-                            <div className="ldbCont">{destination}</div>
+                            <div className="ldbCont">
+                        <a href={"?" + train.rid}>{destination}</a>
+                            </div>
                         </div>
                         {message}
                         {calling}
