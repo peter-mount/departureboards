@@ -174,7 +174,12 @@ class Boards extends Component {
                             }}
                         />;
 
-        return  <div className="ldbWrapper">
+        return  <div>
+            <div className="App-header">
+            <button className="leftButton btn btn-primary" onClick={this.props.app.stations}>Select another station</button>
+            <h2>{this.props.station.name}</h2>
+            </div>
+            <div className="ldbWrapper">
                     <div className="ldbTable">
                         <div className="ldbHead">
                             <div className="ldbCol ldbForecast">Expected</div>
@@ -184,6 +189,7 @@ class Boards extends Component {
                         </div>
                         {messages}
                         {departures}
+                    </div>
                     </div>
                 </div>;
     }

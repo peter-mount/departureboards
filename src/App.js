@@ -81,26 +81,18 @@ class App extends Component {
     {
         console.log(this.state);
 
-        let button = null, body = null, title = null;
+        let body = null;
 
-        if (this.state.stations) {
+        if (this.state.stations)
             body = <Stations app={this} />;
-            title = 'Welcome to the new UK Departure Boards';
-        }
 
-        if (this.state.station) {
-            title = this.state.station.name;
-            button = <button className="leftButton btn btn-primary" onClick={this.stations}>Select another station</button>;
+        if (this.state.station)
             body = <Boards app={this} station={this.state.station} />;
-        }
         
-        if( this.state.rid) {
-            title = this.state.rid;
+        if( this.state.rid)
             body = <Train app={this} rid={this.state.rid} />;
-        }
 
         return  <div className="App">
-            <div className="App-header">{button}<h2>{title}</h2></div>
             {body}
             <div id="outer-footer">
                 <div id="inner-footer"> ©2011-2017 Peter Mount, All Rights Reserved.<br/>

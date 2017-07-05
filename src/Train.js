@@ -38,6 +38,7 @@ class Delay extends Component {
         
         if(r==='0') {
             r='OT';
+            suff='';
             c='delay_ontime';
         }
         
@@ -60,10 +61,12 @@ class Movement extends Component {
         var data = this.props.data;
         var lrid = this.props.lrid;
         var c1 = 'expt', c2=c1;
+        if(row.wtp)
+            c1=c2= 'pass';
         if(row.dep || row.arr) {
             c1= 'arr';
-        c2= 'arrived';
-    }
+            c2= 'arrived';
+        }
 
         return <tr key={'r'+row.id}>
                                                     <td className="ldb-fsct-stat">
@@ -72,7 +75,7 @@ class Movement extends Component {
                                                         <td className={'ldb-fsct-loc-' + c1}>
                                                 <Location data={data} tiploc={row.tpl}/>
                                                 </td>
-                                                <td className={'ldb-fsct-plat-' + c1}> {row.platsup ? null : row.plat} </td>
+                                                <td className={'ldb-fsct-plat-' + c1}> {row.wtp?'Pass':row.platsup ? null : row.plat} </td>
                                                 <td className={'ldb-fsct-' + c2}>
                                                     {row.dep ? <Time time={row.dep}/> : row.arr ? <Time time={row.arr} arrived="true"/> : <Time time={row.expectedTime} expected="true"/>}
                                                 </td>
@@ -145,6 +148,9 @@ class Train extends Component {
     var lrid = data.lastReport ? data.lastReport.id : -1;
 
         return <div id="board">
+            <div className="App-header">
+                <Location data={data} tiploc={data.destination.tpl}/> <span className='ldbVia'>{data.via}</span>
+            </div>
             <div className="ldbWrapper">
                 <div className="ldb-row">
                     <table>
@@ -193,6 +199,7 @@ class Train extends Component {
                     }/>
                     <Info label="UID" value={schedule.uid}/>
                     <Info label="RID" value={data.rid} linkPrefix="//uktra.in/rtt/train/"/>
+                    <Info label="Generated" value={data.generatedTime}/>
             </div>
         </div>;
             }

@@ -163,17 +163,23 @@ td.ldb-fsct-expected {
     color: #ffff00;
     border-bottom: 2px solid white;
 }
-td.ldb-fsct-loc-arr, td.ldb-fsct-loc-expt, td.ldb-fsct-loc-can {
+td.ldb-fsct-loc-arr, td.ldb-fsct-loc-expt, td.ldb-fsct-loc-pass, td.ldb-fsct-loc-can {
     text-align: left;
 }
 td.ldb-fsct-loc-arr, td.ldb-fsct-plat-arr {
     font-style: normal;
     font-weight: bold;
 }
-td.ldb-fsct-loc-expt, td.ldb-fsct-plat-expt {
+td.ldb-fsct-loc-expt, td.ldb-fsct-plat-expt, td.ldb-fsct-plat-pass {
     font-style: italic;
     font-weight: normal;
 }
+td.ldb-fsct-pass, td.ldb-fsct-loc-pass, td.ldb-fsct-plat-pass {
+    color: lightgray;
+}
+.delay_early {color: limegreen}
+.delay_delayed {color: #C21F39}
+.delay_ontime {color: #ffff00}
 td.ldb-fsct-loc-can, .ldb-fsct-cancelled {
     font-style: italic;
     font-weight: normal;
