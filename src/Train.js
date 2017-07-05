@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 
+import Stomp from 'stompjs';
+
 class Time extends Component {
     render() {
         var t = this.props.time;
@@ -111,7 +113,30 @@ class Train extends Component {
         super(props);
         console.log('Train', props);
         window.history.replaceState({}, '', '?' + props.rid);
+        
+        // Get the global data in the background
         this.refresh(this);
+        
+        // Subscribe to websocket
+            console.log('Websocket connecting...');
+            var t = this;
+        t.wsclient = Stomp.client('ws://rabbit2.amsterdam.area51.onl:15674/ws');
+        t.wsclient.debug = ()=>{};
+        t.wsclient.connect('public','guest',()=>{
+            t.sub1=t.wsclient.subscribe('/topic/darwin.'+props.rid+'.#', (msg)=>{
+                t.refresh(t);
+            });
+        },
+        (error)=>{
+            console.error('Websocket error',error);
+            try {
+                t.wsclient.disconnect();
+            }catch(e){
+                console.error(e);
+            }finally {
+                t.wsclient=null;
+            }
+        }, '/');
     }
 
     componentWillUnmount() {
@@ -119,7 +144,15 @@ class Train extends Component {
     }
 
     refresh(t) {
+        // Don't update if too quick
+        var now = new Date().getTime();
+        //if(this.lastUpdate && (now-this.lastUpdate)<10000)
+        //    return ;
+
+        this.lastUpdate=now;
+        
         t.timer = setTimeout(() => t.refresh(t), 60000 /*t.props.app.config.refreshRate*/);
+        
         fetch('https://api.area51.onl/rail/2/darwin/rtt/' + t.props.rid)
                 .then(res => res.json())
                 .then(json => {
@@ -129,9 +162,9 @@ class Train extends Component {
                     });
                 })
                 .catch(e => {
-                    // Retry in 5 seconds
+                    // Set retry for another 60s from now
                     clearTimeout(this.timer);
-                    t.timer = setTimeout(() => t.refresh(t), 5000);
+                    t.timer = setTimeout(() => t.refresh(t), 60000);
                     t.setState({
                         hide: true
                     });
@@ -161,11 +194,11 @@ class Train extends Component {
                                         // What happened
                                         data.lastReport.pass ? 'Passing ' : data.lastReport.dep ? 'Departing ' : data.lastReport.arr ? 'Stopped at ' : null,
                                         // Where
-                                        <Location key='lr' data={data} tiploc={data.lastReport.tpl}/>,
+                                        <Location key='lrl' data={data} tiploc={data.lastReport.tpl}/>,
                                         // When
-                                        ' at ', <Time time={data.lastReport.actualTime}/>,
+                                        ' at ', <Time key='lrt' time={data.lastReport.actualTime}/>,
                                         // Delay
-                                        ' ', <Delay delay={data.lastReport.delay} full="true"/>
+                                        ' ', <Delay key='lrd' delay={data.lastReport.delay} full="true"/>
                                     ]
                                     : null
                 }/>
@@ -210,11 +243,12 @@ class Train extends Component {
                 <Info label="Head code" value={schedule.trainId}/>
                 <Info label="UID" value={schedule.uid}/>
                 <Info label="RID" value={data.rid} linkPrefix="//uktra.in/rtt/train/"/>
-                <Info label="Generated" value={data.generatedTime}/>
+                <Info label="Generated" value={data.generatedTime?data.generatedTime.split('.')[0]:null}/>
                 <div className="ldb-row"> Forms the <a href="/train/201707058783424"> 11:22 </a> 
                     <a href="/train/201707058783424"> </a> <a href="/train/201707058783424"> </a> <a href="/train/201707058783424"> </a> <a href="/train/201707058783424"> </a> <a href="/train/201707058783424"> </a> <a href="/train/201707058783424"> </a> <a href="/train/201707058783424"> </a> <a href="/train/201707058783424"> </a> <a href="/train/201707058783424"> </a> <a href="/train/201707058783424"> </a> <a href="/train/201707058783424"> </a> <a href="/train/201707058783424"> </a> 
                     <a href="/train/201707058783424"> to Canterbury&nbsp;West due 13:27 </a>
                 </div>
+                <Info label="Updates" value={this.wsclient?'Automatic':'Every minute'}/>
             </div>
         </div>;
             }
