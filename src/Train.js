@@ -68,10 +68,11 @@ class Movement extends Component {
             c2= 'arrived';
         }
 
+        // Show icon only if we are the last id
+        var icon = lrid===row.id && !row.dep ?<i className="fa fa-train" aria-hidden="true"></i>:null;
+        
         return <tr key={'r'+row.id}>
-                                                    <td className="ldb-fsct-stat">
-            {lrid===row.id && !row.dep ?<i className="fa fa-train" aria-hidden="true"></i>:null}
-            </td>
+                                                    <td className="ldb-fsct-stat">{icon}</td>
                                                         <td className={'ldb-fsct-loc-' + c1}>
                                                 <Location data={data} tiploc={row.tpl}/>
                                                 </td>
@@ -87,11 +88,15 @@ class Movement extends Component {
 
 class Info extends Component {
     render() {
+        var val = this.props.value;
+        if(val && this.props.linkPrefix)
+            val=<a href={this.props.linkPrefix+val}>{val}</a>;
+        
         return this.props.value === null || this.props.value === undefined
                 ? null
                 : <div className="ldb-row">
                     <div className="ldb-label">{this.props.label}</div>
-                    <div className="ldb-value">{this.props.value}</div>
+                    <div className="ldb-value">{val}</div>
                 </div>;
     }
 }
@@ -166,8 +171,8 @@ class Train extends Component {
                         <tbody>
                             {data.movement
                                                 ? data.movement
-                                                // We don't show passes unless last report
-                                                .filter(row => lrid===row.id || !(row.pass || row.wtp))
+                                                // We don't show passes unless last report or next pass after last report
+                                                .filter(row => lrid===row.id || (lrid+1)===row.id || !(row.pass || row.wtp))
                                                 .reduce((a, row) => {
                                                     a.push(<Movement key={'r'+row.id} data={data} row={row} lrid={lrid}/>);
                                             if(row.id===lrid && row.dep)
@@ -195,7 +200,7 @@ class Train extends Component {
                                             ' at ',
                                             data.lastReport.actualTime
                                         ]
-                                        : 'null'
+                                        : null
                     }/>
                     <Info label="UID" value={schedule.uid}/>
                     <Info label="RID" value={data.rid} linkPrefix="//uktra.in/rtt/train/"/>
