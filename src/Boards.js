@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 
+import Stomp from 'stompjs';
+
 /*
  * Handles the display of an informational message from Darwin
  */
@@ -109,23 +111,60 @@ class Boards extends Component {
         }
     };
 
-    constructor(props) {
-        super(props);
-        window.history.replaceState({},'','/?'+props.station.code);
+    componentWillMount() {
+        window.history.replaceState({},'','/?'+this.props.station.code);
+        
+        // Load the board a fresh
         this.refresh(this);
+        
+        // Subscribe to websocket
+        var t = this;
+        t.wsclient = Stomp.client('ws://rabbit2.amsterdam.area51.onl:15674/ws');
+        t.wsclient.debug = ()=>{};
+        t.wsclient.connect('public','guest',()=>{
+            t.sub1=t.wsclient.subscribe('/topic/darwin.station.'+t.props.station.code, (msg)=>{
+                t.refresh(t);
+            });
+        },
+        (error)=>{
+            console.error('Websocket error',error);
+            try {
+                t.wsclient.disconnect();
+            }catch(e){
+                console.error(e);
+            }finally {
+                t.wsclient=null;
+            }
+        }, '/');
     }
     
     componentWillUnmount() {
         clearTimeout(this.timer);
+        if(this.wsclient) {
+            this.wsclient.disconnect();
+        }
+        this.wsclient=null;
     }
 
     refresh(t) {
+        // Stop us refreshing too often, mainly for busy stations
+        var now = new Date().getTime();
+        if( t.lastUpdate && (now-t.lastUpdate)<10000)
+            return ;
+        t.lastUpdate=now;
+    
+        clearTimeout(t.timer);
         t.timer = setTimeout( ()=>t.refresh(t), t.props.app.config.refreshRate );
+        
         fetch('https://api.area51.onl/rail/2/station/' + t.props.station.code + '/boards')
                 .then(res => res.json())
                 .then(json => {
-                    console.log(json);
                     t.setState({data: json});
+                })
+                .catch(e => {
+                    // Set retry for another 60s from now
+                    clearTimeout(t.timer);
+                    t.timer = setTimeout(() => t.refresh(t), t.props.app.config.refreshRate);
                 });
     }
 

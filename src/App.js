@@ -8,7 +8,7 @@ import './App.css';
 class App extends Component {
 
     config = {
-        refreshRate: 5000
+        refreshRate: 60000
     }
 
     constructor(props) {
@@ -23,7 +23,7 @@ class App extends Component {
         var search = window.location.search ? window.location.search.substr(1)
                 : window.location.hash ? window.location.hash.substr(1)
                 : null;
-        console.log(search ? search.length :null);
+
         if (search && search.length === 3) {
             // CRS code
             this.state = {};
@@ -79,8 +79,6 @@ class App extends Component {
 
     render()
     {
-        console.log(this.state);
-
         let body = null;
 
         if (this.state.stations)

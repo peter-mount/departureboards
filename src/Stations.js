@@ -8,26 +8,23 @@ class Stations extends Component {
     };
 
     componentDidMount() {
+        
+        window.history.replaceState({},'','/');
+        
         //this.focus.focus();
         this.setState({options: []});
     }
 
     // Perform the query
     search(query, t) {
-        console.log(query);
         fetch('https://api.area51.onl/rail/2/search/' + query)
                 .then(resp => resp.json())
                 .then(json => {
-                    console.log(json);
                     return json;
                 })
                 .then(json => t.setState({
                         options: json
-                    }))
-                .then(json => {
-                    console.log(t.state);
-                }
-                );
+                    }));
     }
 
     // Handle the selection. Only pass 1 entry to the app

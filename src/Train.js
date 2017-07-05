@@ -109,21 +109,18 @@ class Train extends Component {
         hide: true
     };
 
-    constructor(props) {
-        super(props);
-        console.log('Train', props);
-        window.history.replaceState({}, '', '?' + props.rid);
+    componentWillMount() {
+        window.history.replaceState({}, '', '?' + this.props.rid);
         
         // Get the global data in the background
         this.refresh(this);
         
         // Subscribe to websocket
-            console.log('Websocket connecting...');
-            var t = this;
+        var t = this;
         t.wsclient = Stomp.client('ws://rabbit2.amsterdam.area51.onl:15674/ws');
         t.wsclient.debug = ()=>{};
         t.wsclient.connect('public','guest',()=>{
-            t.sub1=t.wsclient.subscribe('/topic/darwin.'+props.rid+'.#', (msg)=>{
+            t.sub1=t.wsclient.subscribe('/topic/darwin.'+this.props.rid+'.#', (msg)=>{
                 t.refresh(t);
             });
         },
@@ -141,6 +138,10 @@ class Train extends Component {
 
     componentWillUnmount() {
         clearTimeout(this.timer);
+        if(this.wsclient) {
+            this.wsclient.disconnect();
+        }
+        this.wsclient=null;
     }
 
     refresh(t) {
@@ -151,7 +152,8 @@ class Train extends Component {
 
         this.lastUpdate=now;
         
-        t.timer = setTimeout(() => t.refresh(t), 60000 /*t.props.app.config.refreshRate*/);
+        clearTimeout(t.timer);
+        t.timer = setTimeout(() => t.refresh(t), t.props.app.config.refreshRate);
         
         fetch('https://api.area51.onl/rail/2/darwin/rtt/' + t.props.rid)
                 .then(res => res.json())
@@ -163,8 +165,8 @@ class Train extends Component {
                 })
                 .catch(e => {
                     // Set retry for another 60s from now
-                    clearTimeout(this.timer);
-                    t.timer = setTimeout(() => t.refresh(t), 60000);
+                    clearTimeout(t.timer);
+                    t.timer = setTimeout(() => t.refresh(t), t.props.app.config.refreshRate);
                     t.setState({
                         hide: true
                     });
