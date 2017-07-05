@@ -119,7 +119,7 @@ class Boards extends Component {
         
         // Subscribe to websocket
         var t = this;
-        t.wsclient = Stomp.client('ws://rabbit2.amsterdam.area51.onl:15674/ws');
+        t.wsclient = Stomp.client('wss://ws.area51.onl/ws/');
         t.wsclient.debug = ()=>{};
         t.wsclient.connect('public','guest',()=>{
             t.sub1=t.wsclient.subscribe('/topic/darwin.station.'+t.props.station.code, (msg)=>{
