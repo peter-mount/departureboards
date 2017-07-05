@@ -136,10 +136,12 @@
     padding-right: 1pt;
 }
 
-.ldb-row .ldb-value {
+.ldb-row .ldb-value,
+.ldb-row .ldb-value > a {
     display: inline-block;
     text-align: left;
     padding-left: 1pt;
+    color: lightgray;
 }
 
 .ldb-row table {

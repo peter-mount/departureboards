@@ -16,15 +16,15 @@ class Time extends Component {
 
 class Delay extends Component {
     render() {
-        var t = this.props.delay;
+        var t = this.props.delay, full=this.props.full;
         if (!t)
             return null;
 
         t = t.split(':');
         
-        var suff='', c='delay_delayed';
+        var suff=full?' late':'L', c='delay_delayed';
         if(t[0].startsWith('-')) {
-            suff='E';
+            suff=full?' early' : 'E';
             t[0]=t[0].substr(1);
             c='delay_early';
         }
@@ -37,12 +37,12 @@ class Delay extends Component {
             r=r.substr(1);
         
         if(r==='0') {
-            r='OT';
+            r=full?'' : 'OT';
             suff='';
             c='delay_ontime';
         }
         
-        return <span className={c}>{r+suff}</span>;
+        return <span className={full?'':c}>{r+suff}</span>;
     }
 }
 ;
@@ -147,14 +147,28 @@ class Train extends Component {
             </div>;
 
         var data = this.state.data,
-                schedule = data.schedule ? data.schedule : {};
+                schedule = data.schedule ? data.schedule : {},
+                forecast = data.forecast ? data.forecast : {};
 
     // Id of last report
     var lrid = data.lastReport ? data.lastReport.id : -1;
 
         return <div id="board">
             <div className="App-header">
-                <Location data={data} tiploc={data.destination.tpl}/> <span className='ldbVia'>{data.via}</span>
+                <Time time={data.origin.time}/> <Location data={data} tiploc={data.origin.tpl}/> to <Location data={data} tiploc={data.destination.tpl}/> <span className='ldbVia'>{data.via}</span> due <Time time={data.destination.time}/>
+                <Info label="Last Report" value={data.lastReport && forecast.activated && !forecast.deactivated
+                                    ? [
+                                        // What happened
+                                        data.lastReport.pass ? 'Passing ' : data.lastReport.dep ? 'Departing ' : data.lastReport.arr ? 'Stopped at ' : null,
+                                        // Where
+                                        <Location key='lr' data={data} tiploc={data.lastReport.tpl}/>,
+                                        // When
+                                        ' at ', <Time time={data.lastReport.actualTime}/>,
+                                        // Delay
+                                        ' ', <Delay delay={data.lastReport.delay} full="true"/>
+                                    ]
+                                    : null
+                }/>
             </div>
             <div className="ldbWrapper">
                 <div className="ldb-row">
@@ -170,41 +184,37 @@ class Train extends Component {
                         </thead>
                         <tbody>
                             {data.movement
-                                                ? data.movement
-                                                // We don't show passes unless last report or next pass after last report
-                                                .filter(row => lrid===row.id || (lrid+1)===row.id || !(row.pass || row.wtp))
-                                                .reduce((a, row) => {
-                                                    a.push(<Movement key={'r'+row.id} data={data} row={row} lrid={lrid}/>);
-                                            if(row.id===lrid && row.dep)
-                                                a.push(<tr key={'r'+row.id+"a"}>
-                                                            <td className="ldb-fsct-stat">
-                                                                <i className="fa fa-train" aria-hidden="true"></i>
-                                                            </td>
-                                                        </tr>);
-                                            return a;
-                        },[])
-                        :null
+                                ? data.movement
+                                // We don't show passes unless:
+                                // We are the last report
+                                // We are the next entry after the last report if it was not also a pass - no 2 passes together
+                                .filter(row => lrid===row.id || (lrid>=0 && !data.lastReport.wtp && (lrid+1)===row.id) || !(row.pass || row.wtp))
+                                .reduce((a, row) => {
+                                    // Add the movement
+                                    a.push(<Movement key={'r'+row.id} data={data} row={row} lrid={lrid}/>);
+                                    // Add a blank row when between stops with no passes
+                                    if(row.id===lrid && row.dep)
+                                        a.push(<tr key={'r'+row.id+"a"}>
+                                                    <td className="ldb-fsct-stat">
+                                                        <i className="fa fa-train" aria-hidden="true"></i>
+                                                    </td>
+                                                </tr>);
+                                    return a;
+                                },[])
+                                :null
                         }
                         </tbody>
                     </table>
                 </div>
+                <Info label="Operator" value={schedule.toc ? schedule.toc.name : null}/>
+                <Info label="Head code" value={schedule.trainId}/>
+                <Info label="UID" value={schedule.uid}/>
+                <Info label="RID" value={data.rid} linkPrefix="//uktra.in/rtt/train/"/>
+                <Info label="Generated" value={data.generatedTime}/>
                 <div className="ldb-row"> Forms the <a href="/train/201707058783424"> 11:22 </a> 
                     <a href="/train/201707058783424"> </a> <a href="/train/201707058783424"> </a> <a href="/train/201707058783424"> </a> <a href="/train/201707058783424"> </a> <a href="/train/201707058783424"> </a> <a href="/train/201707058783424"> </a> <a href="/train/201707058783424"> </a> <a href="/train/201707058783424"> </a> <a href="/train/201707058783424"> </a> <a href="/train/201707058783424"> </a> <a href="/train/201707058783424"> </a> <a href="/train/201707058783424"> </a> 
                     <a href="/train/201707058783424"> to Canterbury&nbsp;West due 13:27 </a>
                 </div>
-                <Info label="Head code" value={schedule.trainId}/>
-                <Info label="Operator" value={schedule.toc ? schedule.toc.name : null}/>
-                <Info label="Last Report" value={data.lastReport
-                                        ? [
-                                            <Location key='lr' data={data} tiploc={data.lastReport.tpl}/>,
-                                            ' at ',
-                                            data.lastReport.actualTime
-                                        ]
-                                        : null
-                    }/>
-                    <Info label="UID" value={schedule.uid}/>
-                    <Info label="RID" value={data.rid} linkPrefix="//uktra.in/rtt/train/"/>
-                    <Info label="Generated" value={data.generatedTime}/>
             </div>
         </div>;
             }
