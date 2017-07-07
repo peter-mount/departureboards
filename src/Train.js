@@ -52,7 +52,7 @@ class Delay extends Component {
 class Location extends Component {
     render() {
         var tpl = this.props.data.tiploc[this.props.tiploc];
-        return <span className="tiploc">{tpl ? tpl.name : this.props.tiploc}</span>;
+        return <span className="tiploc">{tpl ? tpl.name.replace('&amp;','&') : this.props.tiploc}</span>;
     }
 }
 ;
@@ -71,7 +71,8 @@ class Movement extends Component {
         }
 
         // Show icon only if we are the last id
-        var icon = lrid===row.id && !row.dep ?<i className="fa fa-train" aria-hidden="true"></i>:null;
+        //var icon = lrid===row.id && !row.dep ?<i className="fa fa-train" aria-hidden="true"></i>:null;
+        var icon = lrid===row.id && (row.arr && !row.dep) ?<i className="fa fa-train" aria-hidden="true"></i>:null;
         
         return <tr key={'r'+row.id}>
                                                     <td className="ldb-fsct-stat">{icon}</td>
@@ -105,8 +106,11 @@ class Info extends Component {
 ;
 
 class Train extends Component {
+
     state = {
-        hide: true
+        hide: true,
+        data: null,
+        update: false
     };
 
     componentWillMount() {
@@ -116,32 +120,79 @@ class Train extends Component {
         this.refresh(this);
         
         // Subscribe to websocket
-        var t = this;
-        t.wsclient = Stomp.client('wss://ws.area51.onl/ws/');
-        t.wsclient.debug = ()=>{};
-        t.wsclient.connect('public','guest',()=>{
-            t.sub1=t.wsclient.subscribe('/topic/darwin.'+this.props.rid+'.#', (msg)=>{
-                t.refresh(t);
-            });
-        },
-        (error)=>{
-            console.error('Websocket error',error);
-            try {
-                t.wsclient.disconnect();
-            }catch(e){
-                console.error(e);
-            }finally {
-                t.wsclient=null;
-            }
-        }, '/');
+        this.stopWSReconnect=false;
+        this.connectWebSocket(this);
     }
 
     componentWillUnmount() {
-        clearTimeout(this.timer);
-        if(this.wsclient) {
-            this.wsclient.disconnect();
+        if(this.timer) clearTimeout(this.timer);
+        
+        this.stopWSReconnect=true;
+        this.disconnectWebSocket(this);
+    }
+    
+    connectWebSocket(t) {
+        console.log('con 1');
+        if(t.stopWSReconnect || t.wsclient) return;
+
+        console.log('con 2');
+        t.wsclient = Stomp.client('wss://ws.area51.onl/ws/');
+        t.wsclient.debug = ()=>{};
+        t.wsclient.connect('public','guest',()=>{
+        console.log('connected');
+            // Subscribe to the train
+            t.sub1=t.wsclient.subscribe('/topic/darwin.'+this.props.rid+'.#', (msg)=>{
+                t.refresh(t);
+            });
+            
+            // Refresh now?
+            t.updatePage(t);
+        },
+        (error)=>{
+            console.error('Websocket error',error);
+            
+            t.disconnectWebSocket(t);
+            
+            // Reconnect?
+            if(!t.stopWSReconnect)
+                setTimeout(()=>t.connectWebSocket(t),5000);
+            
+            // Refresh now?
+            t.updatePage(t);
+        }, '/');
+    }
+    
+    disconnectWebSocket(t) {
+        console.log('disc');
+        try {
+            if(t.wsclient)
+                t.wsclient.disconnect();
+        }catch(e){
+            console.error(e);
+        }finally {
+            t.wsclient=null;
         }
-        this.wsclient=null;
+    }
+
+    updateJson(t,json) {
+        t.setState({
+            hide: false,//true
+            data: json,
+            update: false
+        });
+    }
+
+    updatePage(t) {
+        t.setState({
+            hide: false,//true
+            data: t.state.data,
+            update: true
+        });
+    }
+
+    resetTimer(t) {
+        if(t.timer) clearTimeout(t.timer);
+        t.timer = setTimeout(() => t.refresh(t), t.props.app.config.refreshRate);
     }
 
     refresh(t) {
@@ -152,59 +203,40 @@ class Train extends Component {
 
         this.lastUpdate=now;
         
-        clearTimeout(t.timer);
-        t.timer = setTimeout(() => t.refresh(t), t.props.app.config.refreshRate);
+        t.resetTimer(t);
         
         fetch('https://api.area51.onl/rail/2/darwin/rtt/' + t.props.rid)
                 .then(res => res.json())
                 .then(json => {
-                    t.setState({
-                        hide: false,
-                        data: json
-                    });
+                    t.resetTimer(t);
+                    t.updateJson(t,json);
                 })
                 .catch(e => {
-                    // Set retry for another 60s from now
-                    clearTimeout(t.timer);
-                    t.timer = setTimeout(() => t.refresh(t), t.props.app.config.refreshRate);
-                    t.setState({
-                        hide: true
-                    });
+                    t.resetTimer(t);
+                    t.updatePage(t);
                 });
     }
 
     render() {
         console.log(this.state);
-        if (this.state.hide)
+        var data = this.state.data;
+        if (this.state.hide || !data )
             return <div>
                 <i className="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
                 <span className="sr-only">Loading...</span>
             </div>;
+            
+        var schedule = data.schedule ? data.schedule : {};
+        var forecast = data.forecast ? data.forecast : {};
 
-        var data = this.state.data,
-                schedule = data.schedule ? data.schedule : {},
-                forecast = data.forecast ? data.forecast : {};
-
-    // Id of last report
-    var lrid = data.lastReport ? data.lastReport.id : -1;
+        // Id of last report
+        var lrid = data.lastReport ? data.lastReport.id : -1;
 
         return <div id="board">
             <div className="App-header">
                 <Time time={data.origin.time}/> <Location data={data} tiploc={data.origin.tpl}/> to <Location data={data} tiploc={data.destination.tpl}/> <span className='ldbVia'>{data.via}</span> due <Time time={data.destination.time}/>
-                <Info label="Last Report" value={data.lastReport && forecast.activated && !forecast.deactivated
-                                    ? [
-                                        // What happened
-                                        data.lastReport.pass ? 'Passing ' : data.lastReport.dep ? 'Departing ' : data.lastReport.arr ? 'Stopped at ' : null,
-                                        // Where
-                                        <Location key='lrl' data={data} tiploc={data.lastReport.tpl}/>,
-                                        // When
-                                        ' at ', <Time key='lrt' time={data.lastReport.actualTime}/>,
-                                        // Delay
-                                        ' ', <Delay key='lrd' delay={data.lastReport.delay} full="true"/>
-                                    ]
-                                    : null
-                }/>
             </div>
+       
             <div className="ldbWrapper">
                 <div className="ldb-row">
                     <table>
@@ -223,12 +255,14 @@ class Train extends Component {
                                 // We don't show passes unless:
                                 // We are the last report
                                 // We are the next entry after the last report if it was not also a pass - no 2 passes together
-                                .filter(row => lrid===row.id || (lrid>=0 && !data.lastReport.wtp && (lrid+1)===row.id) || !(row.pass || row.wtp))
+                                //.filter(row => lrid===row.id || (lrid>=0 && !data.lastReport.wtp && (lrid+1)===row.id) || !(row.pass || row.wtp))
+                                .filter(row => lrid===row.id || (lrid>=0  && (lrid+1)===row.id) || !(row.pass || row.wtp))
                                 .reduce((a, row) => {
                                     // Add the movement
                                     a.push(<Movement key={'r'+row.id} data={data} row={row} lrid={lrid}/>);
                                     // Add a blank row when between stops with no passes
-                                    if(row.id===lrid && row.dep)
+                                    //if(row.id===lrid && !(row.wtp||(row.arr&&!row.dep)))
+                                    if(row.id===lrid && !(row.arr && !row.dep))
                                         a.push(<tr key={'r'+row.id+"a"}>
                                                     <td className="ldb-fsct-stat">
                                                         <i className="fa fa-train" aria-hidden="true"></i>
@@ -241,16 +275,28 @@ class Train extends Component {
                         </tbody>
                     </table>
                 </div>
+ 
+            <Info label="Last Report" value={data.lastReport && forecast.activated && !forecast.deactivated
+                                ? [
+                                    // What happened
+                                    data.lastReport.pass ? 'Passing ' : data.lastReport.dep ? 'Departing ' : data.lastReport.arr ? 'Stopped at ' : null,
+                                    // Where
+                                    <Location key='lrl' data={data} tiploc={data.lastReport.tpl}/>,
+                                    // When
+                                    ' at ', <Time key='lrt' time={data.lastReport.actualTime}/>,
+                                    // Delay
+                                    ' ', <Delay key='lrd' delay={data.lastReport.delay} full="true"/>
+                                ]
+                                : null
+            }/>
+
                 <Info label="Operator" value={schedule.toc ? schedule.toc.name : null}/>
                 <Info label="Head code" value={schedule.trainId}/>
                 <Info label="UID" value={schedule.uid}/>
                 <Info label="RID" value={data.rid} linkPrefix="//uktra.in/rtt/train/"/>
                 <Info label="Generated" value={data.generatedTime?data.generatedTime.split('.')[0]:null}/>
-                <div className="ldb-row"> Forms the <a href="/train/201707058783424"> 11:22 </a> 
-                    <a href="/train/201707058783424"> </a> <a href="/train/201707058783424"> </a> <a href="/train/201707058783424"> </a> <a href="/train/201707058783424"> </a> <a href="/train/201707058783424"> </a> <a href="/train/201707058783424"> </a> <a href="/train/201707058783424"> </a> <a href="/train/201707058783424"> </a> <a href="/train/201707058783424"> </a> <a href="/train/201707058783424"> </a> <a href="/train/201707058783424"> </a> <a href="/train/201707058783424"> </a> 
-                    <a href="/train/201707058783424"> to Canterbury&nbsp;West due 13:27 </a>
-                </div>
                 <Info label="Updates" value={this.wsclient?'Automatic':'Every minute'}/>
+                <div className="ldb-row">&nbsp;</div>
             </div>
         </div>;
             }

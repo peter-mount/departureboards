@@ -4,3 +4,5 @@
 /private/
 /nbproject/
 /departureboards/nbproject/private/
+build
+npm-debug.log
