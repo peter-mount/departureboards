@@ -1,7 +1,16 @@
 {
   "name": "departureboards",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
+  "publishConfig": {
+        "registry": "https://nexus.area51.onl/repository/npm-private/"
+  },
+  "files": [
+        "public",
+        "src",
+        "README.md"
+  ],
+  "main": "src/App",
   "dependencies": {
     "jquery": "^3.2.1",
     "react": "^15.6.1",
