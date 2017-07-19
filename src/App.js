@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 //import logo from './logo.svg';
 import Navigation from './Navigation.js';
 import Stations from './Stations.js';
-import Boards from './Boards.js';
+import Boards from './boards/Boards.js';
 import Train from './Train.js';
 
 import './css/App.css';
