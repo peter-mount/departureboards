@@ -42,18 +42,18 @@ class BoardRow extends Component {
     }
 
     var lastReport = status.lastReport ?
-            [
-              <span >Last report:</span>,
+            <span>
+              <span >Last report:</span>
               <span className="ldbDest"> {status.lastReport.name} {status.lastReport.time} </span>
-            ]
+            </span>
             : null;
 
     var toc = train.toc ? <span> {train.toc}&nbsp;service. </span> : null;
     var length = status.length && status.length>0 ?
-            [
-              <span>Formed of:</span>,
+            <span>
+              <span>Formed of:</span>
               <span className="ldbDest"> {status.length} coaches</span>
-            ]
+            </span>
             : null;
 
     var message = null;
@@ -71,7 +71,7 @@ class BoardRow extends Component {
         calling = <div className="ldb-entbot">
                     <span className="callList" > Calling at:</span> {
                       this.props.departure.calling.map(
-                        cp => <span className="callList" ><a onClick={()=>this.props.app.boards(cp.crs)} dangerouslySetInnerHTML={{__html: this.fix(cp.name)}}></a>&nbsp;({cp.time}) </span>
+                        cp => <span key={cp.crs} className="callList" ><a onClick={()=>this.props.app.boards(cp.crs)} dangerouslySetInnerHTML={{__html: this.fix(cp.name)}}></a>&nbsp;({cp.time}) </span>
                     )}
                   </div>;
 

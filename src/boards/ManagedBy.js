@@ -13,7 +13,7 @@ class ManagedBy extends Component {
                   This station is managed by {operator.name}
                 </span>;
 
-        return  <div class="ldb-row">
+        return  <div className="ldb-row">
                   <div className="ldb-enttop">{text}</div>
                 </div>;
     }
