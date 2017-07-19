@@ -1,5 +1,10 @@
 /* LDB Standard Theme */
 
+.ldb-message i {
+    float:left;
+    padding: 0.125em;
+}
+
 .ldbLoc {
     font-family: Arial;
     font-size: 24pt;
@@ -127,6 +132,7 @@
 
 .ldb-row {
     color: #fff;
+    font-size: 2em;
 }
 
 .ldb-row .ldb-label {
@@ -144,6 +150,7 @@
     color: lightgray;
 }
 
+/*
 .ldb-row table {
     border-collapse: collapse;
     width: 100%;
@@ -179,6 +186,8 @@ td.ldb-fsct-loc-expt, td.ldb-fsct-plat-expt, td.ldb-fsct-plat-pass {
 td.ldb-fsct-pass, td.ldb-fsct-loc-pass, td.ldb-fsct-plat-pass {
     color: lightgray;
 }
+*/
+
 .delay_early {color: limegreen}
 .delay_delayed {color: #C21F39}
 .delay_ontime {color: #ffff00}
@@ -203,9 +212,9 @@ td.ldb-fsct-stat {
         padding-top: 11pt;
     }
     .ldbUpdated { font-size: 70%; }
-    .ldbTable { font-size: 130%; }
+    .ldbTable { font-size: 100%; }
     .ldbHead {
-        font-size: 110%;
+        font-size: 90%;
         padding: 6px 4px;
     }
     .ldb-enttop, .ldb-entmid { font-size: 70%; }
@@ -221,10 +230,15 @@ td.ldb-fsct-stat {
         padding-left: 15pt;
         padding-right: 15pt;
         text-align: center;
+        xfont-size: 90%;
     }
 
+  .h2 {
+    font-size: 150%;
+  }
+  
     .ldb-row {
-        font-size: 80%;
+        font-size: 110%;
     }
 }
 
@@ -234,14 +248,14 @@ td.ldb-fsct-stat {
         width:24px;
         height: 24px;
     }
-    .ldbLoc { 
+    .ldbLoc {
         font-size: 12pt;
         padding-top: 5pt;
     }
     .ldbUpdated { font-size: 70%; }
     .ldbTable { font-size: 110%; }
     .ldbHead {
-        font-size: 120%;
+        font-size: 100%;
         padding: 6px 4px;
     }
     .ldb-enttop, .ldb-entmid { font-size: 90%; }
@@ -255,7 +269,7 @@ td.ldb-fsct-stat {
     .ldbCol { font-size: 90%; padding: 1px 0px; }
 
     .ldb-row {
-        font-size: 80%;
+        font-size: 110%;
     }
 }
 
@@ -283,7 +297,7 @@ td.ldb-fsct-stat {
     .ldbCol { font-size: 90%; padding: 1px 0px; }
 
     .ldb-row {
-        font-size: 100%;
+        font-size: 120%;
     }
 }
 

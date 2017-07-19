@@ -1,0 +1,104 @@
+
+/* iPhone 3GS */
+@media all and ( max-width: 320px ) {
+    /* Ensure navbar fits screen */
+    .navbar {
+        font-size: 70%;
+    }
+    .ldbbutton {
+        font-size: 130%;
+        top: 5pt;
+    }
+    h1 {
+        font-size: 110%;
+        margin: 0;
+        -webkit-margin-before: 0;
+        -webkit-margin-after: 0.67em;
+    }
+    #stationlabel { font-size: 80%; }
+    .ui-autocomplete li { font-size: 12pt; }
+}
+
+/* Samsung Note 3 Portrait */
+@media all and (min-width: 321px) and ( max-width: 443px ) {
+    /* Ensure navbar fits screen */
+    .navbar {
+        font-size: 80%;
+    }
+    .ldbbutton {
+        font-size: 150%;
+        top: 3pt;
+    }
+    h1 {
+        font-size: 130%;
+        margin: 0;
+        -webkit-margin-before: 0;
+        -webkit-margin-after: 0.67em;
+    }
+    #stationlabel { font-size: 90%; }
+    .ui-autocomplete li { font-size: 12pt; }
+}
+
+/* Samsung Note 3 Landscape */
+@media all and ( min-width: 444px ) and ( max-width: 640px ) {
+    .ldbbutton { font-size: 80% }
+    h1 {
+        font-size: 130%;
+        margin: 0;
+        -webkit-margin-before: 0;
+        -webkit-margin-after: 0.67em;
+    }
+    #stationlabel { font-size: 90%; }
+    .ui-autocomplete li { font-size: 12pt; }
+}
+
+/* Samsung Tab 7.7+ */
+@media all and (min-width: 641px ) and (max-width: 1023px){
+    .ldbbutton { font-size: 80% }
+    h1 {
+        font-size: 130%;
+        margin: 0;
+        -webkit-margin-before: 0;
+        -webkit-margin-after: 0.67em;
+    }
+    #stationlabel { font-size: 90%; }
+    .ui-autocomplete li { font-size: 12pt; }
+}
+
+/* iPad 3/4 */
+@media all and (min-width: 1024px) and (max-width: 1599px){
+    .ldbbutton { font-size: 150% }
+    h1 {
+        font-size: 130%;
+        margin: 0;
+        -webkit-margin-before: 0;
+        -webkit-margin-after: 0.67em;
+    }
+    #stationlabel { font-size: 90%; }
+    .ui-autocomplete li { font-size: 12pt; }
+}
+
+/* Kindle Fire HDX - Massive resolution 2560x1600 */
+@media all and (min-width: 1600px){
+    .ldbbutton { font-size: 350% }
+    h1 {
+        font-size: 130%;
+        margin: 0;
+        -webkit-margin-before: 0;
+        -webkit-margin-after: 0.67em;
+    }
+    #stationlabel { font-size: 90%; }
+    .ui-autocomplete li { font-size: 12pt; }
+
+    #outer-body { top: 10em; }
+    #outer-footer { font-size: 240%; }
+    #home { font-size: 240%; }
+
+    .ui-widget input {
+        font-size: 150%;
+        width: 90%;
+    }
+    .ui-autocomplete li { font-size: 250%; }
+    .logo-nre { max-width: 600px; }
+
+}

@@ -1,0 +1,76 @@
+.App {
+}
+
+.App-header {
+  margin-top: 4em;
+}
+
+.station-form {
+    height: 4.5em;
+}
+
+.station-form div {
+    text-align:center;
+}
+
+body {
+    font-family: Verdana,Helvetica,Arial,sans-serif;
+    background: #000;
+    color: #fff;
+    margin:0;
+    padding: 0;
+    xoverflow: hidden;
+    xoverflow-y: hidden;
+}
+
+a {color: #fff;}
+a:hover {color: #ff0;}
+a:visited {color: #fff;}
+
+/* Dialogs need black text */
+.modal-dialog {color:#000;}
+.modal-dialog a,
+.modal-dialog a:hover,
+.modal-dialog a:visited {color:#00F;}
+
+#body {
+    margin-top: 4em;
+}
+
+#outer-footer {
+    position: fixed;
+    background: #000;
+    color: #fff;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 3em;
+    z-index: 10;
+    border-top: 1px solid white;
+    margin: 1px;
+    font-size: 60%;
+}
+
+h1 {text-align: center;}
+
+p {text-align: justify;}
+
+/* iPhone 3GS */
+@media all and ( max-width: 320px ) {
+    /* Ensure navbar fits screen */
+    .navbar {
+        font-size: 70%;
+    }
+    .ldbbutton {
+        font-size: 130%;
+        top: 5pt;
+    }
+    h1 {
+        font-size: 110%;
+        margin: 0;
+        -webkit-margin-before: 0;
+        -webkit-margin-after: 0.67em;
+    }
+    #stationlabel { font-size: 80%; }
+    .ui-autocomplete li { font-size: 12pt; }
+}

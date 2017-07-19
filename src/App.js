@@ -1,9 +1,13 @@
 import React, { Component } from 'react';
 //import logo from './logo.svg';
+import Navigation from './Navigation.js';
 import Stations from './Stations.js';
 import Boards from './Boards.js';
 import Train from './Train.js';
-import './App.css';
+
+import './css/App.css';
+import './css/ldb.css';
+import './css/media.css';
 
 class App extends Component {
 
@@ -23,6 +27,9 @@ class App extends Component {
         var search = window.location.search ? window.location.search.substr(1)
                 : window.location.hash ? window.location.hash.substr(1)
                 : null;
+
+        // debug
+        search='MDE';
 
         if (search && search.length === 3) {
             // CRS code
@@ -79,29 +86,31 @@ class App extends Component {
 
     render()
     {
-        let body = null;
+        let body, nav, t=this;
 
-        if (this.state.stations)
-            body = <Stations app={this} />;
+        if (this.state.stations) {
+          nav = <Navigation app={this} />
+          body = <Stations app={this} />;
+        }
 
-        if (this.state.station)
-            body = <Boards app={this} station={this.state.station} />;
-        
+        if (this.state.station) {
+          nav = <Navigation app={this} station={ ()=>this.stations() }/>
+          body = <Boards app={this} station={this.state.station} />;
+        }
+
         if( this.state.rid)
             body = <Train app={this} rid={this.state.rid} />;
 
-        return  <div className="App">
-            {body}
-            <div id="outer-footer">
-                <div id="inner-footer"> ©2011-2017 Peter Mount, All Rights Reserved.<br/>
-                    Contains data provided by
-                    <a href="http://www.networkrail.co.uk/">Network Rail</a>,
-                    <a href="http://www.nationalrail.co.uk/">National Rail Enquiries</a>,
-                    <a href="http://www.tfl.gov.uk">Transport for London</a>
-                    and other public sector information licensed under the Open Government Licence.
+        return <div className="App">
+                {nav}
+                {body}
+                <div id="outer-footer">
+                  <div id="inner-footer">
+                    ©2011-2017 Peter Mount, All Rights Reserved.<br/>
+                    Contains data provided by <a href="http://www.networkrail.co.uk/">Network Rail</a>, <a href="http://www.nationalrail.co.uk/">National Rail Enquiries</a> and other public sector information licensed under the Open Government Licence.
+                  </div>
                 </div>
-            </div>
-        </div>;
+              </div>;
     }
 }
 

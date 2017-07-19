@@ -6,17 +6,17 @@ import Stomp from 'stompjs';
  * Handles the display of an informational message from Darwin
  */
 class MessageRow extends Component {
-    
+
     render() {
         var msg=this.props.msg, icon = 'fa-warning';
-        
+
         if(msg.category === 'System')
             icon = 'fa-linux';
         else if(msg.category === 'Information'||msg.category === 'PriorTrains'||msg.category === 'PriorOther')
             icon = 'fa-info-circle';
 
         return (
-                <div className={"ldb-enttop ldb-message " + (this.props.index % 2 === 0 ? "ldbRow altrow" : "ldbRow")}>
+                <div className={"ldb-enttop ldb-message " + (this.props.index % 2 === 0 ? "ldb-row altrow" : "ldb-row")}>
                     <i className={"fa " + icon + ' fa-3x'} aria-hidden="true"></i>
                     <span dangerouslySetInnerHTML={{__html: msg.message}}></span>
                     <div className="clearfix"></div>
@@ -58,7 +58,7 @@ class BoardRow extends Component {
                 : null;
 
         var toc = train.toc ? <span> {train.toc}&nbsp;service. </span> : null;
-        var length = status.length && status.length>0 ? 
+        var length = status.length && status.length>0 ?
                 [
                     <span>Formed of:</span>,
                     <span className="ldbDest"> {status.length} coaches</span>
@@ -67,9 +67,13 @@ class BoardRow extends Component {
 
         var message = null;
         if(status.cancelled || status.delayed)
-            message = <div className="ldbCancelled">{status.reason}</div>;
+            message = <div className="ldb-entbot">
+                <div className="ldbCancelled">{status.reason}</div>
+              </div>;
         else if(status.reason)
-            message = <div className="ldbLate">{status.reason}</div>;
+            message = <div className="ldb-entbot">
+                <div className="ldbLate">{status.reason}</div>
+              </div>;
 
         var calling = null;
         if (this.props.departure.calling && this.props.departure.calling.length > 0)
@@ -83,7 +87,7 @@ class BoardRow extends Component {
             </div>;
 
             return (
-                    <div className={this.props.index % 2 === 0 ? "ldbRow altrow" : "ldbRow"}>
+                    <div className={this.props.index % 2 === 0 ? "ldb-row altrow" : "ldb-row"}>
                         <div className="ldb-enttop">
                             <div className="ldbCol ldbForecast ldbOntime">{expected}</div>
                             <div className="ldbCol ldbSched">{departs}</div>
@@ -94,7 +98,7 @@ class BoardRow extends Component {
                         </div>
                         {message}
                         {calling}
-                        <div className="ldb-entbot">{toc}{length}{lastReport}</div> 
+                        <div className="ldb-entbot">{toc}{length}{lastReport}</div>
                     </div>
                     );
     }
@@ -112,11 +116,11 @@ class Boards extends Component {
     };
 
     componentWillMount() {
-        window.history.replaceState({},'','/?'+this.props.station.code);
-        
+        //window.history.replaceState({},'','/?'+this.props.station.code);
+
         // Load the board a fresh
         this.refresh(this);
-        
+
         // Subscribe to websocket
         var t = this;
         t.wsclient = Stomp.client('wss://ws.area51.onl/ws/');
@@ -137,7 +141,7 @@ class Boards extends Component {
             }
         }, '/');
     }
-    
+
     componentWillUnmount() {
         clearTimeout(this.timer);
         if(this.wsclient) {
@@ -152,10 +156,10 @@ class Boards extends Component {
         if( t.lastUpdate && (now-t.lastUpdate)<10000)
             return ;
         t.lastUpdate=now;
-    
+
         clearTimeout(t.timer);
         t.timer = setTimeout( ()=>t.refresh(t), t.props.app.config.refreshRate );
-        
+
         fetch('https://api.area51.onl/rail/2/station/' + t.props.station.code + '/boards')
                 .then(res => res.json())
                 .then(json => {
@@ -198,7 +202,7 @@ class Boards extends Component {
                                     departure={dep}
                                 />;
                     });
-        
+
         if( messages===null && departures===null )
             messages =  <MessageRow
                             key={'row' + idx}
@@ -214,22 +218,23 @@ class Boards extends Component {
                         />;
 
         return  <div>
-            <div className="App-header">
-            <button className="leftButton btn btn-primary" onClick={this.props.app.stations}>Select another station</button>
-            <h2>{this.props.station.name}</h2>
-            </div>
-            <div className="ldbWrapper">
-                    <div className="ldbTable">
+                  <div className="App-header">
+                    <h2>{this.props.station.name}</h2>
+                    <div className="ldbWrapper">
+                      <div className="ldbTable">
                         <div className="ldbHead">
-                            <div className="ldbCol ldbForecast">Expected</div>
-                            <div className="ldbCol ldbSched">Departs</div>
-                            <div className="ldbCol ldbPlat">Plat.</div>
-                            <div className="ldbCont">Destination</div>
+                          <div className="ldbCol ldbForecast">Expected</div>
+                          <div className="ldbCol ldbSched">Departs</div>
+                          <div className="ldbCol ldbPlat">Plat</div>
+                          <div className="ldbCont">Destination</div>
                         </div>
-                        {messages}
-                        {departures}
+                      </div>
                     </div>
-                    </div>
+                  </div>
+                  <div className="App-intro">
+                    {messages}
+                    {departures}
+                  </div>
                 </div>;
     }
 }
@@ -250,13 +255,12 @@ export default Boards;
 //                                <span className="callList" > <a href="/mldb/HBN">Hollingbourne</a> (16:05) </span>
 //                                <span className="callList" > <a href="/mldb/HRM">Harrietsham</a> (16:09) </span>
 //                                <span className="callList" > <a href="/mldb/LEN">Lenham</a> (16:13) </span>
-//                                <span className="callList" > <a href="/mldb/CHG">Charing</a> (16:18) </span> 
+//                                <span className="callList" > <a href="/mldb/CHG">Charing</a> (16:18) </span>
 //                                <span className="callList" > <a href="/mldb/AFK">Ashford&nbsp;International</a> (16:27) </span>
 //                            </div>
 //                            <div className="ldb-entbot">
 //                                <span> Southeastern&nbsp;service. </span>
 //                                <span className="ldbHeader">Last report:</span>
 //                                <span className="ldbDest"> Barming 15:50 </span>
-//                            </div> 
+//                            </div>
 //                        </div>
-                        

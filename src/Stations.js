@@ -8,9 +8,9 @@ class Stations extends Component {
     };
 
     componentDidMount() {
-        
+
         window.history.replaceState({},'','/');
-        
+
         //this.focus.focus();
         this.setState({options: []});
     }
@@ -35,11 +35,16 @@ class Stations extends Component {
 
     render() {
         return <div>
-            <div className="App-header"><h2>Welcome to the new UK Departure Boards</h2></div>
+            <div className="App-header">
+              <h1>Realtime UK Departure Boards</h1>
+
+            </div>
             <div className="App-intro">
                 <div className="station-form">
                     <div>
-                        <div id="stationlabel" htmlFor="stations">Please enter the station you want to view below: </div>
+                        <div id="stationlabel" htmlFor="stations">
+                          Please enter the station you want to view below:
+                        </div>
                         <AsyncTypeahead
                             id="stations"
                             useCache={false}
@@ -54,8 +59,6 @@ class Stations extends Component {
                     </div>
                 </div>
                 <p>
-                    Live departure boards for every UK Rail Station in a mobile friendly format by the
-                    team behind <a href="https://twitter.com/TrainWatch">@TrainWatch</a> and <a href="//uktra.in/">uktra.in</a>.
                 </p>
                 <p>
                     To use simply enter the UK Rail station name in the box above and you will be shown the current boards for that station.
@@ -71,6 +74,5 @@ class Stations extends Component {
     }
 
 }
-;
 
 export default Stations;
