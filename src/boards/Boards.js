@@ -68,14 +68,9 @@ class Boards extends Component {
           clearTimeout(t.timer);
           t.timer = setTimeout( ()=>t.refresh(t), t.props.app.config.refreshRate );
 
-          console.log("yyy");
           fetch('https://api.area51.onl/rail/2/station/' + t.props.station.location.crs + '/boards')
                 .then(res => res.json())
-                .then(json => {
-                  console.log("xxx");
-                    t.setState({data: json});
-                    console.log(json);
-                })
+                .then(json => t.setState({data: json}) )
                 .catch(e => {
                     // Set retry for another 60s from now
                     clearTimeout(t.timer);
@@ -94,7 +89,7 @@ class Boards extends Component {
         this.refresh(this);
       }
 
-        var departures = null, messages = null, toc, idx = 0;
+        var departures = null, messages = null, idx = 0;
 
         if (this.state.data.messages && this.state.data.messages.length > 0)
             messages = this.state.data.messages
@@ -163,27 +158,3 @@ class Boards extends Component {
 }
 
 export default Boards;
-
-//                        <div className="ldbRow altrow">
-//                            <div className="ldb-enttop">
-//                                <div className="ldbCol ldbForecast ldbOntime">On&nbsp;Time</div>
-//                                <div className="ldbCol ldbSched"> 15:56 </div>
-//                                <div className="ldbCol ldbPlat"> 2 </div>
-//                                <div className="ldbCont"> <a > Ashford International </a>
-//                                    <span className="ldbVia">via Maidstone East</span> </div>
-//                            </div>
-//                            <div className="ldb-entbot">
-//                                <span className="ldbHeader callList" > Calling at: </span>
-//                                <span className="callList" > <a href="/mldb/BSD">Bearsted</a> (16:02) </span>
-//                                <span className="callList" > <a href="/mldb/HBN">Hollingbourne</a> (16:05) </span>
-//                                <span className="callList" > <a href="/mldb/HRM">Harrietsham</a> (16:09) </span>
-//                                <span className="callList" > <a href="/mldb/LEN">Lenham</a> (16:13) </span>
-//                                <span className="callList" > <a href="/mldb/CHG">Charing</a> (16:18) </span>
-//                                <span className="callList" > <a href="/mldb/AFK">Ashford&nbsp;International</a> (16:27) </span>
-//                            </div>
-//                            <div className="ldb-entbot">
-//                                <span> Southeastern&nbsp;service. </span>
-//                                <span className="ldbHeader">Last report:</span>
-//                                <span className="ldbDest"> Barming 15:50 </span>
-//                            </div>
-//                        </div>

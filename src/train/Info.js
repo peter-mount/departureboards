@@ -6,12 +6,15 @@ class Info extends Component {
         if(val && this.props.linkPrefix)
             val=<a href={this.props.linkPrefix+val}>{val}</a>;
 
-        return this.props.value === null || this.props.value === undefined
-                ? null
-                : <div className="ldb-row">
-                    <div className="ldb-label">{this.props.label}</div>
-                    <div className="ldb-value">{val}</div>
-                </div>;
+        if( this.props.value === null || this.props.value === undefined )
+          return null;
+
+          var label = this.props.label ? <div className="ldb-label">{this.props.label}</div> : null;
+
+          return  <div className="ldb-row">
+                    {label}
+                    <div className={this.props.className?this.props.className:"ldb-value"}>{val}</div>
+                  </div>;
     }
 }
 

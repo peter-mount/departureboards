@@ -11,7 +11,6 @@ class Navigation extends Component {
                   Select another station
                 </NavItem>;
 
-console.log(this.props.backToStation);
     if(this.props.backToStation && this.props.backToStation.crs && this.props.backToStation.name) {
       var crs = this.props.backToStation.crs;
       backToStation = <NavItem onClick={()=>app.boards(crs)}>

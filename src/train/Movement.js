@@ -10,9 +10,14 @@ class Movement extends Component {
         var data = this.props.data;
         var lrid = this.props.lrid;
         var c1 = 'expt', c2=c1;
-        if(row.wtp)
+        console.log(row);
+        if(row.can) {
+            c1= 'can';
+            c2= 'cancelled';
+        }
+        else if(row.wtp)
             c1=c2= 'pass';
-        if(row.dep || row.arr) {
+        else if(row.dep || row.arr) {
             c1= 'arr';
             c2= 'arrived';
         }
@@ -27,7 +32,7 @@ class Movement extends Component {
                     <Location data={data} tiploc={row.tpl}/>
                   </td>
                   <td className={'ldb-fsct-plat-' + c1}>
-                    {row.wtp?'Pass':row.platsup ? null : row.plat}
+                    {row.can?'Cancelled':row.wtp?'Pass':row.platsup ? null : row.plat}
                   </td>
                   <td className={'ldb-fsct-' + c2}>
                     {row.dep ? <Time time={row.dep}/> : row.arr ? <Time time={row.arr} arrived="true"/> : <Time time={row.expectedTime} expected="true"/>}

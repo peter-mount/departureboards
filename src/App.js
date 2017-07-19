@@ -32,11 +32,11 @@ class App extends Component {
       var search = window.location.search ? window.location.search.substr(1)
               : window.location.hash ? window.location.hash.substr(1)
               : null;
-      console.log(search);
 
       // debug
-      if(!search || search.length<2)
-        search='MDE';
+      //if(!search || search.length<2)
+        //search='201707198780786';
+        //search='MDE';
 
       setTimeout(()=>{
         if (search && search.length === 3) {
@@ -66,8 +66,6 @@ class App extends Component {
 
     boards(station)
     {
-      console.log('boards',station,this);
-      //this.state = {};
       fetch('https://api.area51.onl/rail/2/station/' + station.toUpperCase() )
         .then(res => res.json())
         .then(json => {
@@ -96,9 +94,7 @@ class App extends Component {
 
     render()
     {
-        let body, nav, t=this;
-
-        console.log(this.state);
+        let body, nav;
 
         if (this.state.stations) {
           nav = <Navigation app={this} />

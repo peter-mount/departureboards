@@ -35,14 +35,11 @@ class Train extends Component {
     }
 
     connectWebSocket(t) {
-        console.log('con 1');
         if(t.stopWSReconnect || t.wsclient) return;
 
-        console.log('con 2');
         t.wsclient = Stomp.client('wss://ws.area51.onl/ws/');
         t.wsclient.debug = ()=>{};
         t.wsclient.connect('public','guest',()=>{
-        console.log('connected');
             // Subscribe to the train
             t.sub1=t.wsclient.subscribe('/topic/darwin.'+this.props.rid+'.#', (msg)=>{
                 t.refresh(t);
@@ -52,8 +49,6 @@ class Train extends Component {
             t.updatePage(t);
         },
         (error)=>{
-            console.error('Websocket error',error);
-
             t.disconnectWebSocket(t);
 
             // Reconnect?
@@ -66,7 +61,6 @@ class Train extends Component {
     }
 
     disconnectWebSocket(t) {
-        console.log('disc');
         try {
             if(t.wsclient)
                 t.wsclient.disconnect();
@@ -98,11 +92,11 @@ class Train extends Component {
         t.timer = setTimeout(() => t.refresh(t), t.props.app.config.refreshRate);
     }
 
-    refresh(t) {
+    refresh(t,force) {
         // Don't update if too quick
         var now = new Date().getTime();
-        //if(this.lastUpdate && (now-this.lastUpdate)<10000)
-        //    return ;
+        //if(!force || (this.lastUpdate && (now-this.lastUpdate)<10000) )
+        //  return ;
 
         this.lastUpdate=now;
 
@@ -111,7 +105,18 @@ class Train extends Component {
         fetch('https://api.area51.onl/rail/2/darwin/rtt/' + t.props.rid)
                 .then(res => res.json())
                 .then(json => {
+                  // add cancel flag to movement if we can match it in the timetable
+                  if(json.movement && json.timetable)
+                    json.timetable.filter(t=>t.can)
+                      .forEach(t=> {
+                        json.movement.filter( m => m.tpl===t.tpl && (t.wtd?t.wtd:t.wta?t.wta:t.wtp) === (m.wtd?m.wtd:m.wta?m.wta:m.wtp) )
+                          .forEach( m => m.can = t.can );
+                      });
+                  return json;
+                })
+                .then(json => {
                     t.resetTimer(t);
+                    console.log(json);
                     t.updateJson(t,json);
                 })
                 .catch(e => {
@@ -129,6 +134,10 @@ class Train extends Component {
                 <span className="sr-only">Loading...</span>
             </div>;
 
+        var via;
+        if(data.via)
+          via = <div className='ldbVia'>{data.via}</div>;
+
         var schedule = data.schedule ? data.schedule : {};
         var forecast = data.forecast ? data.forecast : {};
 
@@ -137,11 +146,16 @@ class Train extends Component {
 
         return <div id="board">
             <div className="App-header">
-                <Time time={data.origin.time}/> <Location data={data} tiploc={data.origin.tpl}/> to <Location data={data} tiploc={data.destination.tpl}/> <span className='ldbVia'>{data.via}</span> due <Time time={data.destination.time}/>
+              <h3>
+                <Time time={data.origin.time}/> <Location data={data} tiploc={data.origin.tpl}/> to <Location data={data} tiploc={data.destination.tpl}/> {via}
+              </h3>
             </div>
 
+            <Info className="ldbCancelled" value={data.schedule && data.schedule.cancReason}/>
+            <Info className="ldbLate" value={data.forecast && data.forecast.lateReason}/>
+
             <div className="ldbWrapper">
-                <div className="ldb-row">
+              <div className="ldb-row">
                     <table>
                         <thead>
                             <tr>
@@ -161,17 +175,16 @@ class Train extends Component {
                                 //.filter(row => lrid===row.id || (lrid>=0 && !data.lastReport.wtp && (lrid+1)===row.id) || !(row.pass || row.wtp))
                                 .filter(row => lrid===row.id || (lrid>=0  && (lrid+1)===row.id) || !(row.pass || row.wtp))
                                 .reduce((a, row) => {
-                                    // Add the movement
-                                    a.push(<Movement key={'r'+row.id} data={data} row={row} lrid={lrid}/>);
-                                    // Add a blank row when between stops with no passes
-                                    //if(row.id===lrid && !(row.wtp||(row.arr&&!row.dep)))
-                                    if(row.id===lrid && !(row.arr && !row.dep))
-                                        a.push(<tr key={'r'+row.id+"a"}>
-                                                    <td className="ldb-fsct-stat">
-                                                        <i className="fa fa-train" aria-hidden="true"></i>
-                                                    </td>
-                                                </tr>);
-                                    return a;
+                                  a.push(<Movement key={'r'+row.id} data={data} row={row} lrid={lrid}/>);
+                                  // Add a blank row when between stops with no passes
+                                  //if(row.id===lrid && !(row.wtp||(row.arr&&!row.dep)))
+                                  if(row.id===lrid && !(row.arr && !row.dep))
+                                    a.push( <tr key={'r'+row.id+"a"}>
+                                              <td className="ldb-fsct-stat">
+                                                <i className="fa fa-train" aria-hidden="true"></i>
+                                              </td>
+                                            </tr>);
+                                  return a;
                                 },[])
                                 :null
                         }
