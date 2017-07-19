@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 //import logo from './logo.svg';
+import About from './info/About.js';
 import Navigation from './Navigation.js';
 import Stations from './Stations.js';
 import Boards from './boards/Boards.js';
@@ -60,6 +61,8 @@ class App extends Component {
       this.setState({
         stations: true,
         msg: msg,
+        about: false,
+        contact: false,
         station: null,
         rid:null,
         returnStation: null
@@ -75,6 +78,8 @@ class App extends Component {
           if(json.location)
             this.setState({
               stations: false,
+              about: false,
+              contact: false,
               station: json,
               rid:null,
               returnStation: null
@@ -87,29 +92,56 @@ class App extends Component {
 
     train(rid, returnStation)
     {
-        this.setState({
-            stations: false,
-            rid: rid,
-            returnStation: returnStation
-        });
+      this.setState({
+        stations: false,
+        about: false,
+        contact: false,
+        rid: rid,
+        returnStation: returnStation
+      });
+    }
+
+    about()
+    {
+      this.setState({
+        about: true,
+        contact: false,
+        stations: false,
+        rid: null,
+        returnStation: null
+      });
+    }
+
+    contactUs()
+    {
+      this.setState({
+        contact: true,
+        stations: false,
+        about: false,
+        rid: null,
+        returnStation: null
+      });
     }
 
     render()
     {
         let body, nav;
 
-        if (this.state.stations) {
+console.log(this.state);
+        if( this.state.about ) {
+          nav = <Navigation app={this} />
+          body = <About app={this} />;
+        }
+        else if (this.state.stations) {
           nav = <Navigation app={this} />
           body = <Stations app={this} />;
         }
-
-        if (this.state.station) {
+        else if (this.state.station) {
           nav = <Navigation app={this} station={ ()=>this.stations() }/>
           // Key here so react knows to force refresh when moving between boards
           body = <Boards key={this.state.station.location.crs} app={this} station={this.state.station} />;
         }
-
-        if( this.state.rid) {
+        else if( this.state.rid) {
           if(this.state.returnStation && this.state.returnStation.crs)
             nav = <Navigation
                     app={this}
@@ -117,10 +149,10 @@ class App extends Component {
                     backToStation={this.state.returnStation}
                   />
           else
-          nav = <Navigation
-                  app={this}
-                  station={ ()=>this.stations() }
-                />
+            nav = <Navigation
+                    app={this}
+                    station={ ()=>this.stations() }
+                  />
           body = <Train app={this} rid={this.state.rid} />;
         }
 

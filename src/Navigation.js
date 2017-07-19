@@ -21,7 +21,7 @@ class Navigation extends Component {
     return <Navbar inverse collapseOnSelect default fixedTop>
       <Navbar.Header>
         <Navbar.Brand>
-          <a href='#'>UK Departureboards</a>
+          <a onClick={()=>app.stations()}>UK Departureboards</a>
         </Navbar.Brand>
         <Navbar.Toggle/>
       </Navbar.Header>
@@ -29,8 +29,8 @@ class Navigation extends Component {
         <Nav>
           {backToStation}
           {station}
-          <NavItem>About</NavItem>
-          <NavItem>ContactUs</NavItem>
+          <NavItem onClick={ ()=>app.about() }>About</NavItem>
+          <NavItem onClick={ ()=>app.contactUs() }>ContactUs</NavItem>
         </Nav>
       </Navbar.Collapse>
     </Navbar>;
