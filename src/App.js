@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 //import logo from './logo.svg';
 import About from './info/About.js';
+import Boards from './boards/Boards.js';
 import ContactUs from './info/ContactUs.js';
+import EUCookie from './EUCookie.js';
 import Navigation from './Navigation.js';
 import Stations from './Stations.js';
-import Boards from './boards/Boards.js';
 import Train from './train/Train.js';
 
 import './css/App.css';
@@ -160,16 +161,17 @@ class App extends Component {
           body = <Train app={this} rid={this.state.rid} />;
         }
 
-        return <div className="App">
-                {nav}
-                {body}
-                <div id="outer-footer">
-                  <div id="inner-footer">
-                    ©2011-{1900+new Date().getYear()} Peter Mount, All Rights Reserved.<br/>
-                    Contains data provided by <a href="http://www.networkrail.co.uk/">Network Rail</a>, <a href="http://www.nationalrail.co.uk/">National Rail Enquiries</a> and other public sector information licensed under the Open Government Licence.
+        return  <div className="App">
+                  {nav}
+                  <EUCookie/>
+                  {body}
+                  <div id="outer-footer">
+                    <div id="inner-footer">
+                      ©2011-{1900+new Date().getYear()} Peter Mount, All Rights Reserved.<br/>
+                      Contains data provided by <a href="http://www.networkrail.co.uk/">Network Rail</a>, <a href="http://www.nationalrail.co.uk/">National Rail Enquiries</a> and other public sector information licensed under the Open Government Licence.
+                    </div>
                   </div>
-                </div>
-              </div>;
+                </div>;
     }
 }
 

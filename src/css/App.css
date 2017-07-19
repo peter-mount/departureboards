@@ -1,7 +1,17 @@
 .App {
 }
 
+/* .App-header with EUCookie */
+#root > div > div:nth-child(3) > .App-header {
+  margin-top: 0;
+}
+
+/* .App-header without EUCookie */
 .App-header {
+  margin-top: 4em;
+}
+
+.App .alert {
   margin-top: 4em;
 }
 
