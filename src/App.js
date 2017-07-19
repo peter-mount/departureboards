@@ -16,21 +16,29 @@ class App extends Component {
     }
 
     constructor(props) {
-        super(props);
+      super(props);
 
-        this.state = {
-            stations: true
-        };
+      // On history changes set the page
+      window.onpopstate = ()=>this.setPage();
 
-        console.log(window.location.search);
-        console.log(window.location.hash);
-        var search = window.location.search ? window.location.search.substr(1)
-                : window.location.hash ? window.location.hash.substr(1)
-                : null;
+      // Select the page
+      this.setPage();
+    }
 
-        // debug
+    setPage() {
+      this.state = {
+      };
+
+      var search = window.location.search ? window.location.search.substr(1)
+              : window.location.hash ? window.location.hash.substr(1)
+              : null;
+      console.log(search);
+
+      // debug
+      if(!search || search.length<2)
         search='MDE';
 
+      setTimeout(()=>{
         if (search && search.length === 3) {
           // CRS code
           this.boards(search);
@@ -38,16 +46,22 @@ class App extends Component {
           // RID
           this.train(search,null);
         } else {
-          window.history.replaceState({}, '', '/');
+          this.stations();
         }
+      },10);
+    }
+
+    setPath(q) {
+      if(q!==window.location.search)
+        window.history.pushState({},'','/?'+q);
     }
 
     stations = (msg) => {
-        this.setState({
-            stations: true,
-            station: null,
-            msg: msg
-        });
+      this.setState({
+        stations: true,
+        station: null,
+        msg: msg
+      });
     }
 
     boards(station)

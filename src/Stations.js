@@ -8,11 +8,11 @@ class Stations extends Component {
     };
 
     componentDidMount() {
+      if(!window.location.search || window.location.search.length>0)
+        window.history.pushState({},'','/');
 
-        window.history.replaceState({},'','/');
-
-        //this.focus.focus();
-        this.setState({options: []});
+      //this.focus.focus();
+      this.setState({options: []});
     }
 
     // Perform the query
@@ -30,7 +30,7 @@ class Stations extends Component {
     // Handle the selection. Only pass 1 entry to the app
     select(selection, t) {
         if (selection && selection.length === 1)
-            t.props.app.boards(selection[0], t.props.app);
+            t.props.app.boards(selection[0].code, t.props.app);
     }
 
     render() {

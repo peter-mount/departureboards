@@ -18,7 +18,7 @@ class Boards extends Component {
     };
 
     componentWillMount() {
-      //window.history.replaceState({},'','/?'+this.props.station.code);
+      this.props.app.setPath(this.props.station.location.crs);
 
       // Load the board a fresh
       this.refresh(this);

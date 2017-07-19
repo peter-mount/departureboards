@@ -17,14 +17,14 @@ class Train extends Component {
     };
 
     componentWillMount() {
-        //window.history.replaceState({}, '', '?' + this.props.rid);
+      this.props.app.setPath(this.props.rid);
 
-        // Get the global data in the background
-        this.refresh(this);
+      // Get the global data in the background
+      this.refresh(this);
 
-        // Subscribe to websocket
-        this.stopWSReconnect=false;
-        this.connectWebSocket(this);
+      // Subscribe to websocket
+      this.stopWSReconnect=false;
+      this.connectWebSocket(this);
     }
 
     componentWillUnmount() {
