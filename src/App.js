@@ -32,61 +32,59 @@ class App extends Component {
         search='MDE';
 
         if (search && search.length === 3) {
-            // CRS code
-            this.state = {};
-            fetch('https://api.area51.onl/rail/2/station/' + search.toUpperCase())
-                    .then(res => res.json())
-                    .then(json => {
-                        this.setState({
-                            station: {
-                                code: json.location.crs,
-                                name: json.location.name,
-                                label: json.location.name + ' [' + json.location.crs + ']'
-                            }
-                        });
-                    })
-                    .catch(e => {
-                        window.history.replaceState({}, '', '/');
-                        this.setState({
-                            stations: true
-                        });
-                    });
+          // CRS code
+          this.boards(search);
         } else if (search && search.length === 15) {
-            this.state ={
-                stations: false,
-                rid: search
-            };
+          // RID
+          this.train(search,null);
         } else {
-            window.history.replaceState({}, '', '/');
+          window.history.replaceState({}, '', '/');
         }
     }
 
-    stations = () => {
+    stations = (msg) => {
         this.setState({
             stations: true,
-            station: null
+            station: null,
+            msg: msg
         });
     }
 
-    boards(station, t)
+    boards(station)
     {
-        this.setState({
-            stations: false,
-            station: station
-        });
+      console.log('boards',station,this);
+      //this.state = {};
+      fetch('https://api.area51.onl/rail/2/station/' + station.toUpperCase() )
+        .then(res => res.json())
+        .then(json => {
+          // null location then crs not recognised
+          if(json.location)
+            this.setState({
+              stations: false,
+              station: json,
+              rid:null,
+              returnStation: null
+            });
+          else
+            this.stations('Unable to locate '+station)
+        })
+        .catch(()=> this.stations('Unable to locate '+station) );
     }
 
-    train(rid, t)
+    train(rid, returnStation)
     {
         this.setState({
             stations: false,
-            rid: rid
+            rid: rid,
+            returnStation: returnStation
         });
     }
 
     render()
     {
         let body, nav, t=this;
+
+        console.log(this.state);
 
         if (this.state.stations) {
           nav = <Navigation app={this} />
@@ -95,18 +93,31 @@ class App extends Component {
 
         if (this.state.station) {
           nav = <Navigation app={this} station={ ()=>this.stations() }/>
-          body = <Boards app={this} station={this.state.station} />;
+          // Key here so react knows to force refresh when moving between boards
+          body = <Boards key={this.state.station.location.crs} app={this} station={this.state.station} />;
         }
 
-        if( this.state.rid)
-            body = <Train app={this} rid={this.state.rid} />;
+        if( this.state.rid) {
+          if(this.state.returnStation && this.state.returnStation.crs)
+            nav = <Navigation
+                    app={this}
+                    station={ ()=>this.stations() }
+                    backToStation={this.state.returnStation}
+                  />
+          else
+          nav = <Navigation
+                  app={this}
+                  station={ ()=>this.stations() }
+                />
+          body = <Train app={this} rid={this.state.rid} />;
+        }
 
         return <div className="App">
                 {nav}
                 {body}
                 <div id="outer-footer">
                   <div id="inner-footer">
-                    ©2011-2017 Peter Mount, All Rights Reserved.<br/>
+                    ©2011-{1900+new Date().getYear()} Peter Mount, All Rights Reserved.<br/>
                     Contains data provided by <a href="http://www.networkrail.co.uk/">Network Rail</a>, <a href="http://www.nationalrail.co.uk/">National Rail Enquiries</a> and other public sector information licensed under the Open Government Licence.
                   </div>
                 </div>

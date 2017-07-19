@@ -4,9 +4,20 @@ import {Navbar, Nav, NavItem} from 'react-bootstrap';
 class Navigation extends Component {
 
   render() {
-    var app = this.props.app, station;
+    var app = this.props.app, station, backToStation;
+
     if(this.props.station)
-      station = <NavItem onClick={app.stations}>Select another station</NavItem>;
+      station = <NavItem onClick={app.stations}>
+                  Select another station
+                </NavItem>;
+
+console.log(this.props.backToStation);
+    if(this.props.backToStation && this.props.backToStation.crs && this.props.backToStation.name) {
+      var crs = this.props.backToStation.crs;
+      backToStation = <NavItem onClick={()=>app.boards(crs)}>
+                        Back to {this.props.backToStation.name} {crs}
+                      </NavItem>;
+    }
 
     return <Navbar inverse collapseOnSelect default fixedTop>
       <Navbar.Header>
@@ -17,6 +28,7 @@ class Navigation extends Component {
       </Navbar.Header>
       <Navbar.Collapse>
         <Nav>
+          {backToStation}
           {station}
           <NavItem>About</NavItem>
           <NavItem>ContactUs</NavItem>

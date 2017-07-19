@@ -14,15 +14,21 @@ class BoardRow extends Component {
             destination = 'Terminates Here';
         }
 
-        var expected = 'On Time';
-        if (status.arrived)
-            expected = 'Arrived';
+        var expected = 'On Time', expectedClass='ldbOntime';
+        if(status.cancelled) {
+          expected = 'Cancelled';
+          expectedClass = 'ldbCancelled';
+        } else if (status.arrived)
+          expected = 'Arrived';
         else if (status.departed)
-            expected = 'Departed';
-        else if (status.delayed)
-            expected = 'Delayed';
-        else if (status.delay > 0)
-            expected = status.time;
+          expected = 'Departed';
+        else if (status.delayed) {
+          expected = 'Delayed';
+          expectedClass = 'ldbLate';
+        } else if (status.delay > 0) {
+          expected = status.time;
+          expectedClass = 'ldbLate';
+        }
 
         var lastReport = status.lastReport ?
                 [
@@ -55,26 +61,24 @@ class BoardRow extends Component {
                 <span className="ldbHeader callList" > Calling at:</span>
                 {
                     this.props.departure.calling.reduce((a, cp) => {
-                        a.push(<span className="callList" ><a href={"?" + cp.crs}>{cp.name}</a> ({cp.time}) </span>);
+                        a.push(<span className="callList" ><a onClick={()=>this.props.app.boards(cp.crs)}>{cp.name}</a> ({cp.time}) </span>);
                         return a;
                 },[])}
             </div>;
 
-            return (
-                    <div className={this.props.index % 2 === 0 ? "ldb-row altrow" : "ldb-row"}>
-                        <div className="ldb-enttop">
-                            <div className="ldbCol ldbForecast ldbOntime">{expected}</div>
-                            <div className="ldbCol ldbSched">{departs}</div>
-                            <div className="ldbCol ldbPlat">{status.platform}</div>
-                            <div className="ldbCont">
-                        <a href={"?" + train.rid}>{destination}</a>
-                            </div>
+            return  <div className={this.props.index % 2 === 0 ? "ldb-row altrow" : "ldb-row"}>
+                      <div className="ldb-enttop">
+                        <div className={"ldbCol ldbForecast "+expectedClass}>{expected}</div>
+                        <div className={"ldbCol ldbSched "+expectedClass}>{departs}</div>
+                        <div className="ldbCol ldbPlat">{status.platform}</div>
+                        <div className="ldbCont">
+                          <a onClick={()=>this.props.app.train(train.rid,this.props.station)}>{destination}</a>
                         </div>
-                        {message}
-                        {calling}
-                        <div className="ldb-entbot">{toc}{length}{lastReport}</div>
-                    </div>
-                    );
+                      </div>
+                      {message}
+                      {calling}
+                      <div className="ldb-entbot">{toc}{length}{lastReport}</div>
+                    </div>;
     }
 };
 

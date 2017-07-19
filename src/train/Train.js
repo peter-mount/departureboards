@@ -17,7 +17,7 @@ class Train extends Component {
     };
 
     componentWillMount() {
-        window.history.replaceState({}, '', '?' + this.props.rid);
+        //window.history.replaceState({}, '', '?' + this.props.rid);
 
         // Get the global data in the background
         this.refresh(this);
