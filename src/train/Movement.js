@@ -10,7 +10,6 @@ class Movement extends Component {
         var data = this.props.data;
         var lrid = this.props.lrid;
         var c1 = 'expt', c2=c1;
-        console.log(row);
         if(row.can) {
             c1= 'can';
             c2= 'cancelled';

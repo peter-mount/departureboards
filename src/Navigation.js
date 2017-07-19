@@ -7,7 +7,7 @@ class Navigation extends Component {
     var app = this.props.app, station, backToStation;
 
     if(this.props.station)
-      station = <NavItem onClick={app.stations}>
+      station = <NavItem onClick={()=>app.stations()}>
                   Select another station
                 </NavItem>;
 

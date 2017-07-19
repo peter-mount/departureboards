@@ -116,7 +116,6 @@ class Train extends Component {
                 })
                 .then(json => {
                     t.resetTimer(t);
-                    console.log(json);
                     t.updateJson(t,json);
                 })
                 .catch(e => {
@@ -126,7 +125,6 @@ class Train extends Component {
     }
 
     render() {
-        console.log(this.state);
         var data = this.state.data;
         if (this.state.hide || !data )
             return <div>
