@@ -141,11 +141,6 @@ class App extends Component {
           nav = <Navigation app={this} />
           body = <Stations app={this} />;
         }
-        else if (this.state.station) {
-          nav = <Navigation app={this} station={ ()=>this.stations() }/>
-          // Key here so react knows to force refresh when moving between boards
-          body = <Boards key={this.state.station.location.crs} app={this} station={this.state.station} />;
-        }
         else if( this.state.rid) {
           if(this.state.returnStation && this.state.returnStation.crs)
             nav = <Navigation
@@ -159,6 +154,11 @@ class App extends Component {
                     station={ ()=>this.stations() }
                   />
           body = <Train app={this} rid={this.state.rid} />;
+        }
+        else if (this.state.station) {
+          nav = <Navigation app={this} station={ ()=>this.stations() }/>
+          // Key here so react knows to force refresh when moving between boards
+          body = <Boards key={this.state.station.location.crs} app={this} station={this.state.station} />;
         }
 
         return  <div className="App">
