@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import Navigation from './Navigation.js';
 import Stations from './Stations.js';
 import Boards from './boards/Boards.js';
-import Train from './Train.js';
+import Train from './train/Train.js';
 
 import './css/App.css';
 import './css/ldb.css';

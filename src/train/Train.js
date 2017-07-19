@@ -1,109 +1,12 @@
 import React, { Component } from 'react';
 
+import Delay from './Delay.js';
+import Info from './Info.js';
+import Location from './Location.js';
+import Movement from './Movement.js';
+import Time from './Time.js';
+
 import Stomp from 'stompjs';
-
-class Time extends Component {
-    render() {
-        var t = this.props.time;
-        if (!t)
-            return null;
-
-        t = t.split(':');
-        var s = this.props.arrived ? 'a' : ':';
-
-        return <span className={this.props.expected ? 'expected' : 'arrived'}>{t[0] + s + t[1]}</span>;
-    }
-}
-;
-
-class Delay extends Component {
-    render() {
-        var t = this.props.delay, full=this.props.full;
-        if (!t)
-            return null;
-
-        t = t.split(':');
-        
-        var suff=full?' late':'L', c='delay_delayed';
-        if(t[0].startsWith('-')) {
-            suff=full?' early' : 'E';
-            t[0]=t[0].substr(1);
-            c='delay_early';
-        }
-
-        var r = t[1];
-        if(t[0] !== '00' )
-            r=t[0]+':'+t[1];
-        
-        if(r.startsWith('0'))
-            r=r.substr(1);
-        
-        if(r==='0') {
-            r=full?'' : 'OT';
-            suff='';
-            c='delay_ontime';
-        }
-        
-        return <span className={full?'':c}>{r+suff}</span>;
-    }
-}
-;
-
-class Location extends Component {
-    render() {
-        var tpl = this.props.data.tiploc[this.props.tiploc];
-        return <span className="tiploc">{tpl ? tpl.name.replace('&amp;','&') : this.props.tiploc}</span>;
-    }
-}
-;
-
-class Movement extends Component {
-    render() {
-        var row = this.props.row;
-        var data = this.props.data;
-        var lrid = this.props.lrid;
-        var c1 = 'expt', c2=c1;
-        if(row.wtp)
-            c1=c2= 'pass';
-        if(row.dep || row.arr) {
-            c1= 'arr';
-            c2= 'arrived';
-        }
-
-        // Show icon only if we are the last id
-        //var icon = lrid===row.id && !row.dep ?<i className="fa fa-train" aria-hidden="true"></i>:null;
-        var icon = lrid===row.id && (row.arr && !row.dep) ?<i className="fa fa-train" aria-hidden="true"></i>:null;
-        
-        return <tr key={'r'+row.id}>
-                                                    <td className="ldb-fsct-stat">{icon}</td>
-                                                        <td className={'ldb-fsct-loc-' + c1}>
-                                                <Location data={data} tiploc={row.tpl}/>
-                                                </td>
-                                                <td className={'ldb-fsct-plat-' + c1}> {row.wtp?'Pass':row.platsup ? null : row.plat} </td>
-                                                <td className={'ldb-fsct-' + c2}>
-                                                    {row.dep ? <Time time={row.dep}/> : row.arr ? <Time time={row.arr} arrived="true"/> : <Time time={row.expectedTime} expected="true"/>}
-                                                </td>
-                                                <td className={'ldb-fsct-' + c2}><Delay delay={row.delay}/></td>
-                                                </tr>;
-
-    }
-};
-
-class Info extends Component {
-    render() {
-        var val = this.props.value;
-        if(val && this.props.linkPrefix)
-            val=<a href={this.props.linkPrefix+val}>{val}</a>;
-        
-        return this.props.value === null || this.props.value === undefined
-                ? null
-                : <div className="ldb-row">
-                    <div className="ldb-label">{this.props.label}</div>
-                    <div className="ldb-value">{val}</div>
-                </div>;
-    }
-}
-;
 
 class Train extends Component {
 
@@ -115,10 +18,10 @@ class Train extends Component {
 
     componentWillMount() {
         window.history.replaceState({}, '', '?' + this.props.rid);
-        
+
         // Get the global data in the background
         this.refresh(this);
-        
+
         // Subscribe to websocket
         this.stopWSReconnect=false;
         this.connectWebSocket(this);
@@ -126,11 +29,11 @@ class Train extends Component {
 
     componentWillUnmount() {
         if(this.timer) clearTimeout(this.timer);
-        
+
         this.stopWSReconnect=true;
         this.disconnectWebSocket(this);
     }
-    
+
     connectWebSocket(t) {
         console.log('con 1');
         if(t.stopWSReconnect || t.wsclient) return;
@@ -144,24 +47,24 @@ class Train extends Component {
             t.sub1=t.wsclient.subscribe('/topic/darwin.'+this.props.rid+'.#', (msg)=>{
                 t.refresh(t);
             });
-            
+
             // Refresh now?
             t.updatePage(t);
         },
         (error)=>{
             console.error('Websocket error',error);
-            
+
             t.disconnectWebSocket(t);
-            
+
             // Reconnect?
             if(!t.stopWSReconnect)
                 setTimeout(()=>t.connectWebSocket(t),5000);
-            
+
             // Refresh now?
             t.updatePage(t);
         }, '/');
     }
-    
+
     disconnectWebSocket(t) {
         console.log('disc');
         try {
@@ -202,9 +105,9 @@ class Train extends Component {
         //    return ;
 
         this.lastUpdate=now;
-        
+
         t.resetTimer(t);
-        
+
         fetch('https://api.area51.onl/rail/2/darwin/rtt/' + t.props.rid)
                 .then(res => res.json())
                 .then(json => {
@@ -225,7 +128,7 @@ class Train extends Component {
                 <i className="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
                 <span className="sr-only">Loading...</span>
             </div>;
-            
+
         var schedule = data.schedule ? data.schedule : {};
         var forecast = data.forecast ? data.forecast : {};
 
@@ -236,7 +139,7 @@ class Train extends Component {
             <div className="App-header">
                 <Time time={data.origin.time}/> <Location data={data} tiploc={data.origin.tpl}/> to <Location data={data} tiploc={data.destination.tpl}/> <span className='ldbVia'>{data.via}</span> due <Time time={data.destination.time}/>
             </div>
-       
+
             <div className="ldbWrapper">
                 <div className="ldb-row">
                     <table>
@@ -275,7 +178,7 @@ class Train extends Component {
                         </tbody>
                     </table>
                 </div>
- 
+
             <Info label="Last Report" value={data.lastReport && forecast.activated && !forecast.deactivated
                                 ? [
                                     // What happened
