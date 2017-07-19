@@ -57,7 +57,6 @@ class App extends Component {
     }
 
     stations = (msg) => {
-      console.log('stations',msg);
       this.setState({
         stations: true,
         msg: msg,

@@ -13,13 +13,11 @@ class MessageRow extends Component {
         else if(msg.category === 'Information'||msg.category === 'PriorTrains'||msg.category === 'PriorOther')
             icon = 'fa-info-circle';
 
-        return (
-                <div className={"ldb-enttop ldb-message " + (this.props.index % 2 === 0 ? "ldb-row altrow" : "ldb-row")}>
-                    <i className={"fa " + icon + ' fa-3x'} aria-hidden="true"></i>
-                    <span dangerouslySetInnerHTML={{__html: msg.message}}></span>
-                    <div className="clearfix"></div>
-                </div>
-                );
+        return  <div className={"ldb-enttop ldb-message " + (this.props.index % 2 === 0 ? "ldb-row altrow" : "ldb-row")}>
+                  <i className={"fa " + icon + ' fa-3x'} aria-hidden="true"></i>
+                  <span dangerouslySetInnerHTML={{__html: msg.message}}></span>
+                  <div className="clearfix"></div>
+                </div>;
     }
 };
 

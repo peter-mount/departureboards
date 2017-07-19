@@ -1,6 +1,14 @@
 /* LDB Standard Theme */
 
 .ldb-message i {
+  font-size: 200%;
+}
+
+.ldb-message span {
+  font-size: 90%;
+}
+
+.ldb-message i {
     float:left;
     padding: 0.125em;
 }
