@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 //import logo from './logo.svg';
 import About from './info/About.js';
+import ContactUs from './info/ContactUs.js';
 import Navigation from './Navigation.js';
 import Stations from './Stations.js';
 import Boards from './boards/Boards.js';
@@ -127,10 +128,13 @@ class App extends Component {
     {
         let body, nav;
 
-console.log(this.state);
         if( this.state.about ) {
           nav = <Navigation app={this} />
           body = <About app={this} />;
+        }
+        else if( this.state.contact ) {
+          nav = <Navigation app={this} />
+          body = <ContactUs app={this} />;
         }
         else if (this.state.stations) {
           nav = <Navigation app={this} />
