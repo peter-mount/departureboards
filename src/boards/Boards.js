@@ -60,10 +60,15 @@ class Boards extends Component {
     }
 
     unsubscribe() {
-      if(this.wsclient) {
-          this.wsclient.disconnect();
+      try {
+        if(this.wsclient) {
+            this.wsclient.disconnect();
+        }
+      } catch(e) {
+        console.error(e);
+      } finally {
+        this.wsclient=null;
       }
-      this.wsclient=null;
     }
 
     update(t,m) {
