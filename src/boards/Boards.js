@@ -117,7 +117,7 @@ class Boards extends Component {
 
     getTime(d) {
       var dl=d.split(':');
-      return (Number.parseInt(dl[0])*60)+Number.parseInt(dl[1]);
+      return (Number.parseInt(dl[0],10)*60)+Number.parseInt(dl[1],10);
     }
 
     sort(d,t) {

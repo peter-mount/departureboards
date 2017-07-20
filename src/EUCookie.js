@@ -8,7 +8,7 @@ class EUCookie extends Component {
   constructor(props) {
     super(props);
 
-    var k = '2002/58/EC', e = localStorage.getItem(k), n = new Date().getTime(), c = null;
+    var k = '2002/58/EC', e = localStorage.getItem(k), n = new Date().getTime();
 
     if(e)
       try {
@@ -21,7 +21,6 @@ class EUCookie extends Component {
     if ((e && e[0] < n) || !e) {
       e=[n + 15552000000,n];
       localStorage.setItem(k, JSON.stringify(e));
-      c=true;
     }
 
     this.state = {

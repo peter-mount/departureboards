@@ -12,7 +12,7 @@ class About extends Component {
 
                 <h1>National Rail Enquiries</h1>
                 <div className="logo-container">
-                  <img className="logo-nre" src="./NRE_Powered_logo.jpg" />
+                  <img className="logo-nre" alt="Powered by National Rail Enquiries" src="./NRE_Powered_logo.jpg" />
                 </div>
                 <p> For the mainline stations, the application is a view on the Darwin Push Port real time feed from National Rail Enquiries. </p>
                 <p> This feed provides both timetabled times for services but also actual as well as the predicted arrival &amp; departure times for services, so when a service is delayed then we will show the same predicted times as National Rail Enquiries have access to. </p>
