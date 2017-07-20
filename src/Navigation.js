@@ -31,6 +31,7 @@ class Navigation extends Component {
           {station}
           <NavItem onClick={ ()=>app.about() }>About</NavItem>
           <NavItem onClick={ ()=>app.contactUs() }>ContactUs</NavItem>
+          <NavItem onClick={ ()=>app.configure() }>Configure</NavItem>
         </Nav>
       </Navbar.Collapse>
     </Navbar>;

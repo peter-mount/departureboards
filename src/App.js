@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 //import logo from './logo.svg';
 import About from './info/About.js';
 import Boards from './boards/Boards.js';
+import Config from './config/Config.js';
 import ContactUs from './info/ContactUs.js';
 import EUCookie from './EUCookie.js';
 import Navigation from './Navigation.js';
@@ -59,10 +60,26 @@ class App extends Component {
         window.history.pushState({},'','/?'+q);
     }
 
+    configure = () => {
+      this.setState({
+        configure: true,
+        ret: this.state,
+        stations: false,
+        msg: null,
+        about: false,
+        contact: false,
+        station: null,
+        rid:null,
+        returnStation: null
+      });
+    }
+
     stations = (msg) => {
       this.setState({
         stations: true,
         msg: msg,
+        configure: false,
+        ret: null,
         about: false,
         contact: false,
         station: null,
@@ -79,6 +96,8 @@ class App extends Component {
           // null location then crs not recognised
           if(json.location)
             this.setState({
+              configure: false,
+              ret: null,
               stations: false,
               about: false,
               contact: false,
@@ -95,6 +114,8 @@ class App extends Component {
     train(rid, returnStation)
     {
       this.setState({
+        configure: false,
+        ret: null,
         stations: false,
         about: false,
         contact: false,
@@ -107,6 +128,8 @@ class App extends Component {
     {
       this.setState({
         about: true,
+        configure: false,
+        ret: null,
         contact: false,
         stations: false,
         rid: null,
@@ -118,6 +141,8 @@ class App extends Component {
     {
       this.setState({
         contact: true,
+        configure: false,
+        ret: null,
         stations: false,
         about: false,
         rid: null,
@@ -129,7 +154,11 @@ class App extends Component {
     {
         let body, nav;
 
-        if( this.state.about ) {
+        if( this.state.configure ) {
+          nav = <Navigation app={this} />
+          body = <Config app={this} ret={this.state.ret} />;
+        }
+        else if( this.state.about ) {
           nav = <Navigation app={this} />
           body = <About app={this} />;
         }
@@ -143,16 +172,10 @@ class App extends Component {
         }
         else if( this.state.rid) {
           if(this.state.returnStation && this.state.returnStation.crs)
-            nav = <Navigation
-                    app={this}
-                    station={ ()=>this.stations() }
-                    backToStation={this.state.returnStation}
-                  />
+            nav = <Navigation app={this} backToStation={this.state.returnStation} />
           else
-            nav = <Navigation
-                    app={this}
-                    station={ ()=>this.stations() }
-                  />
+            nav = <Navigation app={this} station={ ()=>this.stations() } />
+
           body = <Train app={this} rid={this.state.rid} />;
         }
         else if (this.state.station) {
@@ -160,6 +183,8 @@ class App extends Component {
           // Key here so react knows to force refresh when moving between boards
           body = <Boards key={this.state.station.location.crs} app={this} station={this.state.station} />;
         }
+
+        console.log(body);
 
         return  <div className="App">
                   {nav}
