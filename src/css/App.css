@@ -65,6 +65,34 @@ h1 {text-align: center;}
 
 p {text-align: justify;}
 
+/* Config page */
+h4.config {
+  text-align: center;
+  font-weight: bold;
+}
+div.config {
+  display: block;
+  width: 100%;
+  border: 1px dotted green;
+  line-height: 1.75em;
+}
+
+div.config div:first-child {
+  display: inline-block;
+  text-align: right;
+  padding-right: 0.25em;
+  width: 70%;
+  border: 1px dotted yellow;
+}
+
+div.config div:not(:first-child) {
+  display: inline-block;
+  text-align: left;
+  padding-left: 0.25em;
+  width: 30%;
+  border: 1px dotted yellow;
+}
+
 /* iPhone 3GS */
 @media all and ( max-width: 320px ) {
     /* Ensure navbar fits screen */

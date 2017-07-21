@@ -1,4 +1,8 @@
 import React, { Component } from 'react';
+import {Button, Tab, Tabs} from 'react-bootstrap';
+
+import ConfigBoards from './ConfigBoards.js';
+import ConfigNetwork from './ConfigNetwork.js';
 
 class Config extends Component {
 
@@ -11,40 +15,50 @@ class Config extends Component {
     console.log('conf rend');
 
     return  <div>
-              <div className="App-header">
-                <h1>Configuration</h1>
-              </div>
-              <div className="App-intro">
-                <h2>Options</h2>
-                <p>The following options are available:</p>
-                <table>
-                  <tbody>
-                    <tr>
-                      <th className="center" colSpan="2">Services</th>
-                    </tr>
-                    <tr>
-                      <th>Show services terminating here</th>
-                      <td><input id="settingTerm" name="ldbTerm" default="f" type="checkbox" /></td>
-                    </tr>
-                    <tr>
-                      <th className="center" colSpan="2">Calling points</th>
-                    </tr>
-                    <tr>
-                      <th>Show for running services</th>
-                      <td><input id="settingCall" name="ldbCall" default="t" type="checkbox" /></td>
-                    </tr>
-                    <tr>
-                      <th>Show for terminated services</th>
-                      <td><input id="settingTermCall" name="ldbTermCall" default="t" type="checkbox" /></td>
-                    </tr>
-                    <tr>
-                      <th>Show for cancelled services</th>
-                      <td><input id="settingCanCall" name="ldbCanCall" default="t" type="checkbox" /></td>
-                    </tr>
-                  </tbody>
-                </table>
-                <div> <a id="settingsCancel" className="ldbbutton">Cancel</a> <a id="settingsSave" className="ldbbutton">Save</a> </div>
-              </div>
+              <div className="App-intro" style={{
+                position: "absolute",
+                top: "4em",
+                bottom: "2.25em",
+                left: "0.5em",
+                right: "0.5em",
+                border: "1px solid red"
+              }}>
+                <Tabs
+                  defaultActiveKey={1}
+                  id="configTabs"
+                  animation={false}
+                  style={{
+                    position: "absolute",
+                    top: "0em",
+                    bottom: "2.5em",
+                    left: "0em",
+                    right: "0em",
+                    border: "1px solid red"
+                  }}
+                >
+
+                  <Tab eventKey={1} title="Boards">
+                    <ConfigBoards />
+                  </Tab>
+
+                  <Tab eventKey={2} title="Network">
+                    <ConfigNetwork />
+                  </Tab>
+
+                </Tabs>
+                <div style={{
+                  position: "absolute",
+                  bottom: "0em",
+                  left: "0em",
+                  right: "0em"/*
+                  marginTop: "2em",
+                  marginLeft:"1em",
+                  marginRight: "1em"*/
+                }}>
+                  <Button bsStyle="danger">Cancel</Button>
+                  <Button bsStyle="success" style={{float:'right'}}>Save</Button>
+                  </div>
+                </div>
             </div>;
   }
 }

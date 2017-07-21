@@ -43,7 +43,9 @@ class App extends Component {
         //search='MDE';
 
       setTimeout(()=>{
-        if (search && search.length === 3) {
+        if( true )
+          this.configure();
+        else if (search && search.length === 3) {
           // CRS code
           this.boards(search);
         } else if (search && search.length === 15) {
@@ -192,8 +194,7 @@ class App extends Component {
                   {body}
                   <div id="outer-footer">
                     <div id="inner-footer">
-                      ©2011-{1900+new Date().getYear()} Peter Mount, All Rights Reserved.<br/>
-                      Contains data provided by <a href="http://www.networkrail.co.uk/">Network Rail</a>, <a href="http://www.nationalrail.co.uk/">National Rail Enquiries</a> and other public sector information licensed under the Open Government Licence.
+                      ©2011-{1900+new Date().getYear()} Peter Mount, All Rights Reserved. Contains data provided by <a href="http://www.networkrail.co.uk/">Network Rail</a>, <a href="http://www.nationalrail.co.uk/">National Rail Enquiries</a> and other public sector information licensed under the Open Government Licence.
                     </div>
                   </div>
                 </div>;
