@@ -15,18 +15,54 @@ import './css/media.css';
 
 class App extends Component {
 
-    config = {
-        refreshRate: 60000
-    }
-
     constructor(props) {
       super(props);
+
+      // Load/init config
+      this.config = this.getConfig();
 
       // On history changes set the page
       window.onpopstate = ()=>this.setPage();
 
       // Select the page
       this.setPage();
+    }
+
+    getConfig() {
+      var config;
+        try {
+          config = JSON.parse( localStorage.getItem('config') );
+        }catch(e) {
+          config=null;
+        }
+      if(!config) {
+        config = {
+            boards: {
+              services: {
+                terminated: false,
+              },
+              calling: {
+                running: true,
+                terminated: false,
+                cancelled: false
+              }
+            },
+            network: {
+              refreshRate: 60000,
+              websocket: {
+                enabled: true,
+                reconnect: 10000
+              }
+            }
+        }
+        this.saveConfig(config);
+      }
+      return config;
+    }
+
+    saveConfig(config) {
+      if(config)
+        localStorage.setItem('config', JSON.stringify(config));
     }
 
     setPage() {

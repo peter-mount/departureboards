@@ -144,7 +144,7 @@ class Boards extends Component {
 
     resetTimer(t) {
       clearTimeout(t.timer);
-      t.timer = setTimeout( ()=>t.refresh(t), t.props.app.config.refreshRate );
+      t.timer = setTimeout( ()=>t.refresh(t), t.props.app.config.network.refreshRate );
     }
 
     refresh(t) {

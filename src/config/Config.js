@@ -9,6 +9,8 @@ class Config extends Component {
   constructor(props) {
     super(props);
     console.log('conf const');
+
+    this.config = this.props.app.getConfig();
   }
 
   render() {
@@ -38,11 +40,11 @@ class Config extends Component {
                 >
 
                   <Tab eventKey={1} title="Boards">
-                    <ConfigBoards />
+                    <ConfigBoards config={this.config} />
                   </Tab>
 
                   <Tab eventKey={2} title="Network">
-                    <ConfigNetwork />
+                    <ConfigNetwork config={this.config} />
                   </Tab>
 
                 </Tabs>
