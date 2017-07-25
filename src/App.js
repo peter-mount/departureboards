@@ -10,6 +10,7 @@ import Stations from './Stations.js';
 import Train from './train/Train.js';
 
 import './css/App.css';
+import './css/Config.css';
 import './css/ldb.css';
 import './css/media.css';
 
@@ -61,8 +62,10 @@ class App extends Component {
     }
 
     saveConfig(config) {
-      if(config)
+      if(config) {
+        this.config=config;
         localStorage.setItem('config', JSON.stringify(config));
+      }
     }
 
     setPage() {
@@ -79,9 +82,7 @@ class App extends Component {
         //search='MDE';
 
       setTimeout(()=>{
-        if( true )
-          this.configure();
-        else if (search && search.length === 3) {
+        if (search && search.length === 3) {
           // CRS code
           this.boards(search);
         } else if (search && search.length === 15) {

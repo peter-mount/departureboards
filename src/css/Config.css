@@ -1,0 +1,23 @@
+/* Configuration panel */
+#configWrapper {
+  position: absolute;
+  top: 4em;
+  bottom: 2.25em;
+  left: 0.5em;
+  right: 0.5em;
+}
+
+#configTabs {
+  position: absolute;
+  top: 0em;
+  bottom: 2.5em;
+  left: 0em;
+  right: 0em;
+}
+
+#configControls {
+  position: absolute;
+  bottom: 0em;
+  left: 0em;
+  right: 0em;
+}

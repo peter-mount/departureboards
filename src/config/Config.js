@@ -17,26 +17,11 @@ class Config extends Component {
     console.log('conf rend');
 
     return  <div>
-              <div className="App-intro" style={{
-                position: "absolute",
-                top: "4em",
-                bottom: "2.25em",
-                left: "0.5em",
-                right: "0.5em",
-                border: "1px solid red"
-              }}>
+              <div id="configWrapper" className="App-intro">
                 <Tabs
                   defaultActiveKey={1}
                   id="configTabs"
                   animation={false}
-                  style={{
-                    position: "absolute",
-                    top: "0em",
-                    bottom: "2.5em",
-                    left: "0em",
-                    right: "0em",
-                    border: "1px solid red"
-                  }}
                 >
 
                   <Tab eventKey={1} title="Boards">
@@ -48,20 +33,25 @@ class Config extends Component {
                   </Tab>
 
                 </Tabs>
-                <div style={{
-                  position: "absolute",
-                  bottom: "0em",
-                  left: "0em",
-                  right: "0em"/*
-                  marginTop: "2em",
-                  marginLeft:"1em",
-                  marginRight: "1em"*/
-                }}>
-                  <Button bsStyle="danger">Cancel</Button>
-                  <Button bsStyle="success" style={{float:'right'}}>Save</Button>
-                  </div>
+                <div id="configControls">
+                  <Button bsStyle="danger" onClick={()=>this.cancel()}>Cancel</Button>
+                  <Button bsStyle="success" onClick={()=>this.save()} style={{float:'right'}}>Save</Button>
                 </div>
+              </div>
             </div>;
+  }
+
+  save() {
+    this.props.app.saveConfig(this.config);
+    this.showPreviousPage();
+  }
+
+  cancel() {
+    this.showPreviousPage();
+  }
+
+  showPreviousPage() {
+    this.props.app.setState(this.props.app.state.ret);
   }
 }
 
