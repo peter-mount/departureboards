@@ -8,14 +8,10 @@ class Config extends Component {
 
   constructor(props) {
     super(props);
-    console.log('conf const');
-
     this.config = this.props.app.getConfig();
   }
 
   render() {
-    console.log('conf rend');
-
     return  <div>
               <div id="configWrapper" className="App-intro">
                 <Tabs
