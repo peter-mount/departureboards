@@ -18,7 +18,8 @@ class BoardRow extends Component {
   render() {
     var train = this.props.departure.train,
         status = this.props.departure.status,
-        sched = this.props.departure.schedule;
+        sched = this.props.departure.schedule,
+        srcCalling = this.props.departure.calling;
 
     var departs = sched.ptd, destination = train.dest;
     if (status.terminatesHere) {
@@ -40,6 +41,12 @@ class BoardRow extends Component {
       expected = status.time;
       expectedClass = 'ldbLate';
     }
+
+    if( (status.cancelled && !this.props.app.config.boards.calling.cancelled)
+    || ( status.terminatesHere && !this.props.app.config.boards.calling.terminated)
+    || ( (!status.cancelled || status.terminatesHere) && !this.props.app.config.boards.calling.running)
+    )
+      srcCalling=null;
 
     var lastReport = status.lastReport ?
             <span>
@@ -67,7 +74,7 @@ class BoardRow extends Component {
                   </div>;
 
     var calling = null;
-    if (this.props.departure.calling && this.props.departure.calling.length > 0)
+    if (srcCalling && srcCalling.length > 0)
         calling = <div className="ldb-entbot">
                     <span className="callList" > Calling at:</span> {
                       this.props.departure.calling.map(

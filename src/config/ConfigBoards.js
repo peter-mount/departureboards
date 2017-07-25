@@ -38,11 +38,11 @@ class ConfigBoards extends Component {
                       >Show for running services</Checkbox>
                       <Checkbox
                         checked={cfg.calling.terminated}
-                        onChange={()=>this.update(()=>cfg.calling.terminated)}
+                        onChange={()=>this.update(()=>cfg.calling.terminated=!cfg.calling.terminated)}
                       >Show for terminated services</Checkbox>
                       <Checkbox
                         checked={cfg.calling.cancelled}
-                        onChange={()=>this.update(()=>cfg.calling.cancelled)}
+                        onChange={()=>this.update(()=>cfg.calling.cancelled=!cfg.calling.cancelled)}
                       >Show for cancelled services</Checkbox>
                   </FormGroup>
                 </Col>

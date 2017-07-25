@@ -24,17 +24,25 @@ class Boards extends Component {
       this.refresh(this);
 
       // Subscribe to websocket
+      this.stopWSReconnect=false;
       this.subscribe();
     }
 
     componentWillUnmount() {
       clearTimeout(this.timer);
+
+      this.stopWSReconnect=true;
       this.unsubscribe();
     }
 
     subscribe() {
       var t = this;
       t.unsubscribe();
+
+      // Do nothing if not enabled etc
+      if(!t.props.app.config.network.websocket.enabled || t.stopWSReconnect)
+        return;
+
       t.wsclient = Stomp.client('wss://ws.area51.onl/ws/');
       t.wsclient.debug = ()=>{};
       t.wsclient.connect('public','guest',
@@ -48,13 +56,11 @@ class Boards extends Component {
         },
         (error)=>{
           console.error('Websocket error',error);
-          try {
-            t.wsclient.disconnect();
-          }catch(e){
-            console.error(e);
-          }finally {
-            t.wsclient=null;
-          }
+          t.unsubscribe();
+
+          // Reconnect?
+          if(!t.stopWSReconnect)
+              setTimeout(()=>t.connectWebSocket(t),t.props.app.config.network.websocket.reconnect);
         },
         '/');
     }
