@@ -14,6 +14,8 @@ import './css/Config.css';
 import './css/ldb.css';
 import './css/media.css';
 
+import {version} from '../package.json';
+
 class App extends Component {
 
     constructor(props) {
@@ -229,7 +231,7 @@ class App extends Component {
                   {body}
                   <div id="outer-footer">
                     <div id="inner-footer">
-                      ©2011-{1900+new Date().getYear()} Peter Mount, All Rights Reserved. Contains data provided by <a href="http://www.networkrail.co.uk/">Network Rail</a>, <a href="http://www.nationalrail.co.uk/">National Rail Enquiries</a> and other public sector information licensed under the Open Government Licence.
+                      ©2011-{1900+new Date().getYear()} Peter Mount, All Rights Reserved. Contains data provided by <a href="http://www.networkrail.co.uk/">Network Rail</a>, <a href="http://www.nationalrail.co.uk/">National Rail Enquiries</a> &amp other public sector information licensed under the Open Government Licence. {version}
                     </div>
                   </div>
                 </div>;
