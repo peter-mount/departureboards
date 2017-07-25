@@ -223,8 +223,6 @@ class App extends Component {
           body = <Boards key={this.state.station.location.crs} app={this} station={this.state.station} />;
         }
 
-        console.log(body);
-
         return  <div className="App">
                   {nav}
                   <EUCookie/>

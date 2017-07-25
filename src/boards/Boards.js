@@ -203,8 +203,6 @@ class Boards extends Component {
                                 />;
                     });
 
-console.log(this.props.app.config);
-
         if (data.departures && data.departures.length > 0)
             departures = data.departures
                     .filter(dep => !dep.status.terminatesHere || this.props.app.config.boards.services.terminated )

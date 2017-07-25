@@ -35,29 +35,33 @@ class Train extends Component {
     }
 
     connectWebSocket(t) {
-        if(t.stopWSReconnect || t.wsclient) return;
+      // Do nothing if not enabled etc
+      if(!t.props.app.config.network.websocket.enabled || t.stopWSReconnect || t.wsclient)
+        return;
 
-        t.wsclient = Stomp.client('wss://ws.area51.onl/ws/');
-        t.wsclient.debug = ()=>{};
-        t.wsclient.connect('public','guest',()=>{
-            // Subscribe to the train
-            t.sub1=t.wsclient.subscribe('/topic/darwin.'+this.props.rid+'.#', (msg)=>{
-                t.refresh(t);
-            });
+      t.wsclient = Stomp.client('wss://ws.area51.onl/ws/');
+      t.wsclient.debug = ()=>{};
+      t.wsclient.connect('public','guest',
+        ()=>{
+          // Subscribe to the train
+          t.sub1=t.wsclient.subscribe('/topic/darwin.'+this.props.rid+'.#', (msg)=>{
+              t.refresh(t);
+          });
 
-            // Refresh now?
-            t.updatePage(t);
+          // Refresh now?
+          t.updatePage(t);
         },
         (error)=>{
-            t.disconnectWebSocket(t);
+          t.disconnectWebSocket(t);
 
-            // Reconnect?
-            if(!t.stopWSReconnect)
-                setTimeout(()=>t.connectWebSocket(t),5000);
+          // Reconnect?
+          if(!t.stopWSReconnect)
+              setTimeout(()=>t.connectWebSocket(t),t.props.app.config.network.websocket.reconnect);
 
-            // Refresh now?
-            t.updatePage(t);
-        }, '/');
+          // Refresh now?
+          t.updatePage(t);
+        },
+        '/');
     }
 
     disconnectWebSocket(t) {
