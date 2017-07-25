@@ -17,14 +17,15 @@ class Stations extends Component {
 
     // Perform the query
     search(query, t) {
-        fetch('https://api.area51.onl/rail/2/search/' + query)
-                .then(resp => resp.json())
-                .then(json => {
-                    return json;
-                })
-                .then(json => t.setState({
-                        options: json
-                    }));
+      fetch('https://api.area51.onl/rail/2/search/' + query)
+        .then(resp => resp.json())
+        .then(json => t.setState({
+          options: json
+        }))
+        .catch((e)=>{
+          // Retry after 1 second
+          setTimeout(()=>t.search(query,t),1000);
+        });
     }
 
     // Handle the selection. Only pass 1 entry to the app

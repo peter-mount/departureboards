@@ -14,7 +14,10 @@ class Boards extends Component {
     state = {
         data: {
             departures: []
-        }
+        },
+        // true on first load of a station, show spinner.
+        // false to then say no data for this station
+        load: true
     };
 
     componentWillMount() {
@@ -171,12 +174,18 @@ class Boards extends Component {
 
                   t.sort(json,t);
 
-                  t.setState({data: json});
+                  t.setState({
+                    data: json,
+                    load: false
+                  });
                 })
                 .catch(e => {
                     // Set retry for another 60s from now
                     clearTimeout(t.timer);
-                    t.timer = setTimeout(() => t.refresh(t), t.props.app.config.refreshRate);
+                    t.timer = setTimeout(
+                      () => t.refresh(t),
+                      t.state.load ? 1000 : t.props.app.config.refreshRate
+                    );
                 });
       }
       t.lastUpdate=now;
@@ -224,7 +233,13 @@ class Boards extends Component {
                                 />;
                     });
 
-        if( messages===null && departures===null )
+        if( messages===null && departures===null ) {
+          if(this.state.load)
+            messages =  <div>
+                          <i className="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+                          <span className="sr-only">Loading...</span>
+                        </div>;
+          else
             messages =  <MessageRow
                             key={'row' + idx}
                             app={this.props.app}
@@ -237,6 +252,7 @@ class Boards extends Component {
                                 source: 'Local'
                             }}
                         />;
+          }
 
         return  <div>
                   <div className="App-header">
