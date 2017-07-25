@@ -214,7 +214,6 @@ class Train extends Component {
                 <Info label="RID" value={data.rid} linkPrefix="//uktra.in/rtt/train/"/>
                 <Info label="Generated" value={data.generatedTime?data.generatedTime.split('.')[0]:null}/>
                 <Info label="Updates" value={this.wsclient?'Automatic':'Every minute'}/>
-                <div className="ldb-row">&nbsp;</div>
             </div>
         </div>;
             }

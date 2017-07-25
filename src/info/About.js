@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Col, Grid, PageHeader, Row, Tab, Tabs} from 'react-bootstrap';
+import {PageHeader, Tab, Tabs} from 'react-bootstrap';
 
 import {version} from '../../package.json';
 
@@ -50,10 +50,6 @@ class About extends Component {
 
                 </Tabs>
 
-                <Grid>
-                  <Row><Col xs={12} md={12} sm={12}>&nbsp;</Col></Row>
-                  <Row><Col xs={12} md={12} sm={12}>&nbsp;</Col></Row>
-                </Grid>
               </div>
             </div>;
   }
