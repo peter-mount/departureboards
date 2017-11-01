@@ -131,7 +131,7 @@ class App extends Component {
 
     boards(station)
     {
-      fetch('https://api.area51.onl/rail/2/station/' + station.toUpperCase() )
+      fetch('https://rail.a51.li/station/' + station.toUpperCase() )
         .then(res => res.json())
         .then(json => {
           // null location then crs not recognised

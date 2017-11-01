@@ -1,6 +1,6 @@
 {
   "name": "departureboards",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "private": false,
   "publishConfig": {
         "registry": "https://nexus.area51.onl/repository/npm-private/"

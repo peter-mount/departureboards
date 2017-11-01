@@ -17,7 +17,7 @@ class Stations extends Component {
 
     // Perform the query
     search(query, t) {
-      fetch('https://api.area51.onl/rail/2/search/' + query)
+      fetch('https://rail.a51.li/search/' + query)
         .then(resp => resp.json())
         .then(json => t.setState({
           options: json

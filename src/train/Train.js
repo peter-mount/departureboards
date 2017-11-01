@@ -106,7 +106,7 @@ class Train extends Component {
 
         t.resetTimer(t);
 
-        fetch('https://api.area51.onl/rail/2/darwin/rtt/' + t.props.rid)
+        fetch('https://rail.a51.li/darwin/rtt/' + t.props.rid)
                 .then(res => res.json())
                 .then(json => {
                   // add cancel flag to movement if we can match it in the timetable

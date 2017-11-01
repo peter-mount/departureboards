@@ -162,7 +162,7 @@ class Boards extends Component {
         if( !t.lastUpdate || (now-t.lastUpdate)>=10000) {
           t.resetTimer(t);
           //console.log('refresh');
-          fetch('https://api.area51.onl/rail/2/station/' + t.props.station.location.crs + '/boards')
+          fetch('https://rail.a51.li/station/' + t.props.station.location.crs + '/boards')
                 .then(res => res.json())
                 .then(json => {
 
