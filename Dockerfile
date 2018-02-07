@@ -59,6 +59,16 @@ RUN babel $(pwd)/src $(pwd)/build
 ADD webpack.config.js webpack.config.js
 RUN webpack --config webpack.config.js
 
+# Now caching, rename main.js to main-{hash}.js
+RUN MAIN="main-$(sha256sum dist/main.js | cut -c-16).js" &&\
+    CSS="main-$(sha256sum dist/mobile.css | cut -c-16).css" &&\
+    mv dist/main.js dist/$MAIN &&\
+    mv dist/main.css dist/$CSS &&\
+    sed \
+      -e "s/main.js/$MAIN/g" \
+      -e "s/main.css/$CSS/g" \
+      -i dist/index.html
+
 # ======================================================================
 # Apache HTTPD based image to run the app locally
 FROM httpd
