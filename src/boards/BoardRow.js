@@ -1,30 +1,55 @@
 import React, { Component } from 'react';
 
+function tiploc( d, tpl ) {
+  return d.tiploc[ tpl ] ? d.tiploc[ tpl ].locname : tpl
+}
+
+// Used to fix calling point names so they don't break
+function fix1(s,a,b) {
+  while(s.indexOf(a)>=0)
+  s=s.replace(a,b);
+  return s;
+}
+
+function fix(s) {
+  return fix1(s,' ','&nbsp;');
+}
+
+function fixtime( t ) {
+  if (t) {
+    var a = t.split(':')
+    return a[0]+':'+a[1]
+  }
+  return null
+}
+
 /*
  * A row on the board showing current status of a train
  */
 class BoardRow extends Component {
 
-  // Used to fix calling point names so they don't break
-  fix(s) {
-    return this.fix1(s,' ','&nbsp;');
-  }
-  fix1(s,a,b) {
-    while(s.indexOf(a)>=0)
-      s=s.replace(a,b);
-    return s;
-  }
-
   render() {
-    var train = this.props.departure.train,
-        status = this.props.departure.status,
-        sched = this.props.departure.schedule,
-        srcCalling = this.props.departure.calling;
+    var data = this.props.data,
+        train = this.props.departure,
+        loc = train.location,
+        timetable = loc.timetable,
+        forecast = loc.forecast,
+        plat = forecast ? forecast.plat : null,
+        time = timetable ? timetable.time : null,
+        // destination text
+        destination = tiploc( data, train.destination ),
+        // via another station
+        via = train.via ? <div className="ldb-entbot">{train.via}</div> : null,
+        // train terminates here
+        terminatesHere = data.tiploc[ train.destination ] && data.tiploc[ train.destination ].crs === this.props.crs;
 
-    var departs = sched.ptd, destination = train.dest;
-    if (status.terminatesHere) {
+    if (terminatesHere) {
       destination = 'Terminates Here';
     }
+
+    var expected = forecast ? fixtime(forecast.time) : time, expectedClass='ldbOntime';
+    var message = null, calling = null, toc, length, lastReport;
+    /*
 
     var expected = 'On Time', expectedClass='ldbOntime';
     if(status.cancelled) {
@@ -63,7 +88,6 @@ class BoardRow extends Component {
             </span>
             : null;
 
-    var message = null;
     if(status.cancelled || status.delayed)
         message = <div className="ldb-entbot">
                     <div className="ldbCancelled">{status.reason}</div>
@@ -73,7 +97,6 @@ class BoardRow extends Component {
                     <div className="ldbLate">{status.reason}</div>
                   </div>;
 
-    var calling = null;
     if (srcCalling && srcCalling.length > 0)
         calling = <div className="ldb-entbot">
                     <span className="callList" > Calling at:</span> {
@@ -81,16 +104,16 @@ class BoardRow extends Component {
                         cp => <span key={cp.crs} className="callList" ><a onClick={()=>this.props.app.boards(cp.crs)} dangerouslySetInnerHTML={{__html: this.fix(cp.name)}}></a>&nbsp;({cp.time}) </span>
                     )}
                   </div>;
+    */
 
     return  <div className={this.props.index % 2 === 0 ? "ldb-row altrow" : "ldb-row"}>
               <div className="ldb-enttop">
                 <div className={"ldbCol ldbForecast "+expectedClass}>{expected}</div>
-                <div className={"ldbCol ldbSched "+expectedClass}>{departs}</div>
-                <div className="ldbCol ldbPlat">{status.platform}</div>
-                <div className="ldbCont">
-                  <a onClick={()=>this.props.app.train(train.rid,this.props.station)}>{destination}</a>
-                </div>
+                <div className={"ldbCol ldbSched "+expectedClass}>{fixtime(time)}</div>
+                <div className="ldbCol ldbPlat">{plat ? plat.plat : null}</div>
+                <div className="ldbCont">{destination}</div>
               </div>
+              {via}
               {message}
               {calling}
               <div className="ldb-entbot">{toc}{length}{lastReport}</div>

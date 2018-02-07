@@ -1,9 +1,18 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-import App from './App';
-import './index.css';
+import { render } from 'react-dom';
+import { BrowserRouter, Route } from 'react-router-dom';
 
-ReactDOM.render(
-  <App />,
+import Boards from "./boards/Boards";
+
+render(
+  <BrowserRouter>
+    <div>
+      <Route
+        component={Boards}
+        exact
+        path='/departures/:crs'
+      />
+    </div>
+  </BrowserRouter>,
   document.getElementById('root')
 );

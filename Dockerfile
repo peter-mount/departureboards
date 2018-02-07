@@ -62,6 +62,10 @@ ADD src src
 RUN eslint $(pwd)/src
 RUN babel $(pwd)/src $(pwd)/build
 
+# The CSS
+ADD css css
+RUN cat css/*.css >>dist/main.css
+
 # Finally run webpack
 ADD webpack.config.js webpack.config.js
 RUN environment=${environment} webpack --config webpack.config.js
