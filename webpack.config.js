@@ -2,11 +2,21 @@ const path = require('path');
 const webpack = require('webpack');
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 
+var plugins = []
+// If we are a production build then this will uglify it and remove the
+// react development tools from the build
+if( process.env.environment == 'production' ) {
+  plugins = [
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify( 'production' )
+    }),
+    new UglifyJSPlugin()
+  ]
+}
+
 module.exports = {
 
-  plugins: [
-    new UglifyJSPlugin()
-  ],
+  plugins: plugins,
 
   entry: "./build/index.js",
 
