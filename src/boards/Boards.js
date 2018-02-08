@@ -5,7 +5,7 @@ import EUCookie from 'area51-eucookie';
 
 import BoardRow from './BoardRow.js';
 import ManagedBy from './ManagedBy.js';
-//import MessageRow from './MessageRow.js';
+import MessageRow from './MessageRow.js';
 
 //import Stomp from 'stompjs';
 
@@ -41,7 +41,21 @@ class Boards extends Component {
 
   // Render the departure boards
   renderDepartures( crs, data ) {
-    var rows = null, idx = 0
+    var messages = null, rows = null, idx = 0
+
+    if (data.messages) {
+      messages = data.messages
+              .filter(msg=>!msg.suppress)
+              .map((msg, ind) => {
+                  idx++;
+                  return  <MessageRow
+                              key={'row' + idx}
+                              board={this}
+                              index={idx}
+                              msg={msg}
+                          />;
+              });
+    }
 
     if (data.departures) {
       rows = data.departures
@@ -61,7 +75,7 @@ class Boards extends Component {
                   />;
         })
     }
-    return <div>{rows}</div>;
+    return <div>{messages}{rows}</div>;
   }
 
   render() {
