@@ -47,25 +47,26 @@ class BoardRow extends Component {
       destination = 'Terminates Here';
     }
 
-    var expected = forecast ? fixtime(forecast.time) : time, expectedClass='ldbOntime';
     var message = null, calling = null, toc, length, lastReport;
-    /*
 
     var expected = 'On Time', expectedClass='ldbOntime';
-    if(status.cancelled) {
+    if(loc.cancelled) {
       expected = 'Cancelled';
       expectedClass = 'ldbCancelled';
-    } else if (status.arrived)
+    } else if (forecast && forecast.arrived)
       expected = 'Arrived';
-    else if (status.departed)
+    else if (forecast && forecast.departed)
       expected = 'Departed';
-    else if (status.delayed) {
+    else if (forecast && forecast.delayed) {
       expected = 'Delayed';
       expectedClass = 'ldbLate';
-    } else if (status.delay > 0) {
-      expected = status.time;
+    } else if (loc.delay > 0) {
+      // forecast will not be null here as this is calculated from it
+      expected = fixtime(forecast.time);
       expectedClass = 'ldbLate';
     }
+
+    /*
 
     if( (status.cancelled && !this.props.app.config.boards.calling.cancelled)
     || ( status.terminatesHere && !this.props.app.config.boards.calling.terminated)
