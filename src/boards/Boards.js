@@ -4,7 +4,7 @@ import { PageHeader } from 'react-bootstrap';
 import EUCookie from 'area51-eucookie';
 
 import BoardRow from './BoardRow.js';
-//import ManagedBy from './ManagedBy.js';
+import ManagedBy from './ManagedBy.js';
 //import MessageRow from './MessageRow.js';
 
 //import Stomp from 'stompjs';
@@ -101,6 +101,7 @@ class Boards extends Component {
       </div>
       <div className="App-intro">
         {body}
+        <ManagedBy data={departures}/>
       </div>
     </div>);
   }
