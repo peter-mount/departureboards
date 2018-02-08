@@ -82,7 +82,7 @@ RUN MAIN="main-$(sha256sum dist/main.js | cut -c-16).js" &&\
 
 # ======================================================================
 # Apache HTTPD based image to run the app locally
-FROM httpd
+FROM httpd:alpine
 
 # Send all 404's to the index document.
 # This is required so we can use URL based routing within the app.
