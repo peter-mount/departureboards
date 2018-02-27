@@ -97,14 +97,15 @@ class BoardRow extends Component {
             </span>
             : null;
 
-    var toc = train.toc ? <span> {train.toc}&nbsp;service. </span> : null;
-    var length = status.length && status.length>0 ?
+    */
+    var toc = train.toc && data.toc && data.toc[train.toc] ? <span> {data.toc[train.toc].tocname}&nbsp;service. </span> : null;
+
+    var length = forecast && forecast.length>0 ?
             <span>
               <span>Formed of:</span>
-              <span className="ldbDest"> {status.length} coaches</span>
+              <span className="ldbDest"> {forecast.length} coaches</span>
             </span>
             : null;
-    */
 
     if( loc.cancelled && train.cancelReason && train.cancelReason.reason > 0 )
         message = <div className="ldb-entbot">
