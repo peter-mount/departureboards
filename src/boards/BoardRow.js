@@ -63,7 +63,7 @@ class BoardRow extends Component {
       destination = 'Terminates Here';
     }
 
-    var message = null, calling = null, toc, length, lastReport;
+    var message = null, calling = null, delay, toc, length, lastReport;
 
     var expected = 'On Time', expectedClass='ldbOntime';
     if(loc.cancelled) {
@@ -125,6 +125,13 @@ class BoardRow extends Component {
                   </div>;
     */
 
+    if (loc.delay&&Math.abs(loc.delay)>=60) {
+      var m = Math.floor(Math.abs(loc.delay/60)), s = Math.abs(loc.delay % 60);
+      delay = <div className="ldb-entbot">
+                  <div className="ldbLate">This train is running {m} {m>1?"minutes":"minute"}{s?" "+s+"s":""} {loc.delay>0?"late":"early"}</div>
+                </div>;
+    }
+
     return  <div className={this.props.index % 2 === 0 ? "ldb-row altrow" : "ldb-row"}>
               <div className="ldb-enttop">
                 <div className={"ldbCol ldbForecast "+expectedClass}>{expected}</div>
@@ -135,6 +142,7 @@ class BoardRow extends Component {
               {via}
               {message}
               {calling}
+              {delay}
               <div className="ldb-entbot">{toc}{length}{lastReport}</div>
             </div>;
   }
