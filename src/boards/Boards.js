@@ -8,7 +8,10 @@ import ManagedBy from './ManagedBy.js';
 import MessageRow from './MessageRow.js';
 
 //import Stomp from 'stompjs';
-
+function getTime( loc ) {
+  var t=loc.timetable.time,f=loc.forecast.time
+  return t?t:f?f:loc.displaytime
+}
 /*
 * Main class that handles the display of a stations departure board
 */
@@ -24,14 +27,14 @@ class Boards extends Component {
   resetTimer( crs ) {
     const t=this;
     clearTimeout(t.timer);
-    t.timer = setTimeout( ()=>t.refresh( crs ), 10000 );
+    //t.timer = setTimeout( ()=>t.refresh( crs ), 10000 );
   }
 
   // Retrieve the latest board
   refresh( crs ) {
     const t = this;
     t.resetTimer( crs )
-    fetch( 'http://loge.amsterdam.area51.onl:9888/ldb/boards/' + crs + '?'+new Date())
+    fetch( 'https://ldb.a.a51.li/boards/' + crs + '?'+new Date())
       .then( res => res.json() )
       .then( departures => t.setState( { departures: departures } ) )
       .catch( e => {
@@ -41,6 +44,8 @@ class Boards extends Component {
 
   // Render the departure boards
   renderDepartures( crs, data ) {
+    console.log( data );
+
     var messages = null, rows = null, idx = 0
 
     if (data.messages) {
@@ -59,6 +64,10 @@ class Boards extends Component {
 
     if (data.departures) {
       rows = data.departures
+        .sort( (a,b) => {
+          var a1 = getTime(a.location), b1 = getTime(b.location);
+          return a1&&b1?(a1 < b1 ? -1 : a1 > b1 ? 1 : 0):0;
+        })
         // Filter out terminations
         .filter( d => !(data.tiploc[d.destination] && data.tiploc[d.destination].crs === crs) )
         // Filter out suppressed entries
