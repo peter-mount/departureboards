@@ -23,12 +23,12 @@ function fixtime( t ) {
   return null
 }
 
-function reason(reason,data) {
+function reason(cancelled,reason,data) {
   var m;
   if (data.reasons) {
-    if (reason.cancelled && data.reasons.cancelled) {
+    if (cancelled && data.reasons.cancelled) {
       m = data.reasons.cancelled[reason.reason];
-    } else if (!reason.cancelled && data.reasons.late) {
+    } else if (!cancelled && data.reasons.late) {
       m = data.reasons.late[reason.reason];
     }
     m = m ? m.reasontext : ("reason " + reason.reason)
@@ -108,11 +108,11 @@ class BoardRow extends Component {
 
     if( loc.cancelled && train.cancelReason && train.cancelReason.reason > 0 )
         message = <div className="ldb-entbot">
-                    <div className="ldbCancelled">{reason(train.cancelReason, data)}</div>
+                    <div className="ldbCancelled">{reason(true,train.cancelReason, data)}</div>
                   </div>;
     else if( train.lateReason && train.lateReason.reason > 0)
         message = <div className="ldb-entbot">
-                    <div className="ldbLate">{reason(train.lateReason, data)}</div>
+                    <div className="ldbLate">{reason(false,train.lateReason, data)}</div>
                   </div>;
 
     /*
