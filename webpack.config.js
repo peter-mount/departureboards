@@ -1,5 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
+/*
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 
 var plugins = []
@@ -13,10 +14,13 @@ if( process.env.environment == 'production' ) {
     new UglifyJSPlugin()
   ]
 }
+*/
+console.log( "Webpack", process.env.environment, 'dist', __dirname + "/dist" );
 
 module.exports = {
+  mode: process.env.environment,
 
-  plugins: plugins,
+  //plugins: plugins,
 
   entry: "./build/index.js",
 
@@ -26,7 +30,8 @@ module.exports = {
   },
 
   module: {
-    loaders: [
+    // This used to be called loaders but recent webpack requires rules instead
+    rules: [
       {
         test: /\.(js|jsx)$/,
         exclude: /(node_modules|bower_components)/,
