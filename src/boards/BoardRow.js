@@ -136,7 +136,7 @@ class BoardRow extends Component {
               <div className="ldb-enttop">
                 <div className={"ldbCol ldbForecast "+expectedClass}>{expected}</div>
                 <div className={"ldbCol ldbSched"}>{fixtime(time)}</div>
-                <div className="ldbCol ldbPlat">{plat ? plat.plat : null}</div>
+                <div className="ldbCol ldbPlat">{plat && !plat.suppressed && !plat.cisSuppressed ? plat.plat : null}</div>
                 <div className="ldbCont">{destination}</div>
               </div>
               {via}
