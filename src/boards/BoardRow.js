@@ -23,6 +23,22 @@ function fixtime( t ) {
   return null
 }
 
+function reason(reason,data) {
+  var m;
+  if (data.reasons) {
+    if (reason.cancelled && data.reasons.cancelled) {
+      m = data.reasons.cancelled[reason.reason];
+    } else if (!reason.cancelled && data.reasons.late) {
+      m = data.reasons.late[reason.reason];
+    }
+    m = m ? m.reasontext : ("reason " + reason.reason)
+  }
+  if (reason.tiploc) {
+    m = m + ( reason.near ? ' near ' : ' at ') + tiploc( reason.tiploc )
+  }
+  return m
+}
+
 /*
  * A row on the board showing current status of a train
  */
@@ -88,16 +104,18 @@ class BoardRow extends Component {
               <span className="ldbDest"> {status.length} coaches</span>
             </span>
             : null;
+    */
 
-    if(status.cancelled || status.delayed)
+    if( loc.cancelled && train.cancelReason && train.cancelReason.reason > 0 )
         message = <div className="ldb-entbot">
-                    <div className="ldbCancelled">{status.reason}</div>
+                    <div className="ldbCancelled">{reason(train.cancelReason, data)}</div>
                   </div>;
-    else if(status.reason)
+    else if( train.lateReason && train.lateReason.reason > 0)
         message = <div className="ldb-entbot">
-                    <div className="ldbLate">{status.reason}</div>
+                    <div className="ldbLate">{reason(train.lateReason, data)}</div>
                   </div>;
 
+    /*
     if (srcCalling && srcCalling.length > 0)
         calling = <div className="ldb-entbot">
                     <span className="callList" > Calling at:</span> {
