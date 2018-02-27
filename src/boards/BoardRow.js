@@ -135,7 +135,7 @@ class BoardRow extends Component {
     return  <div className={this.props.index % 2 === 0 ? "ldb-row altrow" : "ldb-row"}>
               <div className="ldb-enttop">
                 <div className={"ldbCol ldbForecast "+expectedClass}>{expected}</div>
-                <div className={"ldbCol ldbSched "+expectedClass}>{fixtime(time)}</div>
+                <div className={"ldbCol ldbSched"}>{fixtime(time)}</div>
                 <div className="ldbCol ldbPlat">{plat ? plat.plat : null}</div>
                 <div className="ldbCont">{destination}</div>
               </div>
