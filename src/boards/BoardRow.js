@@ -56,6 +56,8 @@ class BoardRow extends Component {
         destination = tiploc( data, train.destination ),
         // via another station
         via = train.via ? <div className="ldb-entbot">{train.via}</div> : null,
+        // Train's been cancelled at this location
+        cancelled = loc.cancelled,
         // train terminates here
         terminatesHere = data.tiploc[ train.destination ] && data.tiploc[ train.destination ].crs === this.props.crs;
 
@@ -100,14 +102,14 @@ class BoardRow extends Component {
     */
     var toc = train.toc && data.toc && data.toc[train.toc] ? <span> {data.toc[train.toc].tocname}&nbsp;service. </span> : null;
 
-    var length = forecast && forecast.length>0 ?
+    var length = !cancelled && forecast && forecast.length>0 ?
             <span>
               <span>Formed of:</span>
               <span className="ldbDest"> {forecast.length} coaches</span>
             </span>
             : null;
 
-    if( loc.cancelled && train.cancelReason && train.cancelReason.reason > 0 )
+    if( cancelled && train.cancelReason && train.cancelReason.reason > 0 )
         message = <div className="ldb-entbot">
                     <div className="ldbCancelled">{reason(true,train.cancelReason, data)}</div>
                   </div>;
@@ -126,8 +128,8 @@ class BoardRow extends Component {
                   </div>;
     */
 
-    if (loc.delay&&Math.abs(loc.delay)>=60) {
-      var m = Math.floor(Math.abs(loc.delay/60)), s = Math.abs(loc.delay % 60);
+    if ( !cancelled && loc.delay && Math.abs( loc.delay ) >= 60 ) {
+      var m = Math.floor( Math.abs( loc.delay / 60 ) ), s = Math.abs( loc.delay % 60 );
       delay = <div className="ldb-entbot">
                   <div className="ldbLate">This train is running {m} {m>1?"minutes":"minute"}{s?" "+s+"s":""} {loc.delay>0?"late":"early"}</div>
                 </div>;
