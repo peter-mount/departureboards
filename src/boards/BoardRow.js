@@ -118,15 +118,14 @@ class BoardRow extends Component {
                     <div className="ldbLate">{reason(false,train.lateReason, data)}</div>
                   </div>;
 
-    /*
-    if (srcCalling && srcCalling.length > 0)
+    if (train.calling && train.calling.length > 0)
         calling = <div className="ldb-entbot">
                     <span className="callList" > Calling at:</span> {
-                      this.props.departure.calling.map(
-                        cp => <span key={cp.crs} className="callList" ><a onClick={()=>this.props.app.boards(cp.crs)} dangerouslySetInnerHTML={{__html: this.fix(cp.name)}}></a>&nbsp;({cp.time}) </span>
+                      train.calling.map(
+                        cp => <span key={cp.tpl} className="callList" ><a>{tiploc(data,cp.tpl)}</a>&nbsp;({fixtime(cp.time)}) </span>
+                      //cp => <span key={cp.tpl} className="callList" ><a onClick={()=>this.props.app.boards(cp.crs)} dangerouslySetInnerHTML={{__html: this.fix(cp.name)}}></a>&nbsp;({cp.time}) </span>
                     )}
                   </div>;
-    */
 
     if ( !cancelled && loc.delay && Math.abs( loc.delay ) >= 60 ) {
       var m = Math.floor( Math.abs( loc.delay / 60 ) ), s = Math.abs( loc.delay % 60 );
