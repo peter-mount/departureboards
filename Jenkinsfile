@@ -43,4 +43,16 @@ node( 'AMD64' ) {
   buildStep( 'webpack' )
   buildStep( 'httpd' )
 
+  stage( 'docker' ) {
+    sh "docker push " + dockerImage
+  }
+
+}
+
+if( BRANCH_NAME == 'master' ) {
+  node( "api-a" ) {
+    stage( 'deploy UAT' ) {
+      sh "/usr/local/bin/departureboards-uat.sh"
+    }
+  }
 }
