@@ -19,6 +19,7 @@ properties([
     cron('0 6 * * *'),
     upstream('/Public/Alpine/master'),
   ])
+])
 
 dockerImage = repository + imagePrefix + ":" + version
 
