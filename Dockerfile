@@ -40,7 +40,7 @@ ADD .eslintrc /usr/local/babel/.eslintrc
 
 # ======================================================================
 # Import sources
-FROM dependencies as source
+FROM dependencies as sources
 WORKDIR /opt/build
 ADD src src
 
