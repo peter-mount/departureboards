@@ -24,7 +24,7 @@ ARG environment=development
 # ======================================================================
 # The base builder image comprising babel, webpack and all required
 # dependencies from npm
-FROM area51/babel:react-latest as babel
+FROM area51/babel:react-latest as dependencies
 
 WORKDIR /opt/build
 ADD package.json package.json
@@ -39,19 +39,26 @@ ADD .babelrc /usr/local/babel/.babelrc
 ADD .eslintrc /usr/local/babel/.eslintrc
 
 # ======================================================================
-# Compile the sources
-FROM babel as compiler
-
+# Import sources
+FROM dependencies as source
 WORKDIR /opt/build
-
-# Now the sources then run eslint and babel against them
 ADD src src
+
+# ======================================================================
+# Run eslint over sources
+FROM source as eslint
+WORKDIR /opt/build
 RUN eslint $(pwd)/src
+
+# ======================================================================
+# Run babel on sources
+FROM source as babel
+WORKDIR /opt/build
 RUN babel $(pwd)/src $(pwd)/build
 
 # ======================================================================
-# Run webpack
-FROM compiler as webpack
+# Run webpack on output
+FROM babel as webpack
 ARG environment
 
 WORKDIR /opt/build
@@ -79,7 +86,7 @@ RUN MAIN="main-$(sha256sum dist/main.js | cut -c-16).js" &&\
 
 # ======================================================================
 # Apache HTTPD based image to run the app locally
-FROM httpd:alpine
+FROM httpd:alpine as httpd
 
 # Send all 404's to the index document.
 # This is required so we can use URL based routing within the app.
