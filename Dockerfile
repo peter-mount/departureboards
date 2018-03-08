@@ -46,13 +46,13 @@ ADD src src
 
 # ======================================================================
 # Run eslint over sources
-FROM source as eslint
+FROM sources as eslint
 WORKDIR /opt/build
 RUN eslint $(pwd)/src
 
 # ======================================================================
 # Run babel on sources
-FROM source as babel
+FROM sources as babel
 WORKDIR /opt/build
 RUN babel $(pwd)/src $(pwd)/build
 
