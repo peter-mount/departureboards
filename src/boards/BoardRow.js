@@ -93,15 +93,15 @@ class BoardRow extends Component {
     || ( (!status.cancelled || status.terminatesHere) && !this.props.app.config.boards.calling.running)
     )
       srcCalling=null;
+      */
 
-    var lastReport = status.lastReport ?
-            <span>
-              <span >Last report:</span>
-              <span className="ldbDest"> {status.lastReport.name} {status.lastReport.time} </span>
-            </span>
-            : null;
+    if (train.lastReport) {
+      lastReport = <span>
+        <span>Last report:</span>
+        <span className="ldbDest"> {tiploc(data,train.lastReport.tpl)} {fixtime(train.lastReport.time)} </span>
+      </span>;
+    }
 
-    */
     var toc = train.toc && data.toc && data.toc[train.toc] ? <span> {data.toc[train.toc].tocname}&nbsp;service. </span> : null;
 
     var length = !cancelled && forecast && forecast.length>0 ?
