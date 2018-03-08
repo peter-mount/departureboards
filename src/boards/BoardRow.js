@@ -54,8 +54,6 @@ class BoardRow extends Component {
         time = timetable ? timetable.time : null,
         // destination text
         destination = tiploc( data, train.destination ),
-        // via another station
-        via = train.via ? <div className="ldb-entbot">{train.via}</div> : null,
         // Train's been cancelled at this location
         cancelled = loc.cancelled,
         // train terminates here
@@ -65,7 +63,11 @@ class BoardRow extends Component {
       destination = 'Terminates Here';
     }
 
-    var message = null, calling = null, delay, toc, length, lastReport;
+    var message, via, calling, delay, toc, length, lastReport;
+
+    if (data.via && data.via[ train.rid ]) {
+      via = <div className="ldb-entbot">{data.via[train.rid].text}</div>
+    }
 
     var expected = 'On Time', expectedClass='ldbOntime';
     if(loc.cancelled) {
