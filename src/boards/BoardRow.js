@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { withRouter } from 'react-router';
 
 function tiploc( d, tpl ) {
   return d.tiploc[ tpl ] ? d.tiploc[ tpl ].locname : tpl
@@ -44,7 +45,20 @@ function reason(cancelled,reason,data) {
  */
 class BoardRow extends Component {
 
+  showBoard( tpl ) {
+    var data = this.props.data;
+    if (data.tiploc && data.tiploc[ tpl ] && data.tiploc[ tpl ].crs) {
+      var crs = data.tiploc[ tpl ].crs;
+      return () => {
+        console.log("Nav crs", crs )
+        this.props.history.push('/departures/' + crs );
+      };
+    }
+    return () => {}
+  }
+
   render() {
+    var history = this.props.history;
     var data = this.props.data,
         train = this.props.departure,
         loc = train.location,
@@ -86,15 +100,6 @@ class BoardRow extends Component {
       expectedClass = 'ldbLate';
     }
 
-    /*
-
-    if( (status.cancelled && !this.props.app.config.boards.calling.cancelled)
-    || ( status.terminatesHere && !this.props.app.config.boards.calling.terminated)
-    || ( (!status.cancelled || status.terminatesHere) && !this.props.app.config.boards.calling.running)
-    )
-      srcCalling=null;
-      */
-
     if (train.lastReport) {
       lastReport = <span>
         <span>Last report:</span>
@@ -124,7 +129,7 @@ class BoardRow extends Component {
         calling = <div className="ldb-entbot">
                     <span className="callList" > Calling at:</span> {
                       train.calling.map(
-                        cp => <span key={cp.tpl} className="callList" ><a>{tiploc(data,cp.tpl)}</a>&nbsp;({fixtime(cp.time)}) </span>
+                        cp => <span key={cp.tpl} className="callList" ><a onClick={this.showBoard(cp.tpl)}>{tiploc(data,cp.tpl)}</a>&nbsp;({fixtime(cp.time)}) </span>
                       //cp => <span key={cp.tpl} className="callList" ><a onClick={()=>this.props.app.boards(cp.crs)} dangerouslySetInnerHTML={{__html: this.fix(cp.name)}}></a>&nbsp;({cp.time}) </span>
                     )}
                   </div>;
@@ -152,4 +157,4 @@ class BoardRow extends Component {
   }
 };
 
-export default BoardRow;
+export default withRouter(BoardRow);
