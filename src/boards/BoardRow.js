@@ -146,7 +146,9 @@ class BoardRow extends Component {
                 <div className={"ldbCol ldbForecast "+expectedClass}>{expected}</div>
                 <div className={"ldbCol ldbSched"}>{fixtime(time)}</div>
                 <div className="ldbCol ldbPlat">{plat && !plat.suppressed && !plat.cisSuppressed ? plat.plat : null}</div>
-                <div className="ldbCont">{destination}</div>
+                <div className="ldbCont">
+                  <a onClick={()=>this.props.history.push('/service/' + train.rid )}>{destination}</a>
+                </div>
               </div>
               {via}
               {message}
