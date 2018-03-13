@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import {PageHeader, Tab, Tabs} from 'react-bootstrap';
+import Delay from './Delay.js';
 import Location from './Location.js';
+import Movement from './Movement.js';
 import Time from './Time.js';
 
 class Schedule extends Component {
@@ -9,7 +11,7 @@ class Schedule extends Component {
     const data = this.props.service;
     console.log( "Schedule", data );
 
-    var via = "{via}";
+    var via = "{via}", id=0, lid=0;
 
     return (<div id="board">
       <h3>
@@ -29,6 +31,18 @@ class Schedule extends Component {
               </tr>
             </thead>
             <tbody>
+              {data.service.locations
+              // We don't show passes unless:
+              // We are the last report
+              // We are the next entry after the last report if it was not also a pass - no 2 passes together
+              //.filter(row => lrid===row.id || (lrid>=0 && !data.lastReport.wtp && (lrid+1)===row.id) || !(row.pass || row.wtp))
+              //.filter(row => lrid===row.id || (lrid>=0  && (lrid+1)===row.id) || !(row.pass || row.wtp))
+              .reduce( (a, row) => {
+                a.push( <Movement key={'r'+id} data={data} row={row} lid={lid} rid={id}/> );
+                id++;
+                return a;
+              },[])
+            }
             </tbody>
           </table>
         </div>
