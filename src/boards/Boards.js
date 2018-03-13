@@ -94,7 +94,8 @@ class Boards extends Component {
 
     var body, { departures } = this.state;
 
-    if (departures) {
+    // Render data unless we have none or we are changing stations
+    if (departures && departures.crs == crs ) {
       body = this.renderDepartures( crs, departures );
     } else {
       this.refresh( crs );
