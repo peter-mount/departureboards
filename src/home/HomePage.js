@@ -11,6 +11,10 @@ class HomePage extends Component {
     this.state = { options: [] };
   }
 
+  componentDidMount() {
+    this.setState({options: []});
+  }
+
   // Perform the query
   search(query, t) {
     fetch('https://ref.a.a51.li/search/' + query)
@@ -27,8 +31,7 @@ class HomePage extends Component {
   // Handle the selection. Only pass 1 entry to the app
   select(selection, t) {
     if (selection && selection.length === 1) {
-      console.log( selection[0]);
-      //t.props.app.boards(selection[0].code, t.props.app);
+      t.props.history.push( '/departures/' + selection[0].code )
     }
   }
 
