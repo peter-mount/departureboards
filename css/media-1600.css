@@ -1,0 +1,55 @@
+
+/* Kindle Fire HDX - Massive resolution 2560x1600 */
+@media all and (min-width: 1600px){
+  .ldbbutton { font-size: 350% }
+  h1 {
+      font-size: 130%;
+      margin: 0;
+      -webkit-margin-before: 0;
+      -webkit-margin-after: 0.67em;
+  }
+  #stationlabel { font-size: 90%; }
+  .ui-autocomplete li { font-size: 12pt; }
+
+  #outer-body { top: 10em; }
+  #outer-footer { font-size: 240%; }
+  #home { font-size: 240%; }
+
+  .ui-widget input {
+      font-size: 150%;
+      width: 90%;
+  }
+  .ui-autocomplete li { font-size: 250%; }
+  .logo-nre { max-width: 600px; }
+  /* LDB */
+  #settings {
+      width:64px;
+      height: 64px;
+  }
+  .ldbLoc {
+      font-size: 35pt;
+      padding-top: 10pt;
+  }
+  .ldbUpdated { font-size: 200%; }
+  .ldbTable { font-size: 350%; }
+  .ldbHead {
+      font-size: 120%;
+      padding: 6px 4px;
+  }
+  .ldb-enttop, .ldb-entmid { font-size: 90%; }
+  .ldb-enttop .ldbVia { font-size: 80%; }
+  .ldb-entwarn { font-size: 100%; }
+  .ldb-entbot { font-size: 70%; }
+  .ldb-entbot p { margin: 0; }
+  .ldbPlat { width: 120px; }
+  .ldbSched { width: 190px; }
+  .ldbForecast { width: 220px; }
+  .ldbCol { font-size: 100%; padding: 1px 0px; }
+
+  .ldb-row {
+      font-size: 210%;
+  }
+  .ldb-row .ldb-label {
+      width: 200pt;
+  }
+}

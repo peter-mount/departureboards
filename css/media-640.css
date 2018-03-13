@@ -1,0 +1,38 @@
+
+/* Samsung Note 3 Landscape */
+@media all and ( min-width: 444px ) and ( max-width: 640px ) {
+    .ldbbutton { font-size: 80% }
+    h1 {
+        font-size: 130%;
+        margin: 0;
+        -webkit-margin-before: 0;
+        -webkit-margin-after: 0.67em;
+    }
+    #stationlabel { font-size: 90%; }
+    .ui-autocomplete li { font-size: 12pt; }
+    /* LDB */
+    #settings {
+        width:24px;
+        height: 24px;
+    }
+    .ldbLoc { font-size: 15pt; }
+    .ldbUpdated { font-size: 70%; }
+    .ldbTable { font-size: 110%; }
+    .ldbHead {
+        font-size: 100%;
+        padding: 6px 4px;
+    }
+    .ldb-enttop, .ldb-entmid { font-size: 90%; }
+    .ldb-enttop .ldbVia { font-size: 70%; }
+    .ldb-entwarn { font-size: 60%; }
+    .ldb-entbot { font-size: 60%; }
+    .ldb-entbot p { margin: 0; }
+    .ldbPlat { width: 30px; }
+    .ldbSched { width: 55px; }
+    .ldbForecast { width: 64px; }
+    .ldbCol { font-size: 90%; padding: 1px 0px; }
+
+    .ldb-row {
+        font-size: 120%;
+    }
+}

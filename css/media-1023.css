@@ -1,0 +1,44 @@
+
+/* Samsung Tab 7.7+ */
+@media all and (min-width: 641px ) and (max-width: 1023px){
+    .ldbbutton { font-size: 80% }
+    h1 {
+        font-size: 130%;
+        margin: 0;
+        -webkit-margin-before: 0;
+        -webkit-margin-after: 0.67em;
+    }
+    #stationlabel { font-size: 90%; }
+    .ui-autocomplete li { font-size: 12pt; }
+    /* LDB */
+    #settings {
+        width:24px;
+        height: 24px;
+    }
+    .ldbLoc {
+        font-size: 20pt;
+        padding-top: 10pt;
+    }
+    .ldbUpdated { font-size: 70%; }
+    .ldbTable { font-size: 130%; }
+    .ldbHead {
+        font-size: 120%;
+        padding: 6px 4px;
+    }
+    .ldb-enttop, .ldb-entmid { font-size: 90%; }
+    .ldb-enttop .ldbVia { font-size: 80%; }
+    .ldb-entwarn { font-size: 100%; }
+    .ldb-entbot { font-size: 70%; }
+    .ldb-entbot p { margin: 0; }
+    .ldbPlat { width: 60px; }
+    .ldbSched { width: 95px; }
+    .ldbForecast { width: 104px; }
+    .ldbCol { font-size: 100%; padding: 1px 0px; }
+
+    .ldb-row {
+        font-size: 210%;
+    }
+    .ldb-row .ldb-label {
+        width: 200pt;
+    }
+}

@@ -1,0 +1,61 @@
+
+/* iPhone 3GS */
+@media all and ( max-width: 320px ) {
+    /* Ensure navbar fits screen
+    .navbar {
+    font-size: 70%;
+  }
+  */
+  .ldbbutton {
+    font-size: 130%;
+    top: 5pt;
+  }
+  h1 {
+    font-size: 110%;
+    margin: 0;
+    -webkit-margin-before: 0;
+    -webkit-margin-after: 0.67em;
+  }
+  #stationlabel { font-size: 80%; }
+  .ui-autocomplete li { font-size: 12pt; }
+
+  /* LDB */
+  #settings {
+    width:24px;
+    height: 24px;
+  }
+  .ldbLoc {
+    font-size: 15pt;
+    padding-top: 11pt;
+  }
+  .ldbUpdated { font-size: 70%; }
+  .ldbTable { font-size: 100%; }
+  .ldbHead {
+    font-size: 90%;
+    padding: 6px 4px;
+  }
+  .ldb-enttop, .ldb-entmid { font-size: 70%; }
+  .ldb-enttop .ldbVia { font-size: 70%; }
+  .ldb-entwarn { font-size: 60%; }
+  .ldb-entbot { font-size: 60%; }
+  .ldb-entbot p { margin: 0; }
+  .ldbPlat { width: 30px; }
+  .ldbSched { width: 55px; }
+  .ldbForecast { width: 64px; }
+  .ldbCol { font-size: 90%; padding: 1px 0px; }
+  .ldbLate, .ldbCancelled,.ldbDelayed {
+    padding-left: 15pt;
+    padding-right: 15pt;
+    text-align: center;
+    xfont-size: 90%;
+  }
+
+  .h2 {
+    font-size: 150%;
+  }
+
+  .ldb-row {
+    font-size: 110%;
+  }
+
+}

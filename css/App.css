@@ -1,3 +1,7 @@
+div.navbar-collapse {
+  background-color: #222;
+}
+
 .App {
 }
 
@@ -107,24 +111,4 @@ div.config div:not(:first-child) {
 }
 .center {
   text-align: center;
-}
-
-/* iPhone 3GS */
-@media all and ( max-width: 320px ) {
-    /* Ensure navbar fits screen */
-    .navbar {
-        font-size: 70%;
-    }
-    .ldbbutton {
-        font-size: 130%;
-        top: 5pt;
-    }
-    h1 {
-        font-size: 110%;
-        margin: 0;
-        -webkit-margin-before: 0;
-        -webkit-margin-after: 0.67em;
-    }
-    #stationlabel { font-size: 80%; }
-    .ui-autocomplete li { font-size: 12pt; }
 }
