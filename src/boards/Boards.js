@@ -6,6 +6,7 @@ import EUCookie from 'area51-eucookie';
 import BoardRow from './BoardRow.js';
 import ManagedBy from './ManagedBy.js';
 import MessageRow from './MessageRow.js';
+import Navigation from '../Navigation';
 
 //import Stomp from 'stompjs';
 function getTime( loc ) {
@@ -109,6 +110,7 @@ class Boards extends Component {
       locName = loc ? loc.locname : crs;
 
     return (<div>
+      <Navigation page="departures"/>
       <EUCookie />
       <div className="App-header">
         <h2>{locName}</h2>

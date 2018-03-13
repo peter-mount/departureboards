@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { withRouter } from 'react-router';
 import { AsyncTypeahead } from 'react-bootstrap-typeahead';
 import EUCookie from 'area51-eucookie';
+import Navigation from '../Navigation';
 
 class HomePage extends Component {
 
@@ -37,6 +38,7 @@ class HomePage extends Component {
 
   render() {
     return (<div>
+      <Navigation/>
       <EUCookie />
       <div className="App-header">
         <h1>Realtime UK Departure Boards</h1>
