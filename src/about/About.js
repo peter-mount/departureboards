@@ -44,7 +44,15 @@ class About extends Component {
             <p> For more information on the open data: </p>
             <ul>
               <li>
-                <a href="https://github.com/peter-mount/nre-feeds">Github repository of the backend used by this application.</a>
+                Github repositories:
+                <ul>
+                  <li>
+                    <a href="https://github.com/peter-mount/nre-feeds">The backend used by this application.</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/peter-mount/departureboards">The frontend of this application.</a>
+                  </li>
+                </ul>
               </li>
               <li>
                 <a href="http://nrodwiki.rockshore.net/index.php/Main_Page">Open Rail Data wiki.</a>
