@@ -14,7 +14,10 @@
 }
 
 #serviceTabs .cancelReason,
-#serviceTabs .lateReason,
-#serviceTabs .via {
+#serviceTabs .lateReason {
   display: block;
+}
+#serviceTabs .via {
+  font-size: 0.8em;
+  margin-left: 0.5em;
 }

@@ -12,15 +12,14 @@ class Schedule extends Component {
 
   render() {
     const data = this.props.service, service = data.service;
-    console.log( "Schedule", data );
 
-    var id=0, lid=0;
+    const lid = data.lastReport ? data.lastReport.id : 0
 
     return (<div id="board">
       <h3>
         <Time time={data.origin.time}/> <Location data={data} tiploc={data.origin.tiploc}/> to <Location data={data} tiploc={data.destination.tiploc}/>
+        <Via via={data.via}/>
       </h3>
-      <Via via={data.via}/>
       <Reason data={data} reason={service.cancelReason} canc={true}/>
       <Reason data={data} reason={service.lateReason}/>
 
@@ -38,18 +37,18 @@ class Schedule extends Component {
             </thead>
             <tbody>
               {service.locations
-              // We don't show passes unless:
-              // We are the last report
-              // We are the next entry after the last report if it was not also a pass - no 2 passes together
-              //.filter(row => lrid===row.id || (lrid>=0 && !data.lastReport.wtp && (lrid+1)===row.id) || !(row.pass || row.wtp))
-              //.filter(row => lrid===row.id || (lrid>=0  && (lrid+1)===row.id) || !(row.pass || row.wtp))
               // Filter out passes unless we have just passed or approaching one
-              .filter( row => !(row.timetable.wtp || row.forecast.pass) )
-              // Filter only stations (unless detailed mode enabled then all)
-              .filter( row => data.tiploc && data.tiploc[ row.tiploc ] && data.tiploc[ row.tiploc ].station )
+              .filter( row => row.id===lid || (lid>=0 && !data.lastReport.wtp && (lid+1)===row.id) || !(row.timetable.wtp || row.forecast.pass) )
               .reduce( (a, row) => {
-                a.push( <Movement key={'r'+id} data={data} row={row} lid={lid} rid={id}/> );
-                id++;
+                a.push( <Movement key={'r'+row.id} data={data} row={row} lid={lid}/> );
+                // Add a blank row when between stops with no passes
+                if(row.id===lid && !(row.forecast.arrived && !row.forecast.departed)) {
+                  a.push( <tr key={'r'+row.id+"a"}>
+                    <td className="ldb-fsct-stat">
+                      <i className="fa fa-train" aria-hidden="true"></i>
+                    </td>
+                  </tr>);
+                }
                 return a;
               },[])
             }

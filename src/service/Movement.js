@@ -9,28 +9,25 @@ class Movement extends Component {
     const p = this.props,
       row = p.row,
       data = p.data,
-      rid = p.rid,
       lid = p.lid,
       wtp = row.timetable.wtp,
       forecast = row.forecast,
       plat = forecast.plat;
     var c1 = 'expt', c2=c1;
-    /*
-    if(row.can) {
+
+    if(row.cancelled) {
         c1= 'can';
         c2= 'cancelled';
     }
-    else if(row.wtp)
+    else if(wtp)
         c1=c2= 'pass';
-    else if(row.dep || row.arr) {
+    else if(forecast.departed || forecast.arrived ) {
         c1= 'arr';
         c2= 'arrived';
     }
-    */
 
-    // Show icon only if we are the last id
-    //var icon = lrid===row.id && !row.dep ?<i className="fa fa-train" aria-hidden="true"></i>:null;
-    var icon = lid===rid && (forecast.arrived && !forecast.departed) ?<i className="fa fa-train" aria-hidden="true"></i>:null;
+    // Show train icon if we are at the required position
+    var icon = lid===row.id && !forecast.departed ?<i className="fa fa-train" aria-hidden="true"></i>:null;
 
     return  <tr key={'r'+row.id}>
               <td className="ldb-fsct-stat">{icon}</td>
