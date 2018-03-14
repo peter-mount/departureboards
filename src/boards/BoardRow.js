@@ -35,7 +35,7 @@ function reason(cancelled,reason,data) {
     m = m ? m.reasontext : ("reason " + reason.reason)
   }
   if (reason.tiploc) {
-    m = m + ( reason.near ? ' near ' : ' at ') + tiploc( reason.tiploc )
+    m = m + ( reason.near ? ' near ' : ' at ') + tiploc( data, reason.tiploc )
   }
   return m
 }
