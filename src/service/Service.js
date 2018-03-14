@@ -10,11 +10,19 @@ class Service extends Component {
   constructor( props ) {
     super( props );
     this.state = {}
+  }
 
+  componentDidMount() {
     const { match } = this.props,
       { params } = match,
       rid = params.rid;
     this.refresh( rid, true );
+  }
+
+  componentWillUnmount() {
+    if(this.timer) {
+      clearTimeout(this.timer);
+    }
   }
 
   resetTimer(rid) {
@@ -49,7 +57,7 @@ class Service extends Component {
         }
 
         console.log( json );
-        
+
         this.setState({data:json});
       })
       .catch(e => {

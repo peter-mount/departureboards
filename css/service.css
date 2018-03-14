@@ -1,16 +1,18 @@
 
-.App-header #serviceTabs .nab-tabs {
-  position: absolute;
+.App-header #serviceTabs {
+  position: fixed;
   top: 4em;
   left: 0;
   right: 0;
 }
 
-.App-header #serviceTabs .tab-content {
-  position: absolute;
-  top: 6em;
+.App-header .tab-content {
+  position: fixed;
+  top: 7em;
   left: 0;
   right: 0;
+  bottom: 0;
+  overflow-y: auto;
 }
 
 #serviceTabs .cancelReason,

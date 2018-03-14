@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
 import {PageHeader, Tab, Tabs} from 'react-bootstrap';
 import Movement from './Movement.js';
 
@@ -8,12 +9,41 @@ import Reason from '../util/Reason.js';
 import Time from '../util/Time.js';
 import Via from '../util/Via.js';
 
+/*
+ * Handles the Schedule tab
+ */
 class Schedule extends Component {
+
+  componentDidMount() {
+    this.ensureTrainVisible()
+  }
+
+  componentDidUpdate() {
+    this.ensureTrainVisible()
+  }
+
+  ensureTrainVisible() {
+    // Attempt to ensure the current position of the train is visible
+    const data = this.props.service, lastReport = data.lastReport;
+    if (lastReport) {
+      var dom = ReactDOM.findDOMNode( this.refs['r'+lastReport.id] );
+      if(dom.scrollIntoView) {
+        console.log("scrollIntoView");
+        dom.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+          inline: "nearest"
+        });
+      } else {
+        console.log("scrollIntoView unsupported");
+      }
+    }
+  }
 
   render() {
     const data = this.props.service, service = data.service;
 
-    const lid = data.lastReport ? data.lastReport.id : 0
+    const lid = data.lastReport ? data.lastReport.id : -1
 
     return (<div id="board">
       <h3>
@@ -38,9 +68,15 @@ class Schedule extends Component {
             <tbody>
               {service.locations
               // Filter out passes unless we have just passed or approaching one
-              .filter( row => row.id===lid || (lid>=0 && !data.lastReport.wtp && (lid+1)===row.id) || !(row.timetable.wtp || row.forecast.pass) )
+              .filter( row => row.id===lid || (lid>=0 && !(data.lastReport&&data.lastReport.wtp) && (lid+1)===row.id) || !(row.timetable.wtp || row.forecast.pass) )
               .reduce( (a, row) => {
-                a.push( <Movement key={'r'+row.id} data={data} row={row} lid={lid}/> );
+                a.push( <Movement
+                  key={'r'+row.id}
+                  data={data}
+                  row={row}
+                  lid={lid}
+                  ref={'r'+row.id}
+                /> );
                 // Add a blank row when between stops with no passes
                 if(row.id===lid && !(row.forecast.arrived && !row.forecast.departed)) {
                   a.push( <tr key={'r'+row.id+"a"}>
