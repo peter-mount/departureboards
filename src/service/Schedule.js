@@ -43,6 +43,10 @@ class Schedule extends Component {
               // We are the next entry after the last report if it was not also a pass - no 2 passes together
               //.filter(row => lrid===row.id || (lrid>=0 && !data.lastReport.wtp && (lrid+1)===row.id) || !(row.pass || row.wtp))
               //.filter(row => lrid===row.id || (lrid>=0  && (lrid+1)===row.id) || !(row.pass || row.wtp))
+              // Filter out passes unless we have just passed or approaching one
+              .filter( row => !(row.timetable.wtp || row.forecast.pass) )
+              // Filter only stations (unless detailed mode enabled then all)
+              .filter( row => data.tiploc && data.tiploc[ row.tiploc ] && data.tiploc[ row.tiploc ].station )
               .reduce( (a, row) => {
                 a.push( <Movement key={'r'+id} data={data} row={row} lid={lid} rid={id}/> );
                 id++;
