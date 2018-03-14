@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 
-import Delay from './Delay.js';
-import Location from './Location.js';
-import Time from './Time.js';
+import Delay from '../util/Delay.js';
+import Location from '../util/Location.js';
+import Time from '../util/Time.js';
 
 class Movement extends Component {
   render() {
@@ -28,7 +28,6 @@ class Movement extends Component {
     }
     */
 
-console.log(row.tiploc, wtp, plat, row )
     // Show icon only if we are the last id
     //var icon = lrid===row.id && !row.dep ?<i className="fa fa-train" aria-hidden="true"></i>:null;
     var icon = lid===rid && (forecast.arrived && !forecast.departed) ?<i className="fa fa-train" aria-hidden="true"></i>:null;

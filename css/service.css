@@ -1,0 +1,20 @@
+
+.App-header #serviceTabs .nab-tabs {
+  position: absolute;
+  top: 4em;
+  left: 0;
+  right: 0;
+}
+
+.App-header #serviceTabs .tab-content {
+  position: absolute;
+  top: 6em;
+  left: 0;
+  right: 0;
+}
+
+#serviceTabs .cancelReason,
+#serviceTabs .lateReason,
+#serviceTabs .via {
+  display: block;
+}

@@ -1,22 +1,28 @@
 import React, { Component } from 'react';
 import {PageHeader, Tab, Tabs} from 'react-bootstrap';
-import Delay from './Delay.js';
-import Location from './Location.js';
 import Movement from './Movement.js';
-import Time from './Time.js';
+
+import Delay from '../util/Delay.js';
+import Location from '../util/Location.js';
+import Reason from '../util/Reason.js';
+import Time from '../util/Time.js';
+import Via from '../util/Via.js';
 
 class Schedule extends Component {
 
   render() {
-    const data = this.props.service;
+    const data = this.props.service, service = data.service;
     console.log( "Schedule", data );
 
-    var via = "{via}", id=0, lid=0;
+    var id=0, lid=0;
 
     return (<div id="board">
       <h3>
-        <Time time={data.origin.time}/> <Location data={data} tiploc={data.origin.tiploc}/> to <Location data={data} tiploc={data.destination.tiploc}/> {via}
+        <Time time={data.origin.time}/> <Location data={data} tiploc={data.origin.tiploc}/> to <Location data={data} tiploc={data.destination.tiploc}/>
       </h3>
+      <Via via={data.via}/>
+      <Reason data={data} reason={service.cancelReason} canc={true}/>
+      <Reason data={data} reason={service.lateReason}/>
 
       <div className="ldbWrapper">
         <div className="ldb-row">
@@ -31,7 +37,7 @@ class Schedule extends Component {
               </tr>
             </thead>
             <tbody>
-              {data.service.locations
+              {service.locations
               // We don't show passes unless:
               // We are the last report
               // We are the next entry after the last report if it was not also a pass - no 2 passes together

@@ -199,11 +199,12 @@ td.ldb-fsct-pass, td.ldb-fsct-loc-pass, td.ldb-fsct-plat-pass {
 
 .delay_early {color: limegreen}
 .delay_delayed {color: #C21F39}
+.lateReason,
 .delay_ontime {color: #ffff00}
+td.ldb-fsct-loc-can, .ldb-fsct-cancelled, .ldb-fsct-plat-can, .cancelReason {color: red}
 td.ldb-fsct-loc-can, .ldb-fsct-cancelled, .ldb-fsct-plat-can {
     font-style: italic;
     font-weight: normal;
-    color: red;
 }
 td.ldb-fsct-stat {
     width: 10pt;
