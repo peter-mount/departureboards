@@ -48,7 +48,11 @@ node( 'AMD64' ) {
       }
     )
   }
-  buildStep( 'webpack' )
+
+  stage( "webpack") {
+    sh 'docker build -t ' + dockerImage + ' --build-arg environment=production --target webpack .'
+  }
+
   buildStep( 'httpd' )
 
   stage( 'docker' ) {
