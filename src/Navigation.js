@@ -38,7 +38,7 @@ class Navigation extends Component {
           {station}
           <NavItem onClick={ ()=>t.props.history.push( "/about" ) }>About</NavItem>
           <NavItem onClick={ ()=>t.props.history.push( "/contactUs" ) }>ContactUs</NavItem>
-          <NavItem onClick={ ()=>props.history.push( "/configure" ) }>Configure</NavItem>
+          <NavItem onClick={ ()=>t.props.history.push( "/configure" ) }>Configure</NavItem>
         </Nav>
       </Navbar.Collapse>
     </Navbar>);

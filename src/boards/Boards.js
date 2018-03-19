@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { withRouter } from 'react-router';
 import { PageHeader } from 'react-bootstrap';
 import EUCookie from 'area51-eucookie';
+import config from 'react-global-configuration';
 
 import BoardRow from './BoardRow.js';
 import ManagedBy from './ManagedBy.js';
@@ -28,7 +29,7 @@ class Boards extends Component {
   resetTimer( crs ) {
     const t=this;
     clearTimeout(t.timer);
-    t.timer = setTimeout( ()=>t.refresh( crs ), 10000 );
+    t.timer = setTimeout( ()=>t.refresh( crs ), config.get( 'refreshRate' ) );
   }
 
   // Retrieve the latest board
