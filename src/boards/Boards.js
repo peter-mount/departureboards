@@ -28,7 +28,7 @@ class Boards extends Component {
   resetTimer( crs ) {
     const t=this;
     clearTimeout(t.timer);
-    //t.timer = setTimeout( ()=>t.refresh( crs ), 10000 );
+    t.timer = setTimeout( ()=>t.refresh( crs ), 10000 );
   }
 
   // Retrieve the latest board
@@ -45,7 +45,6 @@ class Boards extends Component {
 
   // Render the departure boards
   renderDepartures( crs, data ) {
-    console.log( data );
 
     var messages = null, rows = null, idx = 0
 

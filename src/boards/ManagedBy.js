@@ -18,8 +18,6 @@ class ManagedBy extends Component {
           This station is managed by {toc.tocname}
         </span>;
       }
-
-      console.log( station, data, toc, text )
     }
 
     return  <div className="ldb-row">

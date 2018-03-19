@@ -50,7 +50,6 @@ class BoardRow extends Component {
     if (data.tiploc && data.tiploc[ tpl ] && data.tiploc[ tpl ].crs) {
       var crs = data.tiploc[ tpl ].crs;
       return () => {
-        console.log("Nav crs", crs )
         this.props.history.push('/departures/' + crs );
       };
     }
