@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import {PageHeader, Tab, Tabs} from 'react-bootstrap';
 import Movement from './Movement.js';
+import config from 'react-global-configuration';
 
 import Delay from '../util/Delay.js';
 import Location from '../util/Location.js';
@@ -43,7 +44,23 @@ class Schedule extends Component {
   render() {
     const data = this.props.service, service = data.service;
 
-    const lid = data.lastReport ? data.lastReport.id : -1
+    const lid = data.lastReport ? data.lastReport.id : -1;
+
+    var filter;
+    if (config.get("showAll")) {
+      filter = row => true;
+    }
+    if (!filter && config.get( "showPasses" )) {
+      filter = row => {
+         if (row.timetable.wtp || row.forecast.pass) {
+           return data.tiploc && data.tiploc[row.tiploc] && data.tiploc[row.tiploc].station
+         }
+         return true;
+      };
+    }
+    if (!filter) {
+      filter = row => row.id===lid || (lid>=0 && !(data.lastReport&&data.lastReport.wtp) && (lid+1)===row.id) || !(row.timetable.wtp || row.forecast.pass);
+    }
 
     return (<div id="board">
       <h3>
@@ -68,7 +85,7 @@ class Schedule extends Component {
             <tbody>
               {service.locations
               // Filter out passes unless we have just passed or approaching one
-              .filter( row => row.id===lid || (lid>=0 && !(data.lastReport&&data.lastReport.wtp) && (lid+1)===row.id) || !(row.timetable.wtp || row.forecast.pass) )
+              .filter( filter )
               .reduce( (a, row) => {
                 a.push( <Movement
                   key={'r'+row.id}

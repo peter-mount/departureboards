@@ -7,6 +7,7 @@ import Navigation from '../Navigation';
 
 import {getConfig,saveConfig} from './Config.js';
 import ConfigBoards from './ConfigBoards.js';
+import ConfigService from './ConfigService.js';
 
 class ConfigPage extends Component {
 
@@ -25,6 +26,10 @@ class ConfigPage extends Component {
 
           <Tab eventKey={1} title="Boards">
             <ConfigBoards config={this.config} />
+          </Tab>
+
+          <Tab eventKey={2} title="Services">
+            <ConfigService config={this.config} />
           </Tab>
 
         </Tabs>
