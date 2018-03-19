@@ -12,6 +12,7 @@ export function getConfig() {
     json = {
       showTerminated: false,
       refreshRate: 60000,
+      serviceRefreshRate: 60000,
     }
     saveConfig(json);
   }
