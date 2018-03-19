@@ -33,7 +33,7 @@ node( 'AMD64' ) {
   stage( "prepare" ) {
     checkout scm
     sh "docker pull area51/babel:react-latest"
-    sh "docker pull httpd:alpine"
+    sh "docker pull httpd:2.4.29-alpine"
   }
 
   buildStep( 'dependencies' )
