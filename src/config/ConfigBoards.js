@@ -15,7 +15,7 @@ class ConfigBoards extends Component {
     return (<Grid>
       <Row>
         <Col xs={12} md={12} sm={12}>
-          <FormGroup controlId="cfsNetWsReconnect">
+          <FormGroup controlId="cfgBoards">
             <ControlLabel>Services</ControlLabel>
             <Checkbox
               checked={cfg.showTerminated}

@@ -26,6 +26,19 @@ class Boards extends Component {
     };
   }
 
+  componentDidMount() {
+    const { match } = this.props,
+      { params } = match,
+      crs = params.crs;
+    this.refresh( crs );
+  }
+
+  componentWillUnmount() {
+    if(this.timer) {
+      clearTimeout(this.timer);
+    }
+  }
+
   resetTimer( crs ) {
     const t=this;
     clearTimeout(t.timer);
@@ -64,15 +77,17 @@ class Boards extends Component {
     }
 
     if (data.departures) {
-      rows = data.departures
-        //.sort( (a,b) => {
-        //  var a1 = getTime(a.location), b1 = getTime(b.location);
-        //  return a1&&b1?(a1 < b1 ? -1 : a1 > b1 ? 1 : 0):0;
-        //})
+      var filterTerminated = d => true,
+          filterSuppressed = d => !(d.location && d.location.forecast && d.location.forecast.plat && d.location.forecast.plat.cissup );
+
+      if( !config.get( "showTerminated" ) ) {
         // Filter out terminations
-        .filter( d => !(data.tiploc[d.destination] && data.tiploc[d.destination].crs === crs) )
-        // Filter out suppressed entries
-        .filter( d => !(d.location && d.location.forecast && d.location.forecast.plat && (/*d.location.forecast.plat.sup ||*/ d.location.forecast.plat.cissup) ) )
+        filterTerminated = d => !(data.tiploc[d.destination] && data.tiploc[d.destination].crs === crs);
+      }
+
+      rows = data.departures
+        .filter( filterSuppressed )
+        .filter( filterTerminated )
         .map( (d,ind) => {
           idx++
           return  <BoardRow
