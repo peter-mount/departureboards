@@ -50,10 +50,8 @@ node( 'AMD64' ) {
   }
 
   stage( "webpack") {
-    sh 'docker build -t ' + dockerImage + ' --build-arg environment=production --target webpack .'
+    sh 'docker build -t ' + dockerImage + ' --build-arg environment=production --target httpd .'
   }
-
-  buildStep( 'httpd' )
 
   stage( 'docker' ) {
     sh "docker push " + dockerImage
