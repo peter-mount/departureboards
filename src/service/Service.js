@@ -4,6 +4,7 @@ import {PageHeader, Tab, Tabs} from 'react-bootstrap';
 import EUCookie from 'area51-eucookie';
 import Navigation from '../Navigation';
 import Schedule from './Schedule';
+import config from 'react-global-configuration';
 
 class Service extends Component {
 
@@ -29,18 +30,11 @@ class Service extends Component {
     if(this.timer) {
       clearTimeout(this.timer);
     }
-    this.timer = setTimeout(() => this.refresh(rid,false), 60000 );
+    this.timer = setTimeout(() => this.refresh(rid,false), config.get( "serviceRefreshRate" ) );
   }
 
   refresh(rid,force) {
-      // Don't update if too quick
-    var now = new Date().getTime();
-    //if(!force || (this.lastUpdate && (now-this.lastUpdate)<10000) )
-    //  return ;
-
-    this.lastUpdate=now;
-
-    this.resetTimer();
+    this.resetTimer(rid);
 
     fetch('https://ldb.a.a51.li/service/' + rid)
       .then(res => res.json())

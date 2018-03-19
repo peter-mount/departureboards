@@ -29,7 +29,6 @@ class Schedule extends Component {
     if (lastReport) {
       var dom = ReactDOM.findDOMNode( this.refs['r'+lastReport.id] );
       if(dom.scrollIntoView) {
-        console.log("scrollIntoView");
         dom.scrollIntoView({
           behavior: "smooth",
           block: "center",
