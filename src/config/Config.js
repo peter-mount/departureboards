@@ -8,7 +8,8 @@ export function getConfig() {
   } catch (e) {
     json=null;
   }
-  if (!json) {
+  // No json or has old config then reset to defaults
+  if (!json || json.boards ) {
     json = {
       showTerminated: false,
       refreshRate: 60000,
