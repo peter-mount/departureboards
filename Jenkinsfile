@@ -39,14 +39,14 @@ node( 'AMD64' ) {
   buildStep( 'dependencies' )
   buildStep( 'sources' )
   stage( "build" ) {
-    parallel({
-      eslint: {
+    parallel(
+      'eslint': {
         buildStep( 'eslint' )
       },
-      babel: {
+      'babel': {
         buildStep( 'babel' )
       }
-    })
+    )
   }
   buildStep( 'webpack' )
   buildStep( 'httpd' )
