@@ -5,8 +5,13 @@ div.navbar-collapse {
 .App {
 }
 
+/* EUCookie */
+#root > div > div > div:nth-child(2).alert.alert-warning.alert-dismissible {
+  margin-top: 4em;
+}
+
 /* .App-header with EUCookie */
-#root > div > div:nth-child(3) > .App-header {
+#root > div > div > div:nth-child(3).App-header {
   margin-top: 0;
 }
 
