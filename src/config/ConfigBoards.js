@@ -21,6 +21,10 @@ class ConfigBoards extends Component {
               checked={cfg.showTerminated}
               onChange={()=>this.update(()=>cfg.showTerminated=!cfg.showTerminated)}
             >Show services terminating here</Checkbox>
+            <Checkbox
+              checked={cfg.hideCalling}
+              onChange={()=>this.update(()=>cfg.hideCalling=!cfg.hideCalling)}
+            >Hide calling points</Checkbox>
           </FormGroup>
         </Col>
       </Row>

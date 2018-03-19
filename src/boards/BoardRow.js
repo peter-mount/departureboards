@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router';
+import config from 'react-global-configuration';
 
 function tiploc( d, tpl ) {
   return d.tiploc[ tpl ] ? d.tiploc[ tpl ].locname : tpl
@@ -115,29 +116,30 @@ class BoardRow extends Component {
             </span>
             : null;
 
-    if( cancelled && train.cancelReason && train.cancelReason.reason > 0 )
-        message = <div className="ldb-entbot">
-                    <div className="ldbCancelled">{reason(true,train.cancelReason, data)}</div>
-                  </div>;
-    else if( train.lateReason && train.lateReason.reason > 0)
-        message = <div className="ldb-entbot">
-                    <div className="ldbLate">{reason(false,train.lateReason, data)}</div>
-                  </div>;
+    if ( cancelled && train.cancelReason && train.cancelReason.reason > 0 ) {
+      message = <div className="ldb-entbot">
+        <div className="ldbCancelled">{reason(true,train.cancelReason, data)}</div>
+      </div>;
+    } else if ( train.lateReason && train.lateReason.reason > 0) {
+      message = <div className="ldb-entbot">
+        <div className="ldbLate">{reason(false,train.lateReason, data)}</div>
+      </div>;
+    }
 
-    if (train.calling && train.calling.length > 0)
-        calling = <div className="ldb-entbot">
-                    <span className="callList" > Calling at:</span> {
-                      train.calling.map(
-                        cp => <span key={cp.tpl} className="callList" ><a onClick={this.showBoard(cp.tpl)}>{tiploc(data,cp.tpl)}</a>&nbsp;({fixtime(cp.time)}) </span>
-                      //cp => <span key={cp.tpl} className="callList" ><a onClick={()=>this.props.app.boards(cp.crs)} dangerouslySetInnerHTML={{__html: this.fix(cp.name)}}></a>&nbsp;({cp.time}) </span>
-                    )}
-                  </div>;
+    if (train.calling && train.calling.length > 0 && !config.get( "hideCalling" ) ) {
+      calling = <div className="ldb-entbot">
+        <span className="callList" > Calling at:</span> {
+          train.calling.map(
+            cp => <span key={cp.tpl} className="callList" ><a onClick={this.showBoard(cp.tpl)}>{tiploc(data,cp.tpl)}</a>&nbsp;({fixtime(cp.time)}) </span>
+        )}
+      </div>;
+    }
 
     if ( !cancelled && loc.delay && Math.abs( loc.delay ) >= 60 ) {
       var m = Math.floor( Math.abs( loc.delay / 60 ) ), s = Math.abs( loc.delay % 60 );
       delay = <div className="ldb-entbot">
-                  <div className="ldbLate">This train is running {m} {m>1?"minutes":"minute"}{s?" "+s+"s":""} {loc.delay>0?"late":"early"}</div>
-                </div>;
+        <div className="ldbLate">This train is running {m} {m>1?"minutes":"minute"}{s?" "+s+"s":""} {loc.delay>0?"late":"early"}</div>
+      </div>;
     }
 
     return  <div className={this.props.index % 2 === 0 ? "ldb-row altrow" : "ldb-row"}>
