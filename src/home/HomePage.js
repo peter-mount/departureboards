@@ -21,7 +21,7 @@ class HomePage extends Component {
     fetch('https://ref.a.a51.li/search/' + query)
       .then(resp => resp.json())
       .then(json => t.setState({
-        options: json
+        options: json ? json : []
       }))
       .catch((e)=>{
         // Retry after 1 second
