@@ -55,10 +55,10 @@ class About extends Component {
                 </ul>
               </li>
               <li>
-                <a href="http://nrodwiki.rockshore.net/index.php/Main_Page">Open Rail Data wiki.</a>
+                <a href="http://wiki.openraildata.com/index.php/Main_Page">Open Rail Data wiki.</a>
               </li>
               <li>
-                <a href="http://nrodwiki.rockshore.net/index.php/Darwin:Push_Port">Darwin Push Port feed details.</a>
+                <a href="http://wiki.openraildata.com/index.php/Darwin:Push_Port">Darwin Push Port feed details.</a>
               </li>
               <li>
                 <a href="https://groups.google.com/forum/#!forum/openraildata-talk">Open Rail Data forum</a>
