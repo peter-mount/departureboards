@@ -59,10 +59,11 @@ node( 'AMD64' ) {
 
 }
 
-if( BRANCH_NAME == 'master' ) {
-  node( "api-a" ) {
-    stage( 'deploy UAT' ) {
-      sh "/usr/local/bin/departureboards-uat.sh"
-    }
-  }
-}
+//if( BRANCH_NAME == 'master' ) {
+//  node( "api-a" ) {
+//    stage( 'deploy UAT' ) {
+//      sh "/usr/local/bin/departureboards-uat.sh"
+//    }
+//  }
+//}
+
