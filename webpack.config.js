@@ -54,5 +54,11 @@ module.exports = {
     colors: true
   },
 
-  devtool: 'source-map'
+  devtool: 'source-map',
+
+  devServer: {
+    open: 'http://localhost:9000',
+    port: 9000,
+    contentBase: 'dist'
+  }
 };

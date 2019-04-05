@@ -28,7 +28,7 @@ FROM area51/babel:react-latest as dependencies
 
 WORKDIR /opt/build
 ADD package.json package.json
-RUN usenpmrepository https://nexus.area51.onl/repository/npm/
+RUN usenpmrepository https://nexus.area51.dev/repository/npm/
 RUN npm install
 
 # Link to webpack
