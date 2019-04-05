@@ -1,19 +1,20 @@
 {
   "name": "departureboards",
-  "version": "0.4.0",
+  "version": "2.0.0",
   "private": false,
   "publishConfig": {
-    "registry": "https://nexus.area51.onl/repository/npm-private/"
+    "registry": "https://nexus.area51.dev/repository/npm-private/"
   },
   "scripts": {
-    "build": "npm run babel && npm run webpack",
+    "build": "npm run css && npm run babel && npm run webpack",
     "babel": "babel --plugins transform-es2015-modules-umd src --ignore __tests__ --out-dir ./build",
     "webpack": "webpack --config webpack.config.js && cp -v public/* dist",
     "lint": "eslint ./src",
     "lintfix": "eslint ./src --fix",
     "lint:watch": "esw -w src/**",
     "run": "npm run build && npm run dev",
-    "dev": "node ./node_modules/webpack-dev-server/bin/webpack-dev-server.js --hot --inline --history-api-fallback"
+    "dev": "node ./node_modules/webpack-dev-server/bin/webpack-dev-server.js --hot --inline --history-api-fallback",
+    "css": "./minifycss.sh"
   },
   "dependencies": {
     "area51-apilock": "^0.1.2",
@@ -50,6 +51,7 @@
     "babel-preset-es2016": "^6.24.1",
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-0": "^6.24.1",
+    "cssnano": "^4.1.10",
     "eslint": "^4.19.0",
     "eslint-plugin-import": "^2.9.0",
     "eslint-plugin-jsx-a11y": "^6.0.3",
@@ -66,6 +68,7 @@
     "grunt-contrib-uglify": "^4.0.1",
     "grunt-newer": "^1.3.0",
     "polished": "^1.9.2",
+    "postcss-cli": "^6.1.2",
     "styled-components": "^2.1.1",
     "uglifyjs-webpack-plugin": "^1.2.4",
     "webpack": "^4.29.6",
