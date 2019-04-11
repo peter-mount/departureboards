@@ -79,17 +79,7 @@ class Service extends Component {
                 <Navigation page="service"/>
                 <EUCookie/>
                 <div className="App-header">
-                    <Tabs defaultActiveKey={1} id="serviceTabs" animation={false}>
-
-                        <Tab eventKey={1} title="Schedule">
-                            <Schedule service={d}/>
-                        </Tab>
-
-                        <Tab eventKey={2} title="Details">
-                            details
-                        </Tab>
-
-                    </Tabs>
+                    <Schedule service={d}/>
                 </div>
             </div>);
         }
