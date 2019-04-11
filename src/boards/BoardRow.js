@@ -90,7 +90,7 @@ class BoardRow extends Component {
             // For splits
             splits, splitsTrain,
             // For joins
-            joins, joinsTrain,
+            joins, joinsTrain, joinsThisTrain, joining,
             message, calling, delay, lastReport;
 
         //console.log( train )
@@ -114,14 +114,18 @@ class BoardRow extends Component {
                                 }
                             }
 
-                            destination =
-                                <span>{destination} &amp; {getDestination(data, splitsTrain.destinationLocation.tiploc, splitsTrain.rid)}</span>;
+                            // Only add the second destination if we are the main association and we are not displaying
+                            // the tiploc for this station - i.e. we are splitting here
+                            // TODO add check for splitting at this station to this rule
+                            if (train.rid === a.main.rid) {
+                                destination =
+                                    <span>{destination} &amp; {getDestination(data, splitsTrain.destinationLocation.tiploc, splitsTrain.rid)}</span>;
+                            }
                             break;
                         case 'JJ':
                             joins = a;
                             joinsTrain = a.schedule;
-                            destination =
-                                <span>{destination} &amp; {getDestination(data, joinsTrain.destinationLocation.tiploc, joinsTrain.rid)}</span>;
+                            joinsThisTrain = a.main.rid === train.rid;
                             break;
                         default:
                             break;
@@ -179,8 +183,9 @@ class BoardRow extends Component {
             for (i = 0; i < train.calling.length; i++) {
                 let cp = train.calling[i],
                     split = splits && cp.tpl === splits.tiploc,
+                    join = joins && cp.tpl === joins.tiploc,
                     last = i > cpi1 && (i + 1) === train.calling.length;
-                if (split || last) {
+                if (join || split || last) {
                     cps[cpi].push(<span key={kid++} className="callList"> and </span>)
                 }
 
@@ -208,14 +213,16 @@ class BoardRow extends Component {
             }
 
             if (cps[1].length) {
+                let via = (data.via && data.via[train.rid]) ? data.via[train.rid].text : "service";
                 s1 = <div>
                     <span
-                        className="callList">{fix(tiploc(data, train.destination))} portion calls at:</span> {cps[1]}
+                        className="callList">{fix(tiploc(data, train.destination))} {via} calls at:</span> {cps[1]}
                 </div>
             }
             if (cps[2].length) {
+                let via = (data.via && data.via[splitsTrain.rid]) ? data.via[splitsTrain.rid].text : "service";
                 s2 = <div><span
-                    className="callList">{fix(tiploc(data, splitsTrain.destinationLocation.tiploc))} portion departing {fixTime(splitsTrain.calling[0].time)} calls at:</span> {cps[2]}
+                    className="callList">{fix(tiploc(data, splitsTrain.destinationLocation.tiploc))} {via} departing {fixTime(splitsTrain.calling[0].time)} calls at:</span> {cps[2]}
                 </div>
             }
             calling = <div className="ldb-entbot">
@@ -225,8 +232,51 @@ class BoardRow extends Component {
             </div>;
         }
 
-        if (!cancelled && loc.delay && Math.abs(loc.delay) >= 60) {
-            let m = Math.floor(Math.abs(loc.delay / 60)), s = Math.abs(loc.delay % 60);
+        if (joins) {
+            // Say a service will join here
+            if (joinsThisTrain && !joins.assoc.cancelled) {
+                let originLocation = joinsTrain.originLocation;
+                joining = <div className="ldb-entbot">
+                    <div>
+                    <span className="callList">
+                        The {fixTime(originLocation.displaytime)} service from <a
+                        onClick={() => this.props.history.push('/service/' + joinsTrain.rid)}>{fix(tiploc(data, originLocation.tiploc))}</a> will attach here
+                    </span>
+                    </div>
+                </div>
+            }
+            // Say a service joins another
+            if (!joinsThisTrain && !joins.main.cancelled) {
+                let destinationLocation = joinsTrain.destinationLocation;
+                joining = <div className="ldb-entbot">
+                    <div>
+                    <span className="callList">
+                        This service will attach at {fix(tiploc(data, train.destination.tiploc))} and continue to {fix(tiploc(data, destinationLocation.tiploc))}
+                    </span>
+                    </div>
+                </div>
+            }
+        }
+
+        if (
+
+            !
+                cancelled
+            &&
+            loc
+                .delay
+            &&
+            Math
+                .abs(loc
+
+                    .delay
+                ) >=
+            60
+        ) {
+            let
+                m = Math.floor(Math.abs(loc.delay / 60))
+                ,
+                s = Math.abs(loc.delay % 60);
             delay = <div className="ldb-entbot">
                 <div className="ldbLate">This train is
                     running {m} {m > 1 ? "minutes" : "minute"}{s ? " " + s + "s" : ""} {loc.delay > 0 ? "late" : "early"}</div>
@@ -246,9 +296,11 @@ class BoardRow extends Component {
             {message}
             {calling}
             {delay}
+            {joining}
             <div className="ldb-entbot">{toc}{length}{lastReport}</div>
         </div>;
     }
-};
+}
+;
 
 export default withRouter(BoardRow);
