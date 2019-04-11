@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 
 /*
  * Handles the rendering of a Via
@@ -9,14 +9,14 @@ import React, { Component } from 'react';
  * This returns null if reason is null, code 0 or reasons map is not present.
  */
 class Via extends Component {
-  render() {
-    const p = this.props,
-      v = p.via;
-    if (v && v.text) {
-      return <span className="via">{v.text}</span>;
+    render() {
+        const p = this.props,
+            v = p.via;
+        if (v && v.text) {
+            return <span className="via">{v.text}</span>;
+        }
+        return null;
     }
-    return null;
-  }
 }
 
 export default Via;
