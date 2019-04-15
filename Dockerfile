@@ -24,7 +24,7 @@ ARG environment=development
 # ======================================================================
 # The base builder image comprising babel, webpack and all required
 # dependencies from npm
-FROM area51/babel:react-latest as dependencies
+FROM area51/babel:react-latest as base
 
 WORKDIR /opt/build
 ADD package.json package.json
@@ -39,50 +39,29 @@ ADD .babelrc /usr/local/babel/.babelrc
 ADD .eslintrc /usr/local/babel/.eslintrc
 
 # ======================================================================
-# Import sources
-FROM dependencies as sources
+# Download NPM sources
+FROM base as npm
 WORKDIR /opt/build
+ADD package.json package.json
+ADD package-lock.json package-lock.json
+RUN npm install
+
+# ======================================================================
+# Run the build
+FROM npm as build
+WORKDIR /opt/build
+ADD .babelrc .babelrc
+ADD .eslintrc .eslintrc
+ADD minifycss.sh minifycss.sh
+ADD webpack.config.js webpack.config.js
+
+ADD public public
+ADD css css
 ADD src src
 
-# ======================================================================
-# Run eslint over sources
-FROM sources as eslint
-WORKDIR /opt/build
-RUN eslint $(pwd)/src
-
-# ======================================================================
-# Run babel on sources
-FROM sources as babel
-WORKDIR /opt/build
-RUN babel $(pwd)/src $(pwd)/build
-
-# ======================================================================
-# Run webpack on output
-FROM babel as webpack
-ARG environment
-
-WORKDIR /opt/build
-
-# Copy static content into the final distribution
-ADD public dist
-
-# The CSS
-ADD css css
-RUN cat css/*.css >>dist/main.css
-
-# Finally run webpack
-ADD webpack.config.js webpack.config.js
-RUN environment=${environment} webpack --config webpack.config.js
-
-# Now caching, rename main.js to main-{hash}.js
-RUN MAIN="main-$(sha256sum dist/main.js | cut -c-16).js" &&\
-    CSS="main-$(sha256sum dist/main.css | cut -c-16).css" &&\
-    mv dist/main.js dist/$MAIN &&\
-    mv dist/main.css dist/$CSS &&\
-    sed \
-      -e "s/main.js/$MAIN/g" \
-      -e "s/main.css/$CSS/g" \
-      -i dist/index.html
+RUN npm run css
+RUN npm run babel
+RUN npm run webpack
 
 # ======================================================================
 # Apache HTTPD based image to run the app locally
@@ -93,4 +72,4 @@ FROM httpd:2.4.29-alpine as httpd
 RUN echo "ErrorDocument 404 /index.html" >>/usr/local/apache2/conf/httpd.conf
 
 # Copy the distribution unto htdocs
-COPY --from=webpack /opt/build/dist /usr/local/apache2/htdocs/
+COPY --from=build /opt/build/dist /usr/local/apache2/htdocs/
