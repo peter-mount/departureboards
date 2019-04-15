@@ -151,7 +151,7 @@ class BoardRow extends Component {
             expectedClass = 'ldbLate';
         }
 
-        if (train.lastReport) {
+        if (train.lastReport && train.lastReport.tpl != "") {
             lastReport = <span>
         <span>Last report:</span>
         <span className="ldbDest"> {tiploc(data, train.lastReport.tpl)} {fixTime(train.lastReport.time)} </span>
@@ -258,21 +258,7 @@ class BoardRow extends Component {
             }
         }
 
-        if (
-
-            !
-                cancelled
-            &&
-            loc
-                .delay
-            &&
-            Math
-                .abs(loc
-
-                    .delay
-                ) >=
-            60
-        ) {
+        if (!cancelled && loc.delay && Math.abs(loc.delay) >= 60) {
             let
                 m = Math.floor(Math.abs(loc.delay / 60))
                 ,
