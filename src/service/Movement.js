@@ -31,7 +31,9 @@ class Movement extends Component {
 
         let terminated = row.planned && row.planned.activity === 'TF' && service && service.destinationLocation && service.terminatedAt && service.destinationLocation.tiploc !== service.terminatedAt.tiploc,
             arrived = forecast.arrived && !forecast.departed,
-            expected = !(forecast.arrived || forecast.departed);
+            expected = !(forecast.arrived || forecast.departed),
+            cancelled = row.cancelled,
+            delay = cancelled ? "" : <Delay delay={row.delay}/>;
 
         return <tr key={'r' + row.id}>
             <td className="ldb-fsct-stat">{icon}</td>
@@ -39,13 +41,13 @@ class Movement extends Component {
                 <Location data={data} tiploc={row.tiploc}/>
             </td>
             <td className={'ldb-fsct-plat-' + c1}>
-                {row.cancelled ? 'Cancelled' : wtp ? 'Pass' : terminated ? "Terminated" : plat && (plat.suppressed && !forecast.departed) ? null : plat.plat}
+                {cancelled ? 'Cancelled' : wtp ? 'Pass' : terminated ? "Terminated" : plat && (plat.suppressed && !forecast.departed) ? null : plat.plat}
             </td>
             <td className={'ldb-fsct-' + c2}>
                 <Time time={forecast.time} terminated={terminated} arrived={arrived} expected={expected}/>
             </td>
             <td className={'ldb-fsct-' + c2}>
-                <Delay delay={row.delay}/>
+                {delay}
             </td>
         </tr>;
 
