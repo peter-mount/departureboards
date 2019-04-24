@@ -9,6 +9,7 @@ class Movement extends Component {
         const p = this.props,
             row = p.row,
             data = p.data,
+            service = data.service,
             lid = p.lid,
             wtp = row.timetable.wtp,
             forecast = row.forecast,
@@ -28,7 +29,7 @@ class Movement extends Component {
         // Show train icon if we are at the required position
         let icon = lid === row.id && !forecast.departed ? <i className="fa fa-train" aria-hidden="true"></i> : null;
 
-        let terminated = row.planned && row.planned.activity === 'TF', //row.type === 'DT',
+        let terminated = row.planned && row.planned.activity === 'TF' && service && service.destinationLocation && service.terminatedAt && service.destinationLocation.tiploc !== service.terminatedAt.tiploc,
             arrived = forecast.arrived && !forecast.departed,
             expected = !(forecast.arrived || forecast.departed);
 
