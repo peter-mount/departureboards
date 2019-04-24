@@ -8,7 +8,7 @@ class Time extends Component {
         }
 
         t = t.split(':');
-        let s = this.props.arrived ? 'a' : ':';
+        let s = (!this.props.terminated && this.props.arrived) ? 'a' : ':';
 
         return <span className={this.props.expected ? 'expected' : 'arrived'}>{t[0] + s + t[1]}</span>;
     }

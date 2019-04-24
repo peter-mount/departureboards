@@ -25,7 +25,7 @@ class Reason extends Component {
             {reason.near ? 'near' : 'at'} <Location data={d} tiploc={reason.tiploc}/>
           </span>;
             }
-            return <span className={reason.canc ? 'cancelReason' : 'lateReason'}>{msg} {nearAt}</span>;
+            return <div className={reason.canc ? 'cancelReason' : 'lateReason'}>{msg} {nearAt}</div>;
         }
         return null;
     }

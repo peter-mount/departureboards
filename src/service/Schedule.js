@@ -59,12 +59,21 @@ class Schedule extends Component {
             filter = row => row.id === lid || (lid >= 0 && !(data.lastReport && data.lastReport.wtp) && (lid + 1) === row.id) || !(row.timetable.wtp || row.forecast.pass);
         }
 
+        let terminated;
+        if (service && service.destinationLocation && service.terminatedAt && service.destinationLocation.tiploc !== service.terminatedAt.tiploc) {
+            let t = service.terminatedAt.displaytime.split(':');
+            terminated = <div>This service was terminated at <Location data={data}
+                                                                       tiploc={service.terminatedAt.tiploc}/> at {t[0]}:{t[1]}
+            </div>
+        }
+
         return (<div id="board">
             <h3>
                 <Time time={data.origin.time}/> <Location data={data} tiploc={data.origin.tiploc}/> to <Location
                 data={data} tiploc={data.destination.tiploc}/>
                 <Via via={data.via}/>
             </h3>
+            {terminated}
             <Reason data={data} reason={service.cancelReason} canc={true}/>
             <Reason data={data} reason={service.lateReason}/>
 
