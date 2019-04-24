@@ -67,11 +67,11 @@ class Schedule extends Component {
             </div>
         }
 
+        // TODO add association here
         return (<div id="board">
             <h3>
                 <Time time={data.origin.time}/> <Location data={data} tiploc={data.origin.tiploc}/> to <Location
-                data={data} tiploc={data.destination.tiploc}/>
-                <Via via={data.via}/>
+                data={data} tiploc={data.destination.tiploc}/> <Via via={data.via}/>
             </h3>
             {terminated}
             <Reason data={data} reason={service.cancelReason} canc={true}/>

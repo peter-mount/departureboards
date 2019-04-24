@@ -13,7 +13,7 @@ class Via extends Component {
         const p = this.props,
             v = p.via;
         if (v && v.text) {
-            return <span className="via">{v.text}</span>;
+            return <span className="ldb-entbot">{v.text}</span>;
         }
         return null;
     }
