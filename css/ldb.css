@@ -182,7 +182,7 @@ td.ldb-fsct-expected {
     text-align: center;
 }
 
-td.ldb-fsct-loc-arr, td.ldb-fsct-loc-expt, td.ldb-fsct-loc-pass, td.ldb-fsct-loc-can {
+td.ldb-fsct-loc-arr, td.ldb-fsct-loc-expt, td.ldb-fsct-loc-pass, td.ldb-fsct-loc-can, td.ldb-info {
     text-align: left;
 }
 td.ldb-fsct-loc-arr, td.ldb-fsct-plat-arr, td.ldb-fsct-plat-can {
@@ -195,6 +195,12 @@ td.ldb-fsct-loc-expt, td.ldb-fsct-plat-expt, td.ldb-fsct-plat-pass {
 }
 td.ldb-fsct-pass, td.ldb-fsct-loc-pass, td.ldb-fsct-plat-pass {
     color: lightgray;
+}
+
+td.ldb-info {
+    font-style: normal;
+    font-weight: normal;
+    color: #ffff00;
 }
 
 .delay_early {color: limegreen}

@@ -23,9 +23,12 @@ class Schedule extends Component {
 
     ensureTrainVisible() {
         // Attempt to ensure the current position of the train is visible
-        const data = this.props.service, lastReport = data.lastReport;
+        const data = this.props.service,
+            service = data.service,
+            lastReport = service.lastReport;
+
         if (lastReport) {
-            let dom = ReactDOM.findDOMNode(this.refs['r' + lastReport.id]);
+            let dom = ReactDOM.findDOMNode(this.refs['r' + service.rid + '_' + lastReport.id]);
             if (dom.scrollIntoView) {
                 dom.scrollIntoView({
                     behavior: "smooth",
@@ -39,25 +42,11 @@ class Schedule extends Component {
     }
 
     render() {
-        const data = this.props.service, service = data.service;
-
-        const lid = data.lastReport ? data.lastReport.id : -1;
-
-        let filter;
-        if (config.get("showAll")) {
-            filter = row => true;
-        }
-        if (!filter && config.get("showPasses")) {
-            filter = row => {
-                if (row.timetable.wtp || row.forecast.pass) {
-                    return data.tiploc && data.tiploc[row.tiploc] && data.tiploc[row.tiploc].station
-                }
-                return true;
-            };
-        }
-        if (!filter) {
-            filter = row => row.id === lid || (lid >= 0 && !(data.lastReport && data.lastReport.wtp) && (lid + 1) === row.id) || !(row.timetable.wtp || row.forecast.pass);
-        }
+        const data = this.props.service,
+            service = data.service,
+            rid = service.rid,
+            association = data.service.association,
+            via = data.via ? data.via : {};
 
         let terminated;
         if (service && service.destinationLocation && service.terminatedAt && service.destinationLocation.tiploc !== service.terminatedAt.tiploc) {
@@ -67,11 +56,37 @@ class Schedule extends Component {
             </div>
         }
 
-        // TODO add association here
+        // Destination and any associations
+        let dest = <span><Location data={data} tiploc={data.destination.tiploc}/> <Via via={via[service.rid]}/></span>,
+            splits;
+        if (association) {
+            for (let a of association) {
+                if (a.category === 'VV' && !a.cancelled && rid === a.main.rid) {
+                    splits = a;
+                    dest = <span>{dest} &amp; <Location data={data} tiploc={a.assoc.destination.tiploc}/> <Via
+                        via={via[a.assoc.rid]}/></span>
+                }
+            }
+        }
+
+        // The destinations
+        let rows = Schedule.appendRows([], service, splits, data);
+
+        if (splits) {
+            rows.push(<tr key={'ra'}>
+                <td className="ldb-fsct-stat"></td>
+                <td className="ldb-info">
+                    <Location data={data} tiploc={splits.assoc.destination.tiploc}/> <Via
+                    via={via[splits.assoc.rid]}/> service runs from
+                </td>
+            </tr>);
+
+            rows = Schedule.appendRows(rows, splits.schedule, null, data);
+        }
+
         return (<div id="board">
             <h3>
-                <Time time={data.origin.time}/> <Location data={data} tiploc={data.origin.tiploc}/> to <Location
-                data={data} tiploc={data.destination.tiploc}/> <Via via={data.via}/>
+                <Time time={data.origin.time}/> <Location data={data} tiploc={data.origin.tiploc}/> to {dest}
             </h3>
             {terminated}
             <Reason data={data} reason={service.cancelReason} canc={true}/>
@@ -90,33 +105,73 @@ class Schedule extends Component {
                         </tr>
                         </thead>
                         <tbody>
-                        {service.locations
-                        // Filter out passes unless we have just passed or approaching one
-                            .filter(filter)
-                            .reduce((a, row) => {
-                                a.push(<Movement
-                                    key={'r' + row.id}
-                                    data={data}
-                                    row={row}
-                                    lid={lid}
-                                    ref={'r' + row.id}
-                                />);
-                                // Add a blank row when between stops with no passes
-                                if (row.id === lid && !(row.forecast.arrived && !row.forecast.departed)) {
-                                    a.push(<tr key={'r' + row.id + "a"}>
-                                        <td className="ldb-fsct-stat">
-                                            <i className="fa fa-train" aria-hidden="true"></i>
-                                        </td>
-                                    </tr>);
-                                }
-                                return a;
-                            }, [])
-                        }
+                        {rows}
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>);
+    }
+
+    static appendRows(rows, service, splits, data) {
+
+        const lastReport = service.lastReport,
+            lid = lastReport ? lastReport.id : -1,
+            via = data.via ? data.via : {};
+
+        let filter;
+        if (config.get("showAll")) {
+            filter = row => true;
+        }
+        if (!filter && config.get("showPasses")) {
+            filter = row => {
+                if (row.timetable.wtp || row.forecast.pass) {
+                    return data.tiploc && data.tiploc[row.tiploc] && data.tiploc[row.tiploc].station
+                }
+                return true;
+            };
+        }
+        if (!filter) {
+            filter = row => row.id === lid || (lid >= 0 && !(lastReport && lastReport.wtp) && (lid + 1) === row.id) || !(row.timetable.wtp || row.forecast.pass);
+        }
+
+        for (let row of service.locations) {
+            const key = 'r' + service.rid + '_' + row.id;
+            if (filter(row)) {
+                rows.push(<Movement
+                    key={key}
+                    data={data}
+                    row={row}
+                    lid={lid}
+                    ref={key}
+                />);
+
+                if (splits && row.tiploc === splits.tiploc) {
+                    rows.push(<tr key={key + "s"}>
+                        <td className="ldb-fsct-stat"></td>
+                        <td className="ldb-info">Where the train divides.</td>
+                    </tr>);
+
+                    rows.push(<tr key={key + "m"}>
+                        <td className="ldb-fsct-stat"></td>
+                        <td className="ldb-info">
+                            <Location data={data} tiploc={data.destination.tiploc}/> <Via
+                            via={via[service.rid]}/> continues to
+                        </td>
+                    </tr>);
+                }
+
+                // Add a blank row when between stops with no passes
+                if (row.id === lid && !(row.forecast.arrived && !row.forecast.departed)) {
+                    rows.push(<tr key={key + "a"}>
+                        <td className="ldb-fsct-stat">
+                            <i className="fa fa-train" aria-hidden="true"></i>
+                        </td>
+                    </tr>);
+                }
+            }
+        }
+        return rows
     }
 }
 

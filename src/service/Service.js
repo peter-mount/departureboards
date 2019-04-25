@@ -32,6 +32,17 @@ class Service extends Component {
         this.timer = setTimeout(() => this.refresh(rid, false), config.get("serviceRefreshRate"));
     }
 
+    static indexSchedule(s) {
+        if (s && s.locations) {
+            // Add index of each location
+            for (let i = 0; i < s.locations.length; i++) {
+                s.locations[i].id = i;
+            }
+            // Calculate last report until we add to the backend
+            s.lastReport = s.locations.reduce((a, b) => b.forecast.arrived || b.forecast.departed ? b : a, null);
+        }
+    }
+
     refresh(rid, force) {
         this.resetTimer(rid);
 
@@ -39,17 +50,14 @@ class Service extends Component {
             .then(res => res.json())
             .then(json => {
                 this.resetTimer(rid);
+                Service.indexSchedule(json.service);
 
-                if (json.service && json.service.locations) {
-                    // Add index of each location
-                    for (let i = 0; i < json.service.locations.length; i++) {
-                        json.service.locations[i].id = i;
+                if (json.service && json.service.association) {
+                    for (let a of json.service.association) {
+                        Service.indexSchedule(a.schedule)
                     }
-                    // Calculate last report until we add to the backend
-                    json.lastReport = json.service.locations.reduce((a, b) => b.forecast.arrived || b.forecast.departed ? b : a, null);
-                }
 
-                console.log(json);
+                }
 
                 this.setState({data: json});
             })
