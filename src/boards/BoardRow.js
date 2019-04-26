@@ -121,7 +121,6 @@ class BoardRow extends Component {
             joins, joinsTrain, joinsThisTrain, joining,
             message, calling, delay, lastReport, prefLastReport;
 
-        //console.log( train )
         if (terminatesHere) {
             destination = 'Terminates Here';
         } else if (train.association && train.association.length > 0) {
@@ -203,7 +202,7 @@ class BoardRow extends Component {
         }
 
         let toc = train.toc && data.toc && data.toc[train.toc] ?
-            <span> {data.toc[train.toc].tocname}&nbsp;service. </span> : null;
+            <span> {data.toc[train.toc].tocname}&nbsp;service{config.get("showHeadcodes") ? (" " + train.trainId) : null}. </span> : null;
 
         let length = !cancelled && forecast && forecast.length > 0 ?
             <span>

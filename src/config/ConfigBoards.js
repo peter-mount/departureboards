@@ -25,6 +25,10 @@ class ConfigBoards extends Component {
                             checked={cfg.hideCalling}
                             onChange={() => this.update(() => cfg.hideCalling = !cfg.hideCalling)}
                         >Hide calling points</Checkbox>
+                        <Checkbox
+                            checked={cfg.showHeadcodes}
+                            onChange={() => this.update(() => cfg.showHeadcodes = !cfg.showHeadcodes)}
+                        >Show Headcodes</Checkbox>
                     </FormGroup>
                 </Col>
             </Row>
