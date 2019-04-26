@@ -102,6 +102,7 @@ class BoardRow extends Component {
         let history = this.props.history,
             data = this.props.data,
             train = this.props.departure,
+            crs = this.props.crs,
             loc = train.location,
             timetable = loc.timetable,
             forecast = loc.forecast,
@@ -126,6 +127,8 @@ class BoardRow extends Component {
         } else if (train.association && train.association.length > 0) {
             for (let a of train.association) {
                 if (!a.cancelled) {
+                    const assocHere = data.tiploc[a.tiploc] && data.tiploc[a.tiploc].crs === crs;
+
                     switch (a.category) {
                         case 'VV':
                             splits = a;
@@ -150,13 +153,16 @@ class BoardRow extends Component {
                             }
                             break;
                         case 'JJ':
-                            joins = a;
-                            joinsTrain = a.schedule;
-                            joinsThisTrain = a.main.rid === train.rid;
+                            if (assocHere) {
+                                joins = a;
+                                joinsTrain = a.schedule;
+                                joinsThisTrain = a.main.rid === train.rid;
+                            }
                             break;
                         default:
                             break;
                     }
+
                 }
             }
         }
@@ -311,7 +317,7 @@ class BoardRow extends Component {
                 joining = <div className="ldb-entbot">
                     <div>
                     <span className="callList">
-                        This service will attach at {fix(tiploc(data, train.dest.tiploc))} and continue to {fix(tiploc(data, destinationLocation.tiploc))} due {fixTime(destinationLocation.displaytime)}
+                        This service will attach at {fix(tiploc(data, destinationLocation.tiploc))} and continue to {fix(tiploc(data, train.dest.tiploc))} due {fixTime(destinationLocation.displaytime)}
                     </span>
                     </div>
                 </div>
