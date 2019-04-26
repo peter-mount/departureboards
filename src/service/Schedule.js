@@ -117,8 +117,8 @@ class Schedule extends Component {
                 <td className="ldb-fsct-loc-expt" colSpan="4">
                     <span className="ldb-info">
                     Joins the <Location data={data} tiploc={joins.main.origin.tiploc}
-                /> to <Location data={data} tiploc={joins.main.destination.tiploc}/> <Via
-                    via={via[joins.main.rid]}/> service arriving at
+                    /> to <Location data={data} tiploc={joins.main.destination.tiploc}/> <Via
+                        via={via[joins.main.rid]}/> service arriving at
                     </span>
                 </td>
             </tr>);
@@ -249,9 +249,22 @@ class Schedule extends Component {
 
                 // Add a blank row when between stops with no passes
                 if (row.id === lid && !(row.forecast.arrived && !row.forecast.departed)) {
+                    let approaching;
+
+                    if ((row.id + 1) < service.locations.length) {
+                        let l = service.locations[row.id + 1],
+                            f = l.forecast;
+                        if (f && f.approaching) {
+                            approaching = <td className="ldb-fsct-loc-expt" colSpan="4">
+                                <span className="ldb-info">Approaching</span>
+                            </td>
+                        }
+                    }
+
                     rows.push(<tr key={key + "a"}>
                         <td className="ldb-fsct-stat">
                             <i className="fa fa-train" aria-hidden="true"></i>
+                            {approaching}
                         </td>
                     </tr>);
                 }
