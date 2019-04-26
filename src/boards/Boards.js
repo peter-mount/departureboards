@@ -73,7 +73,8 @@ class Boards extends Component {
 
         if (data.departures) {
             let filterTerminated = d => true,
-                filterSuppressed = d => !(d.location && d.location.forecast && d.location.forecast.plat && d.location.forecast.plat.cissup);
+                filterSuppressed = d => !(d.location && d.location.forecast && d.location.forecast.plat && d.location.forecast.plat.cissup),
+                filterDeparted = d => !(d.location && d.location.forecast && d.location.forecast.departed);
 
             if (!config.get("showTerminated")) {
                 // Filter out terminations
@@ -83,6 +84,7 @@ class Boards extends Component {
             rows = data.departures
                 .filter(filterSuppressed)
                 .filter(filterTerminated)
+                .filter(filterDeparted)
                 .map((d, ind) => {
                     idx++;
                     return <BoardRow

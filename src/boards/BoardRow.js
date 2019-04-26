@@ -21,21 +21,16 @@ function getCallingPoint(t, data, cp) {
 }
 
 function getLastReport(t, data, label, lr, div) {
-    const a = lr.time.split(':'),
-        lh = 0 + a[0],
-        lm = 0 + a[1],
-        lt = (lh * 60) + lm,
-        now = new Date(),
-        ct = (now.getHours() * 60) + now.getMinutes(),
-        cp = getCallingPoint(t, data, lr);
-    let dt = ct - lt;
-    if (dt < -720) {
-        dt += 1440
-    }
-    if (dt > 720) {
-        dt += 1440
-    }
-    const lab = <span className="callList">{label} {dt > 0 ? 'approaching' : 'at'}</span>;
+    let cp = getCallingPoint(t, data, lr),
+        at = lr.passed ? 'passing'
+            : lr.approaching ? 'approaching'
+                : lr.departed ? 'departed'
+                    : lr.at ? 'at'
+                        : lr.delayed ? 'delayed at'
+                            : "att";
+
+    //const lab = <span className="callList">{label} {dt > -1 ? 'approaching' : 'at'}</span>;
+    const lab = <span className="callList">{label} {at}</span>;
 
     if (div) {
         return <div className="ldb-entbot">{lab} {cp}</div>
