@@ -210,10 +210,10 @@ class BoardRow extends Component {
         let toc = train.toc && data.toc && data.toc[train.toc] ?
             <span> {data.toc[train.toc].tocname}&nbsp;service{config.get("showHeadcodes") ? (" " + train.trainId) : null}. </span> : null;
 
-        let length = !cancelled && forecast && forecast.length > 0 ?
+        let length = !cancelled && loc.length > 0 ?
             <span>
               <span>Formed of:</span>
-              <span className="ldbDest"> {forecast.length} coaches</span>
+              <span className="ldbDest"> {loc.length} coaches</span>
             </span>
             : null;
 
