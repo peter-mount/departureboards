@@ -114,10 +114,12 @@ class Schedule extends Component {
         if (joins) {
             rows.push(<tr key={'rj'}>
                 <td className="ldb-fsct-stat"></td>
-                <td className="ldb-info" colSpan="4">
+                <td className="ldb-fsct-loc-expt" colSpan="4">
+                    <span className="ldb-info">
                     Joins the <Location data={data} tiploc={joins.main.origin.tiploc}
                 /> to <Location data={data} tiploc={joins.main.destination.tiploc}/> <Via
                     via={via[joins.main.rid]}/> service arriving at
+                    </span>
                 </td>
             </tr>);
 
@@ -128,9 +130,10 @@ class Schedule extends Component {
         if (splits) {
             rows.push(<tr key={'ra'}>
                 <td className="ldb-fsct-stat"></td>
-                <td className="ldb-info" colSpan="4">
-                    <Location data={data} tiploc={splits.assoc.destination.tiploc}/> <Via
-                    via={via[splits.assoc.rid]}/> service runs from
+                <td className="ldb-fsct-loc-expt" colSpan="4">
+                    <span className="ldb-info">
+                    <Location data={data} tiploc={splits.assoc.destination.tiploc}/> <Via via={via[splits.assoc.rid]}/> service runs from
+                    </span>
                 </td>
             </tr>);
 
@@ -229,14 +232,17 @@ class Schedule extends Component {
                 if (splits && row.tiploc === splits.tiploc) {
                     rows.push(<tr key={key + "s"}>
                         <td className="ldb-fsct-stat"></td>
-                        <td className="ldb-info" colSpan="4">Where the train divides.</td>
+                        <td className="ldb-fsct-loc-expt" colSpan="4">
+                            <span className="ldb-info">Where the train divides.</span>
+                        </td>
                     </tr>);
 
                     rows.push(<tr key={key + "m"}>
                         <td className="ldb-fsct-stat"></td>
-                        <td className="ldb-info" colSpan="4">
-                            <Location data={data} tiploc={data.destination.tiploc}/> <Via
-                            via={via[service.rid]}/> continues to
+                        <td className="ldb-fsct-loc-expt" colSpan="4">
+                            <span className="ldb-info">
+                            <Location data={data} tiploc={data.destination.tiploc}/> <Via via={via[service.rid]}/> continues to
+                            </span>
                         </td>
                     </tr>);
                 }

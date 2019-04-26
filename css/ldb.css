@@ -198,6 +198,7 @@ td.ldb-fsct-pass, td.ldb-fsct-loc-pass, td.ldb-fsct-plat-pass {
 }
 
 .ldb-info {
+    text-align: left;
     font-style: normal;
     font-weight: normal;
     color: #ffff00;
