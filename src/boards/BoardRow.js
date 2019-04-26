@@ -20,6 +20,29 @@ function getCallingPoint(t, data, cp) {
     >{fix(tiploc(data, cp.tpl))}</a>&nbsp;({fixTime(cp.time)}) </span>
 }
 
+function getLastReport(t, data, label, lr, div) {
+    const a = lr.time.split(':'),
+        lh = 0 + a[0],
+        lm = 0 + a[1],
+        lt = (lh * 60) + lm,
+        now = new Date(),
+        ct = (now.getHours() * 60) + now.getMinutes(),
+        cp = getCallingPoint(t, data, lr);
+    let dt = ct - lt;
+    if (dt < -720) {
+        dt += 1440
+    }
+    if (dt > 720) {
+        dt += 1440
+    }
+    const lab = <span className="callList">{label} {dt > 0 ? 'approaching' : 'at'}</span>;
+
+    if (div) {
+        return <div className="ldb-entbot">{lab} {cp}</div>
+    }
+    return <span>{lab} {cp}</span>
+}
+
 // Used to fix calling point names so they don't break
 function fix1(s, a, b) {
     while (s && s.indexOf(a) >= 0)
@@ -81,6 +104,8 @@ class BoardRow extends Component {
             forecast = loc.forecast,
             plat = forecast ? forecast.plat : null,
             time = timetable ? timetable.time : null,
+            // Train is at the platform
+            arrived = forecast && forecast.arrived,
             // Train's been cancelled at this location
             cancelled = loc.cancelled,
             // train terminates here
@@ -91,7 +116,7 @@ class BoardRow extends Component {
             splits, splitsTrain,
             // For joins
             joins, joinsTrain, joinsThisTrain, joining,
-            message, calling, delay, lastReport;
+            message, calling, delay, lastReport, prefLastReport;
 
         //console.log( train )
         if (terminatesHere) {
@@ -138,11 +163,12 @@ class BoardRow extends Component {
         if (loc.cancelled) {
             expected = 'Cancelled';
             expectedClass = 'ldbCancelled';
-        } else if (forecast && forecast.arrived)
+        } else if (arrived) {
             expected = 'Arrived';
-        else if (forecast && forecast.departed)
+        } else if (forecast && forecast.departed) {
+            // Should not be shown but sometimes is
             expected = 'Departed';
-        else if (forecast && forecast.delayed) {
+        } else if (forecast && forecast.delayed) {
             expected = 'Delayed';
             expectedClass = 'ldbLate';
         } else if (loc.delay > 0) {
@@ -151,11 +177,26 @@ class BoardRow extends Component {
             expectedClass = 'ldbLate';
         }
 
-        if (train.lastReport && train.lastReport.tpl != "") {
-            lastReport = <span>
-        <span>Last report:</span>
-        <span className="ldbDest"> {tiploc(data, train.lastReport.tpl)} {fixTime(train.lastReport.time)} </span>
-      </span>;
+        // Train's current location
+        if (!arrived) {
+            // Last report when the service is running
+            if (train.lastReport && train.lastReport.tpl !== "") {
+                lastReport = getLastReport(this, data, "Last report", train.lastReport, false)
+            }
+
+            // Last report if not yet running but we know the previous service
+            if (!lastReport && train.association) {
+                for (let assoc of train.association) {
+                    if (assoc.category === 'NP') {
+                        const as = assoc.assoc,
+                            ash = assoc.schedule,
+                            lr = ash ? ash.lastReport : null;
+                        if (as.rid === train.rid && lr && lr.tpl !== "" && lr.tpl !== train.origin.tiploc) {
+                            prefLastReport = getLastReport(this, data, "The train forming this service is currently", lr, true)
+                        }
+                    }
+                }
+            }
         }
 
         let toc = train.toc && data.toc && data.toc[train.toc] ?
@@ -178,58 +219,75 @@ class BoardRow extends Component {
             </div>;
         }
 
-        if (train.calling && train.calling.length > 0 && !config.get("hideCalling")) {
-            let cps = [[], [], []], cpi = 0, s1, s2, i, s1origin, kid = 0, cpi1 = 0;
-            for (i = 0; i < train.calling.length; i++) {
-                let cp = train.calling[i],
-                    split = splits && cp.tpl === splits.tiploc,
-                    join = joins && cp.tpl === joins.tiploc,
-                    last = i > cpi1 && (i + 1) === train.calling.length;
-                if (join || split || last) {
-                    cps[cpi].push(<span key={kid++} className="callList"> and </span>)
-                }
+        if (train.calling && train.calling.length > 0) {
+            let startsFrom, s0, s1, s2;
 
-                cps[cpi].push(getCallingPoint(this, data, cp));
+            // Cancelled then see if it starts later
+            if (cancelled && train.calling && train.calling.length) {
+                const cp = train.calling[0];
 
-                if (split) {
-                    cps[cpi].push(<span key={kid++}
-                                        className="callList"> where&nbsp;the&nbsp;train&nbsp;divides.</span>);
-                    s1origin = cp;
-                    cpi = 1;
-                    cpi1 = i + 1
+                startsFrom =
+                    <span><span className="callList">This train will start from </span>{getCallingPoint(this, data, cp)}</span>;
+
+                // Remove all callingpoints with the same tiploc - can happen during disruption
+                while (train.calling.length && train.calling[0].tpl === cp.tpl) {
+                    train.calling = train.calling.slice(1, train.calling.length);
                 }
             }
 
-            if (cpi) {
-                // Skip the first point
-                for (i = 1; i < splitsTrain.calling.length; i++) {
-                    let cp = splitsTrain.calling[i],
-                        last = i > 1 && (i + 1) === splitsTrain.calling.length;
-                    if (last) {
-                        cps[2].push(<span key={kid++} className="callList"> and </span>)
+            if (!config.get("hideCalling")) {
+                let cps = [[], [], []], cpi = 0, i, s1origin, kid = 0, cpi1 = 0;
+                for (i = 0; i < train.calling.length; i++) {
+                    let cp = train.calling[i],
+                        split = splits && cp.tpl === splits.tiploc,
+                        join = joins && cp.tpl === joins.tiploc,
+                        last = i > cpi1 && (i + 1) === train.calling.length;
+                    if (join || split || last) {
+                        cps[cpi].push(<span key={kid++} className="callList"> and </span>)
                     }
-                    cps[2].push(getCallingPoint(this, data, cp))
-                }
-            }
 
-            if (cps[1].length) {
-                let via = (data.via && data.via[train.rid]) ? data.via[train.rid].text : "service";
-                s1 = <div>
+                    cps[cpi].push(getCallingPoint(this, data, cp));
+
+                    if (split) {
+                        cps[cpi].push(<span key={kid++}
+                                            className="callList"> where&nbsp;the&nbsp;train&nbsp;divides.</span>);
+                        s1origin = cp;
+                        cpi = 1;
+                        cpi1 = i + 1
+                    }
+                }
+
+                if (cpi) {
+                    // Skip the first point
+                    for (i = 1; i < splitsTrain.calling.length; i++) {
+                        let cp = splitsTrain.calling[i],
+                            last = i > 1 && (i + 1) === splitsTrain.calling.length;
+                        if (last) {
+                            cps[2].push(<span key={kid++} className="callList"> and </span>)
+                        }
+                        cps[2].push(getCallingPoint(this, data, cp))
+                    }
+                }
+
+                if (cps[1].length) {
+                    let via = (data.via && data.via[train.rid]) ? data.via[train.rid].text : "service";
+                    s1 = <div>
                     <span
                         className="callList">{fix(tiploc(data, train.destination))} {via} calls at:</span> {cps[1]}
-                </div>
-            }
-            if (cps[2].length) {
-                let via = (data.via && data.via[splitsTrain.rid]) ? data.via[splitsTrain.rid].text : "service";
-                s2 = <div><span
-                    className="callList">{fix(tiploc(data, splitsTrain.destinationLocation.tiploc))} {via} departing {fixTime(splitsTrain.calling[0].time)} calls at:</span> {cps[2]}
-                </div>
+                    </div>
+                }
+                if (cps[2].length) {
+                    let via = (data.via && data.via[splitsTrain.rid]) ? data.via[splitsTrain.rid].text : "service";
+                    s2 = <div><span
+                        className="callList">{fix(tiploc(data, splitsTrain.destinationLocation.tiploc))} {via} departing {fixTime(splitsTrain.calling[0].time)} calls at:</span> {cps[2]}
+                    </div>
+                }
+
+                s0 = <span><span className="callList"> {startsFrom ? 'calling' : 'Calling'} at</span> {cps[0]}</span>
             }
             calling = <div className="ldb-entbot">
-                <div><span className="callList"> Calling at:</span> {cps[0]}</div>
-                {s1}
-                {s2}
-            </div>;
+                <div>{startsFrom}{s0}</div>
+                {s1}{s2}</div>;
         }
 
         if (joins) {
@@ -281,9 +339,10 @@ class BoardRow extends Component {
             </div>
             {message}
             {calling}
-            {delay}
             {joining}
             <div className="ldb-entbot">{toc}{length}{lastReport}</div>
+            {prefLastReport}
+            {delay}
         </div>;
     }
 }
