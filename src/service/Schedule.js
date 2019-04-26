@@ -58,30 +58,110 @@ class Schedule extends Component {
 
         // Destination and any associations
         let dest = <span><Location data={data} tiploc={data.destination.tiploc}/> <Via via={via[service.rid]}/></span>,
+            joins,
+            nextService,
+            prevService,
             splits;
         if (association) {
             for (let a of association) {
+                // We split at a station & then continue on, the other service then continues to a new destination
                 if (a.category === 'VV' && !a.cancelled && rid === a.main.rid) {
                     splits = a;
                     dest = <span>{dest} &amp; <Location data={data} tiploc={a.assoc.destination.tiploc}/> <Via
                         via={via[a.assoc.rid]}/></span>
                 }
+
+                // We join another train at our destination
+                if (a.category === 'JJ' && !a.cancelled && rid === a.assoc.rid) {
+                    joins = a;
+                }
+
+                // We form a new service from the destination
+                if (a.category === 'NP' && !a.cancelled) {
+                    if (rid === a.main.rid) {
+                        nextService = a;
+                    }
+                    if (rid === a.assoc.rid) {
+                        prevService = a;
+                    }
+                }
             }
         }
 
         // The destinations
-        let rows = Schedule.appendRows([], service, splits, data);
+        let rows = [];
+
+        if (prevService) {
+            const main = prevService.main,
+                origin = main.origin,
+                prev = <span className="ldb-info">
+                Formed by <Location data={data}
+                                    tiploc={origin.falseDestination ? origin.falseDestination : origin.tiploc}/> <Via
+                    via={via[main.rid]}/> service
+            </span>;
+            rows.push(<Movement key='rps'
+                                data={data}
+                                row={prevService.main.destination}
+                                lid='-1'
+                                ref='rps'
+                                previousService={prev}
+                                platform='due'
+            />);
+        }
+
+        rows = Schedule.appendRows(rows, service, splits, data);
+
+        if (joins) {
+            rows.push(<tr key={'rj'}>
+                <td className="ldb-fsct-stat"></td>
+                <td className="ldb-info" colSpan="4">
+                    Joins the <Location data={data} tiploc={joins.main.origin.tiploc}
+                /> to <Location data={data} tiploc={joins.main.destination.tiploc}/> <Via
+                    via={via[joins.main.rid]}/> service arriving at
+                </td>
+            </tr>);
+
+            rows.push(<Movement key={'rjd'} data={data} row={joins.main.destination} lid='-1' ref={'rjd'}/>);
+
+        }
 
         if (splits) {
             rows.push(<tr key={'ra'}>
                 <td className="ldb-fsct-stat"></td>
-                <td className="ldb-info">
+                <td className="ldb-info" colSpan="4">
                     <Location data={data} tiploc={splits.assoc.destination.tiploc}/> <Via
                     via={via[splits.assoc.rid]}/> service runs from
                 </td>
             </tr>);
 
             rows = Schedule.appendRows(rows, splits.schedule, null, data);
+        }
+
+        if (nextService) {
+            const assoc = nextService.assoc,
+                origin = assoc.destination,
+                next = <span className="ldb-info">
+                Forms the <Location data={data}
+                                    tiploc={origin.falseDestination ? origin.falseDestination : origin.tiploc}/> <Via
+                    via={via[assoc.rid]}/> service
+            </span>;
+            rows.push(<Movement key='rns'
+                                data={data}
+                                row={nextService.assoc.origin}
+                                lid='-1'
+                                ref='rns'
+                                previousService={next}
+                                platform='departs'
+            />);
+
+            rows.push(<Movement key='rnsd'
+                                data={data}
+                                row={nextService.assoc.destination}
+                                lid='-1'
+                                ref='rnsd'
+                                platform='due'
+            />);
+
         }
 
         return (<div id="board">
@@ -149,12 +229,12 @@ class Schedule extends Component {
                 if (splits && row.tiploc === splits.tiploc) {
                     rows.push(<tr key={key + "s"}>
                         <td className="ldb-fsct-stat"></td>
-                        <td className="ldb-info">Where the train divides.</td>
+                        <td className="ldb-info" colSpan="4">Where the train divides.</td>
                     </tr>);
 
                     rows.push(<tr key={key + "m"}>
                         <td className="ldb-fsct-stat"></td>
-                        <td className="ldb-info">
+                        <td className="ldb-info" colSpan="4">
                             <Location data={data} tiploc={data.destination.tiploc}/> <Via
                             via={via[service.rid]}/> continues to
                         </td>

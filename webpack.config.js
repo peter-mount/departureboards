@@ -57,7 +57,7 @@ module.exports = {
   devtool: 'source-map',
 
   devServer: {
-    open: 'http://localhost:9000',
+    /*open: 'http://localhost:9000',*/
     port: 9000,
     contentBase: 'dist'
   }
