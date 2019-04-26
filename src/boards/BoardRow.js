@@ -34,13 +34,13 @@ function getLastReport(t, data, lr) {
 
 function getLastReportPrevService(t, data, lr) {
     let cp = getCallingPoint(t, data, lr),
-        at = lr.passed ? 'passing'
+        at = lr.passed ? 'passed'
             : lr.approaching ? 'approaching'
                 : lr.departed ? 'departed'
                     : lr.at ? 'at'
                         : lr.delayed ? 'delayed at'
-                            : "att",
-        prefix = lr.departed ? 'has' : 'is currently';
+                            : "at",
+        prefix = lr.departed || lr.passed ? 'has' : 'is currently';
 
     return <div className="ldb-entbot"><span
         className="callList">The train forming this service {prefix} {at}</span> {cp}</div>
