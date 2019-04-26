@@ -22,7 +22,7 @@ function getCallingPoint(t, data, cp) {
 
 // Used to fix calling point names so they don't break
 function fix1(s, a, b) {
-    while (s.indexOf(a) >= 0)
+    while (s && s.indexOf(a) >= 0)
         s = s.replace(a, b);
     return s;
 }
@@ -251,7 +251,7 @@ class BoardRow extends Component {
                 joining = <div className="ldb-entbot">
                     <div>
                     <span className="callList">
-                        This service will attach at {fix(tiploc(data, train.destination.tiploc))} and continue to {fix(tiploc(data, destinationLocation.tiploc))}
+                        This service will attach at {fix(tiploc(data, train.dest.tiploc))} and continue to {fix(tiploc(data, destinationLocation.tiploc))} due {fixTime(destinationLocation.displaytime)}
                     </span>
                     </div>
                 </div>
