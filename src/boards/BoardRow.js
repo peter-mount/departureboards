@@ -20,7 +20,7 @@ function getCallingPoint(t, data, cp) {
     >{fix(tiploc(data, cp.tpl))}</a>&nbsp;({fixTime(cp.time)}) </span>
 }
 
-function getLastReport(t, data, label, lr, div) {
+function getLastReport(t, data, lr) {
     let cp = getCallingPoint(t, data, lr),
         at = lr.passed ? 'passing'
             : lr.approaching ? 'approaching'
@@ -29,13 +29,21 @@ function getLastReport(t, data, label, lr, div) {
                         : lr.delayed ? 'delayed at'
                             : "att";
 
-    //const lab = <span className="callList">{label} {dt > -1 ? 'approaching' : 'at'}</span>;
-    const lab = <span className="callList">{label} {at}</span>;
+    return <span><span className="callList">Last Report {at}</span> {cp}</span>
+}
 
-    if (div) {
-        return <div className="ldb-entbot">{lab} {cp}</div>
-    }
-    return <span>{lab} {cp}</span>
+function getLastReportPrevService(t, data, lr) {
+    let cp = getCallingPoint(t, data, lr),
+        at = lr.passed ? 'passing'
+            : lr.approaching ? 'approaching'
+                : lr.departed ? 'departed'
+                    : lr.at ? 'at'
+                        : lr.delayed ? 'delayed at'
+                            : "att",
+        prefix = lr.departed ? 'has' : 'is currently';
+
+    return <div className="ldb-entbot"><span
+        className="callList">The train forming this service {prefix} {at}</span> {cp}</div>
 }
 
 // Used to fix calling point names so they don't break
@@ -176,7 +184,7 @@ class BoardRow extends Component {
         if (!arrived) {
             // Last report when the service is running
             if (train.lastReport && train.lastReport.tpl !== "") {
-                lastReport = getLastReport(this, data, "Last report", train.lastReport, false)
+                lastReport = getLastReport(this, data, train.lastReport)
             }
 
             // Last report if not yet running but we know the previous service
@@ -186,8 +194,8 @@ class BoardRow extends Component {
                         const as = assoc.assoc,
                             ash = assoc.schedule,
                             lr = ash ? ash.lastReport : null;
-                        if (as.rid === train.rid && lr && lr.tpl !== "" && lr.tpl !== train.origin.tiploc) {
-                            prefLastReport = getLastReport(this, data, "The train forming this service is currently", lr, true)
+                        if (ash && as.rid === train.rid && lr && lr.tpl !== "" && lr.tpl !== train.origin.tiploc) {
+                            prefLastReport = getLastReportPrevService(this, data, lr)
                         }
                     }
                 }
