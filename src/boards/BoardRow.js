@@ -208,10 +208,11 @@ class BoardRow extends Component {
         }
 
         let toc = train.toc && data.toc && data.toc[train.toc] ?
-            <span> {data.toc[train.toc].tocname}&nbsp;service{config.get("showHeadcodes") ? (" " + train.trainId) : null}. </span> : null;
+            <span> {data.toc[train.toc].tocname}&nbsp;service{config.get("showHeadcodes") ? (" " + train.trainId) : null} </span> : null;
 
         let length = !cancelled && loc.length > 0 ?
-            <span><span>Formed of: </span><span className="ldbDest">{loc.length}</span><span> coaches </span></span>
+            <span><span>{toc ? 'formed' : 'formed'} of </span><span
+                className="ldbDest">{loc.length}</span><span> coaches </span></span>
             : null;
 
         if (cancelled && train.cancelReason && train.cancelReason.reason > 0) {
@@ -345,8 +346,8 @@ class BoardRow extends Component {
             {message}
             {calling}
             {joining}
-            <div className="ldb-entbot">{toc}{length}</div>
-            {lastReport}{prefLastReport}
+            <div className="ldb-entbot">{toc}{length}{lastReport}</div>
+            {prefLastReport}
             {delay}
         </div>;
     }
