@@ -81,6 +81,12 @@ function reason(cancelled, reason, data) {
     return m
 }
 
+// returns true if the association's tiploc is within the train's calling points
+// i.e. we have not yet split
+function assocValid(a, c) {
+    return a && c && c.filter(cp => a.tiploc === cp.tpl).length
+}
+
 /*
  * A row on the board showing current status of a train
  */
@@ -126,7 +132,7 @@ class BoardRow extends Component {
             destination = 'Terminates Here';
         } else if (train.association && train.association.length > 0) {
             for (let a of train.association) {
-                if (!a.cancelled) {
+                if (!a.cancelled && assocValid(a, train.calling)) {
                     const assocHere = data.tiploc[a.tiploc] && data.tiploc[a.tiploc].crs === crs;
 
                     switch (a.category) {
