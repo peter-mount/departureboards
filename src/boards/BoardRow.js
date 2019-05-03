@@ -220,13 +220,16 @@ class BoardRow extends Component {
         let toc = train.toc && data.toc && data.toc[train.toc] ?
             <span> {data.toc[train.toc].tocname}&nbsp;service{config.get("showHeadcodes") ? (" " + train.trainId) : null} </span> : null;
 
-        if (!cancelled && loc.loading) {
-            console.log(loc.loading)
-            loading = <Loading data={data} loading={loc.loading}/>
+        if (!cancelled && (loc.loading || (train.formation && train.formation.rid === train.rid))) {
+            loading = <Loading data={data} rid={train.rid} loading={loc.loading} formation={train.formation}/>
 
-            // Use the loading length for length if not supplied
-            if (!loc.length && loc.loading.loading) {
-                loc.length = loc.loading.loading.length
+            // Use the loading or formation length for length if not supplied
+            if (!loc.length) {
+                if (loc.loading && loc.loading.loading) {
+                    loc.length = loc.loading.loading.length
+                } else if (train.formation.rid === train.rid) {
+                    log.length = train.formation.formation.coaches
+                }
             }
         }
 

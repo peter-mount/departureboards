@@ -40,25 +40,33 @@
 }
 
 .coach-info {
+    font-size: 60%;
+}
+
+.coach-toilet {
+    font-size: 100%;
+    color: white;
+    padding-top: 0.5em;
+}
+
+.coach-toilet .fa-toilet {
     font-size: 80%;
 }
 
-/* load <= 25% */
+.coach-class {
+    font-size: 80%;
+    color: white;
+    padding-top: 0.3em;
+}
+
 .ci.load-low:before {
     color: green
 }
 
-/* load 26..49% */
 .ci.load-med:before {
-    color: darkgoldenrod;
+    color: orangered;
 }
 
-/* load 50-74% */
 .ci.load-high:before {
-    color: orangered
-}
-
-/* load > 75% */
-.ci.load-full:before {
-    color: red
+    color: red;
 }
