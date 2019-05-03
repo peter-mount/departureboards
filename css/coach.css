@@ -1,0 +1,64 @@
+/* Our simple font for the coach icon */
+
+@font-face {
+    font-family: 'area51medium';
+    src: url('/uktrain-webfont.woff2') format('woff2'),
+    url('/uktrain-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+.ci {
+    color: white;
+    z-index: 10;
+    position: relative;
+    display: inline-block;
+    width: 3.2em;
+    padding-right: 0.1em;
+    padding-left: 0.1em;
+    text-align: center;
+}
+
+.ci:before {
+    font: normal normal normal 14px/1 area51medium;
+    font-size: 3em;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    color: grey;
+    position: absolute;
+    left: 0;
+    z-index: -1;
+}
+
+.coach:before {
+    content: "A";
+}
+
+.cab:before {
+    content: "B";
+}
+
+.coach-info {
+    font-size: 80%;
+}
+
+/* load <= 25% */
+.ci.load-low:before {
+    color: green
+}
+
+/* load 26..49% */
+.ci.load-med:before {
+    color: darkgoldenrod;
+}
+
+/* load 50-74% */
+.ci.load-high:before {
+    color: orangered
+}
+
+/* load > 75% */
+.ci.load-full:before {
+    color: red
+}

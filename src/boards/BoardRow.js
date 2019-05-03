@@ -2,6 +2,8 @@ import React, {Component} from 'react';
 import {withRouter} from 'react-router';
 import config from 'react-global-configuration';
 
+import Loading from './Loading.js';
+
 function tiploc(d, tpl) {
     return d.tiploc[tpl] ? d.tiploc[tpl].locname : tpl
 }
@@ -126,7 +128,9 @@ class BoardRow extends Component {
             splits, splitsTrain,
             // For joins
             joins, joinsTrain, joinsThisTrain, joining,
-            message, calling, delay, lastReport, prefLastReport;
+            message, calling, delay, lastReport, prefLastReport,
+            // Coach loading & Toilets
+            loading;
 
         if (terminatesHere) {
             destination = 'Terminates Here';
@@ -215,6 +219,16 @@ class BoardRow extends Component {
 
         let toc = train.toc && data.toc && data.toc[train.toc] ?
             <span> {data.toc[train.toc].tocname}&nbsp;service{config.get("showHeadcodes") ? (" " + train.trainId) : null} </span> : null;
+
+        if (!cancelled && loc.loading) {
+            console.log(loc.loading)
+            loading = <Loading data={data} loading={loc.loading}/>
+
+            // Use the loading length for length if not supplied
+            if (!loc.length && loc.loading.loading) {
+                loc.length = loc.loading.loading.length
+            }
+        }
 
         let length = !cancelled && loc.length > 0 ?
             <span><span>{toc ? 'formed' : 'formed'} of </span><span
@@ -350,6 +364,7 @@ class BoardRow extends Component {
                 </div>
             </div>
             {message}
+            {loading}
             {calling}
             {joining}
             <div className="ldb-entbot">{toc}{length}{lastReport}</div>
