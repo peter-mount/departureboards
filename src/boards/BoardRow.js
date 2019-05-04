@@ -228,7 +228,7 @@ class BoardRow extends Component {
                 if (loc.loading && loc.loading.loading) {
                     loc.length = loc.loading.loading.length
                 } else if (train.formation.rid === train.rid) {
-                    log.length = train.formation.formation.coaches
+                    loc.length = train.formation.formation.coaches
                 }
             }
         }
