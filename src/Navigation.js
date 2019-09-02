@@ -2,6 +2,8 @@ import React, {Component} from 'react';
 import {withRouter} from 'react-router';
 import {Navbar, Nav, NavItem} from 'react-bootstrap';
 
+import {isUAT} from './config/Config.js';
+
 class Navigation extends Component {
 
     render() {
@@ -28,7 +30,9 @@ class Navigation extends Component {
         return (<Navbar inverse collapseOnSelect default fixedTop>
             <Navbar.Header>
                 <Navbar.Brand>
-                    <a onClick={() => t.props.history.push('/')}>UK Departureboards</a>
+                    <a onClick={() => t.props.history.push('/')}>
+                        UK Departureboards{isUAT() ? " UAT" : ""}
+                    </a>
                 </Navbar.Brand>
                 <Navbar.Toggle/>
             </Navbar.Header>

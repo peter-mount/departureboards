@@ -43,7 +43,7 @@ class Boards extends Component {
     // Retrieve the latest board
     refresh(crs) {
         const t = this;
-        t.resetTimer(crs)
+        t.resetTimer(crs);
         fetch(config.get('ldbUrl') + '/boards/' + crs + '?' + new Date())
             .then(res => res.json())
             .then(departures => t.setState({departures: departures}))
@@ -55,7 +55,7 @@ class Boards extends Component {
     // Render the departure boards
     renderDepartures(crs, data) {
 
-        let messages = null, rows = null, idx = 0
+        let messages = null, rows = null, idx = 0;
 
         if (data.messages) {
             messages = data.messages

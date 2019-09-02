@@ -2,6 +2,8 @@ import React, {Component} from 'react';
 
 import {Checkbox, Col, ControlLabel, FormControl, FormGroup, Grid, Row} from 'react-bootstrap';
 
+import {setServer} from './Config.js';
+
 class ConfigSystem extends Component {
 
     update(f) {
@@ -19,17 +21,8 @@ class ConfigSystem extends Component {
                         <ControlLabel>System</ControlLabel>
                         <Checkbox
                             checked={cfg.useUAT}
-                            onChange={() => this.update(() => {
-                                cfg.useUAT = !cfg.useUAT;
-                                if (cfg.useUAT) {
-                                    cfg.ldbUrl = 'https://ldb.test.area51.dev';
-                                    cfg.refUrl = 'https://ref.test.area51.dev'
-                                } else {
-                                    cfg.ldbUrl = 'https://ldb.a.a51.li';
-                                    cfg.refUrl = 'https://ref.a.a51.li'
-                                }
-                            })}
-                        >Use UAT instead of live</Checkbox>
+                            onChange={() => this.update(() => setServer(cfg, !cfg.useUAT))}
+                        >Use UAT instead of live for data</Checkbox>
                     </FormGroup>
                 </Col>
             </Row>
