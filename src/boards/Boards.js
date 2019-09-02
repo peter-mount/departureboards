@@ -44,7 +44,16 @@ class Boards extends Component {
     refresh(crs) {
         const t = this;
         t.resetTimer(crs);
-        fetch(config.get('ldbUrl') + '/boards/' + crs + '?' + new Date())
+
+        let opts = [];
+        if (!config.get("showTerminated")) {
+            opts.push('term=false')
+        }
+        opts.push('dt=' + new Date());
+
+        let url = config.get('ldbUrl') + '/boards/' + crs + '?' + opts.join("&");
+
+        fetch(url)
             .then(res => res.json())
             .then(departures => t.setState({departures: departures}))
             .catch(e => {
@@ -72,18 +81,11 @@ class Boards extends Component {
         }
 
         if (data.departures) {
-            let filterTerminated = d => true,
-                filterSuppressed = d => !(d.location && d.location.forecast && d.location.forecast.plat && d.location.forecast.plat.cissup),
+            let filterSuppressed = d => !(d.location && d.location.forecast && d.location.forecast.plat && d.location.forecast.plat.cissup),
                 filterDeparted = d => !(d.location && d.location.forecast && d.location.forecast.departed);
-
-            if (!config.get("showTerminated")) {
-                // Filter out terminations
-                filterTerminated = d => !(data.tiploc[d.destination] && data.tiploc[d.destination].crs === crs);
-            }
 
             rows = data.departures
                 .filter(filterSuppressed)
-                .filter(filterTerminated)
                 .filter(filterDeparted)
                 .map((d, ind) => {
                     idx++;
