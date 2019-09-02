@@ -67,6 +67,29 @@ function fixTime(t) {
     return null
 }
 
+function timeRemaining(t) {
+    t = fixTime(t);
+    if (t) {
+        let a = t.split(':'),
+            tt = (a[0] * 60) + (a[1] * 1),
+            now = new Date(),
+            nt = (now.getHours() * 60) + now.getMinutes(),
+            dt = tt - nt;
+
+        // Try to handle crossing midnight 1380 = 23:00 in minutes
+        if (nt > 1380 && dt < -1380) {
+            dt = dt + 1440
+        }
+
+        if (dt > 1 && dt < 10) {
+            return dt + " mins"
+        } else if (dt > 0 && dt <= 1) {
+            return "1 min"
+        }
+    }
+    return null
+}
+
 function reason(cancelled, reason, data) {
     let m;
     if (data.reasons) {
@@ -108,9 +131,13 @@ class BoardRow extends Component {
 
     render() {
         let history = this.props.history,
-            data = this.props.data,
-            train = this.props.departure,
-            crs = this.props.crs,
+            props = this.props,
+            data = props.data,
+            train = props.departure,
+            crs = props.crs,
+            showCountdown = props.showCountdown,
+            flashExpected = props.flashExpected,
+            flashTick = props.flashTick,
             loc = train.location,
             timetable = loc.timetable,
             forecast = loc.forecast,
@@ -177,22 +204,37 @@ class BoardRow extends Component {
             }
         }
 
-        let expected = 'On Time', expectedClass = 'ldbOntime';
+        let expected = 'On Time',
+            expectedClass = 'ldbOntime',
+            expectedTime = showCountdown ? timeRemaining(forecast.time) : null;
+
         if (loc.cancelled) {
             expected = 'Cancelled';
             expectedClass = 'ldbCancelled';
+            flashTick = 0
         } else if (arrived) {
             expected = 'Arrived';
+            flashTick = 0
         } else if (forecast && forecast.departed) {
             // Should not be shown but sometimes is
             expected = 'Departed';
+            flashTick = 0
         } else if (forecast && forecast.delayed) {
             expected = 'Delayed';
             expectedClass = 'ldbLate';
+            flashTick = 0
         } else if (loc.delay > 0) {
-            // forecast will not be null here as this is calculated from it
-            expected = fixTime(forecast.time);
+            // Flash once a second between minutes remaining & expected time
+            if (showCountdown && expectedTime && (!flashExpected || (flashTick % 2) === 1)) {
+                expected = expectedTime
+            } else {
+                expected = fixTime(forecast.time);
+            }
             expectedClass = 'ldbLate';
+
+        } else if (showCountdown && expectedTime) {
+            // Override expected time
+            expected = expectedTime
         }
 
         // Train's current location

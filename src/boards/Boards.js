@@ -34,9 +34,22 @@ class Boards extends Component {
         }
     }
 
+    forceRender(t, departures) {
+        t.setState({
+            departures: departures,
+            flashTick: new Date().getSeconds()
+        })
+
+        clearTimeout(t.flashTimer);
+        if (!config.get('dontFlashExpected')) {
+            t.flashTimer = setTimeout(() => t.forceRender(t, t.state.departures), 1000);
+        }
+    }
+
     resetTimer(crs) {
         const t = this;
         clearTimeout(t.timer);
+        clearTimeout(t.flashTimer);
         t.timer = setTimeout(() => t.refresh(crs), config.get('refreshRate'));
     }
 
@@ -63,7 +76,7 @@ class Boards extends Component {
 
         fetch(url)
             .then(res => res.json())
-            .then(departures => t.setState({departures: departures}))
+            .then(departures => t.forceRender(t, departures))
             .catch(e => {
                 console.error(e);
             });
@@ -72,7 +85,10 @@ class Boards extends Component {
     // Render the departure boards
     renderDepartures(crs, data) {
 
-        let messages = null, rows = null, idx = 0;
+        let messages = null,
+            rows = null,
+            idx = 0,
+            {flashTick} = this.state;
 
         if (data.messages) {
             messages = data.messages
@@ -90,7 +106,9 @@ class Boards extends Component {
 
         if (data.departures) {
             let filterSuppressed = d => !(d.location && d.location.forecast && d.location.forecast.plat && d.location.forecast.plat.cissup),
-                filterDeparted = d => !(d.location && d.location.forecast && d.location.forecast.departed);
+                filterDeparted = d => !(d.location && d.location.forecast && d.location.forecast.departed),
+                showCountdown = !config.get("hideCountdown"),
+                flashExpected = !config.get("dontFlashExpected");
 
             rows = data.departures
                 .filter(filterSuppressed)
@@ -98,12 +116,15 @@ class Boards extends Component {
                 .map((d, ind) => {
                     idx++;
                     return <BoardRow
-                        key={d.rid}
+                        key={d.rid + ':' + d.location}
                         board={this}
                         index={idx}
                         departure={d}
                         data={data}
                         crs={crs}
+                        showCountdown={showCountdown}
+                        flashExpected={flashExpected}
+                        flashTick={flashTick}
                     />;
                 })
         }

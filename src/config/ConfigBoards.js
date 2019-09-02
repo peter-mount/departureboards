@@ -29,6 +29,14 @@ class ConfigBoards extends Component {
                             checked={cfg.showHeadcodes}
                             onChange={() => this.update(() => cfg.showHeadcodes = !cfg.showHeadcodes)}
                         >Show Headcodes</Checkbox>
+                        <Checkbox
+                            checked={cfg.hideCountdown}
+                            onChange={() => this.update(() => cfg.hideCountdown = !cfg.hideCountdown)}
+                        >Hide minute countdown when expected in under 10 minutes</Checkbox>
+                        <Checkbox
+                            checked={cfg.dontFlashExpected}
+                            onChange={() => this.update(() => cfg.dontFlashExpected = !cfg.dontFlashExpected)}
+                        >If countdown timer is shown don't flash it with expected time when delayed</Checkbox>
                     </FormGroup>
                 </Col>
             </Row>
