@@ -46,9 +46,15 @@ class Boards extends Component {
         t.resetTimer(crs);
 
         let opts = [];
+
         if (!config.get("showTerminated")) {
             opts.push('term=false')
         }
+
+        if (config.get("serviceLimit") > 0) {
+            opts.push('len=' + config.get("serviceLimit"))
+        }
+
         opts.push('dt=' + new Date());
 
         let url = config.get('ldbUrl') + '/boards/' + crs + '?' + opts.join("&");

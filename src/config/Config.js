@@ -16,6 +16,7 @@ export function getConfig() {
             showTerminated: false,
             refreshRate: 60000,
             serviceRefreshRate: 60000,
+            serviceLimit: 0,
         };
 
         setServer(json, isUAT());

@@ -34,6 +34,31 @@ class ConfigBoards extends Component {
             </Row>
             <Row>
                 <Col xs={12} md={12} sm={12}>
+                    <FormGroup controlId="cfgBoardLimit">
+                        <ControlLabel>Limit number of services shown in departure board</ControlLabel>
+                        <FormControl
+                            componentClass="select"
+                            value={cfg.serviceLimit}
+                            onChange={(t) => this.update(() => cfg.serviceLimit = t.target.value)}
+                        >
+                            <option value="0">Show all services</option>
+                            <option value="1">1 service</option>
+                            <option value="2">2 services</option>
+                            <option value="3">3 services</option>
+                            <option value="4">4 services</option>
+                            <option value="5">5 services</option>
+                            <option value="10">10 services</option>
+                            <option value="15">15 services</option>
+                            <option value="20">20 services</option>
+                            <option value="25">25 services</option>
+                            <option value="30">30 services</option>
+                            <option value="35">35 services</option>
+                        </FormControl>
+                    </FormGroup>
+                </Col>
+            </Row>
+            <Row>
+                <Col xs={12} md={12} sm={12}>
                     <FormGroup controlId="cfgNetRefresh">
                         <ControlLabel>Polling Refresh Rate</ControlLabel>
                         <FormControl
