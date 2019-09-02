@@ -61,9 +61,7 @@ ADD public public
 ADD css css
 ADD src src
 
-RUN npm run css
-RUN npm run babel
-RUN npm run webpack
+RUN npm run build
 
 # ======================================================================
 # Apache HTTPD based image to run the app locally
