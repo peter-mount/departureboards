@@ -4,7 +4,7 @@ import {PageHeader} from 'react-bootstrap';
 import EUCookie from 'area51-eucookie';
 import config from 'react-global-configuration';
 
-import BoardRow from './BoardRow.js';
+import BoardRow, {timeRemaining} from './BoardRow.js';
 import ManagedBy from './ManagedBy.js';
 import MessageRow from './MessageRow.js';
 import Navigation from '../Navigation';
@@ -32,6 +32,7 @@ class Boards extends Component {
         if (this.timer) {
             clearTimeout(this.timer);
         }
+        clearTimeout(this.flashTimer);
     }
 
     forceRender(t, departures) {
@@ -39,17 +40,11 @@ class Boards extends Component {
             departures: departures,
             flashTick: new Date().getSeconds()
         })
-
-        clearTimeout(t.flashTimer);
-        if (!config.get('dontFlashExpected')) {
-            t.flashTimer = setTimeout(() => t.forceRender(t, t.state.departures), 1000);
-        }
     }
 
     resetTimer(crs) {
         const t = this;
         clearTimeout(t.timer);
-        clearTimeout(t.flashTimer);
         t.timer = setTimeout(() => t.refresh(crs), config.get('refreshRate'));
     }
 
@@ -88,7 +83,8 @@ class Boards extends Component {
         let messages = null,
             rows = null,
             idx = 0,
-            {flashTick} = this.state;
+            {flashTick} = this.state,
+            enableFlash = false;
 
         if (data.messages) {
             messages = data.messages
@@ -115,6 +111,7 @@ class Boards extends Component {
                 .filter(filterDeparted)
                 .map((d, ind) => {
                     idx++;
+                    enableFlash = enableFlash || (showCountdown && timeRemaining(d.location.forecast.time) != null);
                     return <BoardRow
                         key={d.rid + ':' + d.location}
                         board={this}
@@ -128,6 +125,13 @@ class Boards extends Component {
                     />;
                 })
         }
+
+        clearTimeout(this.flashTimer);
+        if (enableFlash && !config.get('dontFlashExpected')) {
+            const t = this;
+            t.flashTimer = setTimeout(() => t.forceRender(t, t.state.departures), 1000);
+        }
+
         return <div>{messages}{rows}</div>;
     }
 

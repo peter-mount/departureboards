@@ -17,7 +17,7 @@ function getDestination(data, tpl, rid) {
 }
 
 function getCallingPoint(t, data, cp) {
-    return <span key={cp.tpl + ":" + cp.time} className="callList"><a
+    return <span key={cp.tpl + ":" + cp.time + ':' + cp.delay} className="callList"><a
         onClick={t.showBoard(cp.tpl)}
     >{fix(tiploc(data, cp.tpl))}</a>&nbsp;({fixTime(cp.time)}) </span>
 }
@@ -67,7 +67,7 @@ function fixTime(t) {
     return null
 }
 
-function timeRemaining(t) {
+export function timeRemaining(t) {
     t = fixTime(t);
     if (t) {
         let a = t.split(':'),
@@ -224,8 +224,8 @@ class BoardRow extends Component {
             expectedClass = 'ldbLate';
             flashTick = 0
         } else if (loc.delay > 0) {
-            // Flash once a second between minutes remaining & expected time
-            if (showCountdown && expectedTime && (!flashExpected || (flashTick % 2) === 1)) {
+            // Flash every 2 seconds between minutes remaining & expected time
+            if (showCountdown && expectedTime && (!flashExpected || (flashTick % 4) < 2)) {
                 expected = expectedTime
             } else {
                 expected = fixTime(forecast.time);
