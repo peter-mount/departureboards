@@ -74,6 +74,14 @@ class HomePage extends Component {
                     By clicking the destination name on those boards you will be able to view the current progress of
                     that service.
                 </p>
+                <h2>Whats New</h2>
+                <p>Sep 2 2019:</p>
+                <ul>
+                    <li>General performance improvements to reduce amount of network bandwidth used to the client.</li>
+                    <li>Ability to limit the number of services returned rather than all services in the next hour.</li>
+                    <li>Terminating services are not returned unless you request it in configuration.</li>
+                    <li>Ability to use our UAT environment instead of the Live one.</li>
+                </ul>
             </div>
         </div>);
     }
