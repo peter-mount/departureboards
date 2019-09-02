@@ -26,6 +26,17 @@ class ConfigSystem extends Component {
                     </FormGroup>
                 </Col>
             </Row>
+            <Row>
+                <Col xs={12} md={12} sm={12}>
+                    <FormGroup controlId="cfgSystemCache">
+                        <ControlLabel>Network API Caching</ControlLabel>
+                        <Checkbox
+                            checked={cfg.disableCashBuster}
+                            onChange={() => this.update(() => cfg.disableCashBuster = !cfg.disableCashBuster)}
+                        >Disable cache busting on API requests</Checkbox>
+                    </FormGroup>
+                </Col>
+            </Row>
         </Grid>);
     }
 }

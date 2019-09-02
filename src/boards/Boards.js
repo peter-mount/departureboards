@@ -55,7 +55,9 @@ class Boards extends Component {
             opts.push('len=' + config.get("serviceLimit"))
         }
 
-        opts.push('dt=' + new Date());
+        if (!config.get("disableCashBuster")) {
+            opts.push('t=' + new Date().getTime());
+        }
 
         let url = config.get('ldbUrl') + '/boards/' + crs + '?' + opts.join("&");
 

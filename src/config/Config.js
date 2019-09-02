@@ -17,6 +17,7 @@ export function getConfig() {
             refreshRate: 60000,
             serviceRefreshRate: 60000,
             serviceLimit: 0,
+            disableCashBuster: false,
         };
 
         setServer(json, isUAT());
