@@ -6,19 +6,21 @@ import React, {Component} from 'react';
 class MessageRow extends Component {
 
     render() {
-        let msg = this.props.msg, icon = 'fa-warning';
+        let msg = this.props.msg, icon = 'fas-3x fa-exclamation-circle';
 
         if (msg.category === 'System') {
-            icon = 'fa-linux';
+            icon = 'fab-3x fa-linux';
         } else if (msg.category === "Station") {
-            icon = 'fa-info-circle';
+            icon = 'fas-3x fa-info-circle';
+        } else if (msg.category === "Train") {
+            icon = 'fas-3x fa-train';
         } else if (msg.category === 'Information' || msg.category === 'PriorTrains' || msg.category === 'PriorOther') {
-            icon = 'fa-info-circle';
+            icon = 'fas-3x fa-info-circle';
         }
 
         return (
             <div className={"ldb-enttop ldb-message " + (this.props.index % 2 === 0 ? "ldb-row altrow" : "ldb-row")}>
-                <i aria-hidden="true" className={"fa " + icon + ' fa-3x'}/>
+                <i aria-hidden="true" className={"fa " + icon}/>
                 <span dangerouslySetInnerHTML={{__html: msg.message}}></span>
                 <div className="clearfix"></div>
             </div>);
