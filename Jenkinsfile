@@ -36,22 +36,10 @@ node( 'AMD64' ) {
     sh "docker pull httpd:2.4.29-alpine"
   }
 
-  buildStep( 'dependencies' )
-  buildStep( 'sources' )
-  stage( "build" ) {
-    parallel(
-      'eslint': {
-        buildStep( 'eslint' )
-      },
-      'babel': {
-        buildStep( 'babel' )
-      }
-    )
-  }
-
-  stage( "webpack") {
-    sh 'docker build -t ' + dockerImage + ' --build-arg environment=production --target httpd .'
-  }
+  buildStep( 'base' )
+  buildStep( 'npm' )
+  buildStep( 'build' )
+  buildStep( 'httpd' )
 
   stage( 'docker' ) {
     sh "docker push " + dockerImage
