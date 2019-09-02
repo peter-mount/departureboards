@@ -217,3 +217,7 @@ td.ldb-fsct-stat {
     width: 10pt;
     height: 10pt;
 }
+
+.ldbCol.ldbForecast.ldbCancelled {
+    font-size: 80%;
+}
