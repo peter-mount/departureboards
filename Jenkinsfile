@@ -1,5 +1,5 @@
 // Repository name use, must end with / or be '' for none
-repository= 'docker.area51.onl/area51/'
+repository= 'docker.area51.dev/area51/'
 
 // image prefix
 imagePrefix = 'departureboards'
