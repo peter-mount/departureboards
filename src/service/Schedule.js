@@ -57,7 +57,8 @@ class Schedule extends Component {
         }
 
         // Destination and any associations
-        let dest = <span><Location data={data} tiploc={data.destination.tiploc}/> <Via via={via[service.rid]}/></span>,
+        let dest = <span><Location data={data} tiploc={service.destinationLocation.tiploc}/> <Via
+                via={via[service.rid]}/></span>,
             joins,
             nextService,
             prevService,
