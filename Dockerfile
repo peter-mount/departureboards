@@ -49,6 +49,8 @@ RUN npm install
 # ======================================================================
 # Run the build
 FROM npm as build
+ARG environment
+
 WORKDIR /opt/build
 ADD .babelrc .babelrc
 ADD .eslintrc .eslintrc

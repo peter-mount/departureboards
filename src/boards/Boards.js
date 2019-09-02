@@ -44,7 +44,7 @@ class Boards extends Component {
     refresh(crs) {
         const t = this;
         t.resetTimer(crs)
-        fetch('https://ldb.test.area51.dev/boards/' + crs + '?' + new Date())
+        fetch(config.get('ldbUrl') + '/boards/' + crs + '?' + new Date())
             .then(res => res.json())
             .then(departures => t.setState({departures: departures}))
             .catch(e => {

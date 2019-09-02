@@ -9,11 +9,15 @@ export function getConfig() {
         json = null;
     }
     // No json or has old config then reset to defaults
-    if (!json || json.boards) {
+    if (!json || json.version == null || json.version < 190902) {
         json = {
+            version: 190902,
             showTerminated: false,
             refreshRate: 60000,
             serviceRefreshRate: 60000,
+            useUAT: false,
+            ldbUrl: 'https://ldb.a.a51.li',
+            refUrl: 'https://ref.a.a51.li',
         };
         saveConfig(json);
     }

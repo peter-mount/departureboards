@@ -4,6 +4,7 @@ import {withRouter} from 'react-router';
 import {AsyncTypeahead} from 'react-bootstrap-typeahead';
 import EUCookie from 'area51-eucookie';
 import Navigation from '../Navigation';
+import config from 'react-global-configuration';
 
 class HomePage extends Component {
 
@@ -18,7 +19,7 @@ class HomePage extends Component {
 
     // Perform the query
     search(query, t) {
-        fetch('https://ref.a.a51.li/search/' + query)
+        fetch(config.get('refUrl') + '/search/' + query)
             .then(resp => resp.json())
             .then(json => t.setState({
                 options: json ? json : []

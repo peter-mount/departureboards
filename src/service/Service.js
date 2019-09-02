@@ -46,7 +46,7 @@ class Service extends Component {
     refresh(rid, force) {
         this.resetTimer(rid);
 
-        fetch('https://ldb.test.area51.dev/service/' + rid)
+        fetch(config.get('ldbUrl') + '/service/' + rid)
             .then(res => res.json())
             .then(json => {
                 this.resetTimer(rid);
