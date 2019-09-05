@@ -44,11 +44,7 @@ export function isUAT() {
 // Sets the appropriate API endpoint
 export function setServer(cfg, useUAT) {
     cfg.useUAT = useUAT;
-    if (useUAT) {
-        cfg.ldbUrl = 'https://ldb.test.area51.dev';
-        cfg.refUrl = 'https://ref.test.area51.dev'
-    } else {
-        cfg.ldbUrl = 'https://ldb.a.a51.li';
-        cfg.refUrl = 'https://ref.a.a51.li'
-    }
+    let env = useUAT ? 'uat' : 'prod';
+    cfg.ldbUrl = 'https://ldb.' + env + '.a51.li';
+    cfg.refUrl = 'https://ref.' + env + '.a51.li'
 }
