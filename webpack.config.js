@@ -15,50 +15,89 @@ if( process.env.environment == 'production' ) {
   ]
 }
 */
-console.log( "Webpack", process.env.environment, 'dist', __dirname + "/dist" );
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+
+console.log("Webpack", process.env.environment, 'dist', __dirname + "/dist");
 
 module.exports = {
-  mode: process.env.environment,
+    mode: process.env.environment,
 
-  //plugins: plugins,
+    //plugins: plugins,
 
-  entry: "./build/index.js",
+    entry: "./build/index.js",//{
+    //main: "./build/index.js",
+    //departureboards: "./build/Departureboards.js"
+    //},
+    //},
+    plugins: [
+        new HtmlWebpackPlugin({
+            title: 'Output Management',
+            filename: "index.html",
+            template: "src/index.html"
+        })
+    ],
 
-  output: {
-    path: __dirname + "/dist",
-    filename: "main.js",
-  },
+    output: {
+        path: __dirname + "/dist",
+        filename: "[name].js",
+        chunkFilename: '[name]-ck.js',
+    },
 
-  module: {
-    // This used to be called loaders but recent webpack requires rules instead
-    rules: [
-      {
-        test: /\.(js|jsx)$/,
-        exclude: /(node_modules|bower_components)/,
-        include: [
-          path.resolve(__dirname, './lib')
-        ],
-        loader: 'babel-loader',
-        query: {
-          presets: [
-            'es2015',
-            'react',
-            'stage-0'
-          ]
+    optimization: {
+        splitChunks: {
+            chunks: 'async',
+            minSize: 30000,
+            maxSize: 90000,
+            minChunks: 1,
+            maxAsyncRequests: 5,
+            maxInitialRequests: 3,
+            automaticNameDelimiter: '~',
+            automaticNameMaxLength: 30,
+            name: true,
+            cacheGroups: {
+                vendors: {
+                    test: /[\\/]node_modules[\\/]/,
+                    priority: -10
+                },
+                default: {
+                    minChunks: 2,
+                    priority: -20,
+                    reuseExistingChunk: true
+                }
+            }
         }
-      }
-    ]
-  },
+    },
 
-  stats: {
-    colors: true
-  },
+    module: {
+        // This used to be called loaders but recent webpack requires rules instead
+        rules: [
+            {
+                test: /\.(js|jsx)$/,
+                exclude: /(node_modules|bower_components)/,
+                include: [
+                    path.resolve(__dirname, './lib')
+                ],
+                loader: 'babel-loader',
+                query: {
+                    presets: [
+                        'es2015',
+                        'react',
+                        'stage-0'
+                    ]
+                }
+            }
+        ]
+    },
 
-  devtool: 'source-map',
+    stats: {
+        colors: true
+    },
 
-  devServer: {
-    /*open: 'http://localhost:9000',*/
-    port: 9000,
-    contentBase: 'dist'
-  }
+    devtool: 'source-map',
+
+    devServer: {
+        /*open: 'http://localhost:9000',*/
+        port: 9000,
+        contentBase: 'dist'
+    }
 };
