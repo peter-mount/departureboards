@@ -79,7 +79,7 @@ module.exports = {
             maxAsyncRequests: 5,
             maxInitialRequests: 3,
             automaticNameDelimiter: '~',
-            automaticNameMaxLength: 30,
+            //automaticNameMaxLength: 30,
             name: true,
             cacheGroups: {
                 vendors: {

@@ -22,25 +22,11 @@
 ARG environment=development
 
 # ======================================================================
-# The base builder image comprising babel, webpack and all required
-# dependencies from npm
-FROM area51/babel:react-latest as base
-
-WORKDIR /opt/build
-ADD package.json package.json
-RUN usenpmrepository https://nexus.area51.dev/repository/npm/
-RUN npm install
-
-# Link to webpack
-RUN npm link webpack
-
-# Override babel & eslint with our react based config
-ADD .babelrc /usr/local/babel/.babelrc
-ADD .eslintrc /usr/local/babel/.eslintrc
-
-# ======================================================================
 # Download NPM sources
-FROM base as npm
+FROM area51/node:latest as npm
+
+RUN echo registry=https://nexus.area51.dev/repository/npm/ >~/.npmrc
+
 WORKDIR /opt/build
 ADD package.json package.json
 ADD package-lock.json package-lock.json
@@ -53,8 +39,7 @@ ARG environment
 
 WORKDIR /opt/build
 ADD .babelrc .babelrc
-ADD .eslintrc .eslintrc
-ADD minifycss.sh minifycss.sh
+#ADD .eslintrc .eslintrc
 ADD webpack.config.js webpack.config.js
 
 ADD public public
