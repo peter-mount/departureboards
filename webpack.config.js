@@ -95,6 +95,14 @@ module.exports = {
                         //'stage-0'
                     ]
                 }
+            },
+            {
+                test: /\.svg$/,
+                exclude: /(node_modules|bower_components)/,
+                include: [
+                    path.resolve(__dirname, './src')
+                ],
+                loader: 'svg-inline-loader'
             }
         ]
     },

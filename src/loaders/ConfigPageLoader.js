@@ -1,36 +1,20 @@
 import React, {Component} from 'react';
+import DynamicComponent from "./DynamicComponent";
 
 class ConfigPageLoader extends Component {
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            Component: null,
-        }
-    }
-
-    componentDidMount() {
-        //
-        // Ignore the warning about:
-        //
-        // System.import() is deprecated and will be removed soon. Use import() instead.
-        // For more info visit https://webpack.js.org/guides/code-splitting/
-        //
-        // This is due to currently using just import (remove System.) causes the comment to be
-        // stripped out & everything get's put into a single chunk.
-        //
-        System.import( /* webpackChunkName: "configPage" webpackPrefetch: -100 */ '../config/ConfigPage')
-            .then(module => {
-                this.setState({Component: module.default});
-            });
-    }
-
+    //
+    // Ignore the warning about:
+    //
+    // System.import() is deprecated and will be removed soon. Use import() instead.
+    // For more info visit https://webpack.js.org/guides/code-splitting/
+    //
+    // This is due to currently using just import (remove System.) causes the comment to be
+    // stripped out & everything get's put into a single chunk.
+    //
     render() {
-        const {Component} = this.state;
-
-        return Component
-            ? <Component/>
-            : <h3>Loading...</h3>
+        return <DynamicComponent
+            import={() => System.import( /* webpackChunkName: "configPage" webpackPrefetch: -100 */ '../config/ConfigPage')}
+        />
     }
 }
 
