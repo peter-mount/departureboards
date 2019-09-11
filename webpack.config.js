@@ -46,14 +46,16 @@ module.exports = {
         path: __dirname + "/dist",
         //filename: "[name].js",
         //chunkFilename: '[name]-bundle.js',
-        filename: '[name].[hash:5].js',
-        chunkFilename: '[name].[id].[hash:5].js',
+        //filename: '[name].[hash:5].js',
+        filename: '[hash:5].js',
+        chunkFilename: '[hash:5]-[id].js',
         publicPath: "/"
     },
 
     optimization: {
-        //moduleIds: "named",//'hashed',
-        //runtimeChunk: false,//"single",
+        moduleIds: 'hashed',
+        // Have a single webpack runtime used by all chunks
+        runtimeChunk: "single",
         splitChunks: {
             chunks: 'async',
             minSize: 30000,

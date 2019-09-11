@@ -3,10 +3,10 @@ import React, {Component} from 'react';
 import {BrowserRouter, Route} from 'react-router-dom';
 
 import AboutLoader from "./loaders/AboutLoader";
-import Boards from "./boards/Boards";
+import BoardsLoader from "./loaders/BoardsLoader";
 import ConfigPageLoader from "./loaders/ConfigPageLoader";
 import ContactUsLoader from "./loaders/ContactUsLoader";
-import HomePage from "./home/HomePage";
+import HomePageLoader from "./loaders/HomePageLoader";
 import ServiceLoader from "./loaders/ServiceLoader";
 
 // Initialise config
@@ -23,8 +23,8 @@ class Departureboards extends Component {
         return (
             <BrowserRouter>
                 <div>
-                    <Route component={HomePage} exact path='/'/>
-                    <Route component={Boards} exact path='/departures/:crs'/>
+                    <Route component={HomePageLoader} exact path='/'/>
+                    <Route component={BoardsLoader} exact path='/departures/:crs'/>
                     <Route component={ServiceLoader} exact path='/service/:rid'/>
                     <Route component={AboutLoader} exact path='/about'/>
                     <Route component={ConfigPageLoader} exact path="/configure"/>
