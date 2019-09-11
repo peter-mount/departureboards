@@ -17,12 +17,6 @@ if( process.env.environment == 'production' ) {
 */
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
-const nameFunction = (module, chunks, cacheGroupKey) => {
-    const moduleFileName = module.identifier().split('/').reduceRight(item => item);
-    const allChunksNames = chunks.map((item) => item.name).join('~');
-    return `${cacheGroupKey}-${allChunksNames}-${moduleFileName}`;
-};
-
 console.log("Webpack", process.env.environment, 'dist', __dirname + "/dist");
 
 module.exports = {
@@ -47,8 +41,8 @@ module.exports = {
         //filename: "[name].js",
         //chunkFilename: '[name]-bundle.js',
         //filename: '[name].[hash:5].js',
-        filename: '[hash:5].js',
-        chunkFilename: '[hash:5]-[id].js',
+        filename: '[hash:5]/[hash:5].js',
+        chunkFilename: '[hash:5]/[hash:5]-[id].js',
         publicPath: "/"
     },
 
@@ -56,6 +50,8 @@ module.exports = {
         moduleIds: 'hashed',
         // Have a single webpack runtime used by all chunks
         runtimeChunk: "single",
+        // Name chunks
+        namedChunks: true,
         splitChunks: {
             chunks: 'async',
             minSize: 30000,
