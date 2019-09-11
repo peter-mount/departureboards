@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {withRouter} from 'react-router';
 import {PageHeader, Tab, Tabs} from 'react-bootstrap';
 import Navigation from '../Navigation';
+import NRELogo from './NRE_Powered_logo.jpg';
 
 class About extends Component {
 
@@ -40,8 +41,7 @@ class About extends Component {
                             predicted arrival &amp; departure times for services, so when a service is delayed then we
                             will show the same predicted times as National Rail Enquiries have access to. </p>
                         <div className="logo-container" style={{textAlign: 'center'}}>
-                            <img className="logo-nre" alt="Powered by National Rail Enquiries"
-                                 src="./NRE_Powered_logo.jpg"/>
+                            <img className="logo-nre" alt="Powered by National Rail Enquiries" src={NRELogo}/>
                         </div>
                     </Tab>
 

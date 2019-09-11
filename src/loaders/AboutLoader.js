@@ -13,7 +13,7 @@ class AboutLoader extends Component {
     //
     render() {
         return <DynamicComponent
-            import={() => System.import( /* webpackChunkName: "about" webpackPrefetch: -100 */ '../about/About')}
+            import={() => System.import( /* webpackChunkName: "about" */ '../about/About')}
         />
     }
 }
