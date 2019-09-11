@@ -5,6 +5,15 @@ import Navigation from '../Navigation';
 import Schedule from './Schedule';
 import config from 'react-global-configuration';
 
+import '../../css/coach.css';
+import '../../css/service.css';
+import '../../css/media-320.css';
+import '../../css/media-443.css';
+import '../../css/media-640.css';
+import '../../css/media-1023.css';
+import '../../css/media-1599.css';
+import '../../css/media-1600.css';
+
 class Service extends Component {
 
     constructor(props) {

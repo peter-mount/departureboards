@@ -1,7 +1,10 @@
 import React, {Component} from 'react';
-//import {render} from 'react-dom';
 import {BrowserRouter, Route} from 'react-router-dom';
 
+import '../css/App.css';
+import '../css/materialicons.css';
+
+// The loaders for each route
 import AboutLoader from "./loaders/AboutLoader";
 import BoardsLoader from "./loaders/BoardsLoader";
 import ConfigPageLoader from "./loaders/ConfigPageLoader";

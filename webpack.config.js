@@ -17,6 +17,9 @@ if( process.env.environment == 'production' ) {
 */
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+
 console.log("Webpack", process.env.environment, 'dist', __dirname + "/dist");
 
 module.exports = {
@@ -33,6 +36,13 @@ module.exports = {
             //chunksSortMode: "dependency",
             chunks: ['main'],
             //excludeChunks: ['departureboards']
+        }),
+
+        new MiniCssExtractPlugin({
+            filename: '[hash:5]/[name].css',
+            chunkFilename: '[hash:5]/[id].css',
+            //filename: '[hash:5]/[hash:5].css',
+            //chunkFilename: '[hash:5]/[hash:5]-[id].css',
         })
     ],
 
@@ -47,6 +57,10 @@ module.exports = {
     },
 
     optimization: {
+        //minimizer: [new TerserJSPlugin({}), new OptimizeCSSAssetsPlugin({})],
+        minimizer: [new OptimizeCSSAssetsPlugin({})],
+
+        // Normal js chunks
         moduleIds: 'hashed',
         // Have a single webpack runtime used by all chunks
         runtimeChunk: "single",
@@ -100,7 +114,11 @@ module.exports = {
                     path.resolve(__dirname, './src')
                 ],
                 loader: 'svg-inline-loader'
-            }
+            },
+            {
+                test: /\.css$/,
+                use: [MiniCssExtractPlugin.loader, 'css-loader'],
+            },
         ]
     },
 

@@ -9,6 +9,8 @@ import ConfigBoards from './ConfigBoards.js';
 import ConfigService from './ConfigService.js';
 import ConfigSystem from './ConfigSystem.js';
 
+import '../../css/Config.css';
+
 class ConfigPage extends Component {
 
     render() {
