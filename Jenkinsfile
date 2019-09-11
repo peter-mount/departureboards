@@ -36,7 +36,6 @@ node( 'AMD64' ) {
     sh "docker pull httpd:2.4.29-alpine"
   }
 
-  buildStep( 'base' )
   buildStep( 'npm' )
   buildStep( 'build' )
   buildStep( 'httpd' )
