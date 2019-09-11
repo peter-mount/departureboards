@@ -14,6 +14,9 @@ import '../../css/media-1023.css';
 import '../../css/media-1599.css';
 import '../../css/media-1600.css';
 
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
+import {faSpinner} from '@fortawesome/free-solid-svg-icons'
+
 class Service extends Component {
 
     constructor(props) {
@@ -87,7 +90,7 @@ class Service extends Component {
                 <Navigation page="service"/>
                 <EUCookie/>
                 <div>
-                    <i className="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+                    <FontAwesomeIcon icon={faSpinner} className="fa-pulse fa-3x fa-fw"/>
                     <span className="sr-only">Loading...</span>
                 </div>
             </div>);

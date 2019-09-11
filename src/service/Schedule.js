@@ -8,6 +8,9 @@ import Reason from '../util/Reason.js';
 import Time from '../util/Time.js';
 import Via from '../util/Via.js';
 
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faTrain} from "@fortawesome/free-solid-svg-icons";
+
 /*
  * Handles the Schedule tab
  */
@@ -264,7 +267,7 @@ class Schedule extends Component {
 
                     rows.push(<tr key={key + "a"}>
                         <td className="ldb-fsct-stat">
-                            <i className="fa fa-train" aria-hidden="true"></i>
+                            <FontAwesomeIcon icon={faTrain}/>
                             {approaching}
                         </td>
                     </tr>);

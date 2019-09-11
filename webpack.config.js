@@ -17,6 +17,8 @@ if( process.env.environment == 'production' ) {
 */
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
+const TerserPlugin = require('terser-webpack-plugin');
+
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 
@@ -57,8 +59,11 @@ module.exports = {
     },
 
     optimization: {
+        minimize: true,
+        //minimizer: [new TerserPlugin()],
+        minimizer: [new TerserPlugin({}), new OptimizeCSSAssetsPlugin({})],
         //minimizer: [new TerserJSPlugin({}), new OptimizeCSSAssetsPlugin({})],
-        minimizer: [new OptimizeCSSAssetsPlugin({})],
+        //minimizer: [new OptimizeCSSAssetsPlugin({})],
 
         // Normal js chunks
         moduleIds: 'hashed',

@@ -4,6 +4,9 @@ import Delay from '../util/Delay.js';
 import Location from '../util/Location.js';
 import Time from '../util/Time.js';
 
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
+import {faTrain} from '@fortawesome/free-solid-svg-icons'
+
 class Movement extends Component {
     render() {
         const p = this.props,
@@ -28,7 +31,7 @@ class Movement extends Component {
         }
 
         // Show train icon if we are at the required position
-        let icon = lid === row.id && !forecast.departed ? <i className="fa fa-train" aria-hidden="true"></i> : null;
+        let icon = lid === row.id && !forecast.departed ? <FontAwesomeIcon icon={faTrain}/> : null;
 
         let terminated = row.planned && row.planned.activity === 'TF' && service && service.destinationLocation && service.terminatedAt && service.destinationLocation.tiploc !== service.terminatedAt.tiploc,
             arrived = forecast.arrived && !forecast.departed,

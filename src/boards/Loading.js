@@ -1,5 +1,8 @@
 import React, {Component} from 'react';
 
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
+import {faToilet} from '@fortawesome/free-solid-svg-icons'
+
 class Loading extends Component {
 
     render() {
@@ -51,7 +54,7 @@ class Loading extends Component {
             let coachToilet;
             switch (toiletType) {
                 case "Standard":
-                    coachToilet = <span className="coach-toilet"><i className="fas fa-toilet"></i></span>;
+                    coachToilet = <span className="coach-toilet"><FontAwesomeIcon icon={faToilet}/></span>;
                     break;
                 case "Accessible":
                     coachToilet = <span className="coach-toilet"><i className="material-icons">accessible</i></span>;
