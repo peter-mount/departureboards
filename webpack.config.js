@@ -15,35 +15,45 @@ if( process.env.environment == 'production' ) {
   ]
 }
 */
-const HtmlWebpackPlugin = require('html-webpack-plugin')
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+
+const nameFunction = (module, chunks, cacheGroupKey) => {
+    const moduleFileName = module.identifier().split('/').reduceRight(item => item);
+    const allChunksNames = chunks.map((item) => item.name).join('~');
+    return `${cacheGroupKey}-${allChunksNames}-${moduleFileName}`;
+};
 
 console.log("Webpack", process.env.environment, 'dist', __dirname + "/dist");
 
 module.exports = {
     mode: process.env.environment,
 
-    //plugins: plugins,
+    entry: "./build/index.js",
 
-    entry: "./build/index.js",//{
-    //main: "./build/index.js",
-    //departureboards: "./build/Departureboards.js"
-    //},
-    //},
     plugins: [
         new HtmlWebpackPlugin({
             title: 'Output Management',
             filename: "index.html",
-            template: "src/index.html"
+            template: "src/index.html",
+            inject: "body",
+            //chunksSortMode: "dependency",
+            chunks: ['main'],
+            //excludeChunks: ['departureboards']
         })
     ],
 
     output: {
         path: __dirname + "/dist",
-        filename: "[name].js",
-        chunkFilename: '[name]-ck.js',
+        //filename: "[name].js",
+        //chunkFilename: '[name]-bundle.js',
+        filename: '[name].[hash:5].js',
+        chunkFilename: '[name].[id].[hash:5].js',
+        publicPath: "/"
     },
 
     optimization: {
+        //moduleIds: "named",//'hashed',
+        //runtimeChunk: false,//"single",
         splitChunks: {
             chunks: 'async',
             minSize: 30000,
@@ -80,9 +90,11 @@ module.exports = {
                 loader: 'babel-loader',
                 query: {
                     presets: [
-                        'es2015',
-                        'react',
-                        'stage-0'
+                        'env',
+                        'react'
+                        //'es2015',
+                        //'react',
+                        //'stage-0'
                     ]
                 }
             }
@@ -98,6 +110,12 @@ module.exports = {
     devServer: {
         /*open: 'http://localhost:9000',*/
         port: 9000,
-        contentBase: 'dist'
+        contentBase: 'dist',
+        // Disable compilation by requesting it only on a non-existent file.
+        // This is needed so that we use what's deployed under dist & not a virtual copy
+        lazy: true,
+        filename: "donotrecompile.js",
+        // Compression
+        compress: false
     }
 };
