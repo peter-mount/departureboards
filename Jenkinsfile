@@ -33,7 +33,7 @@ node( 'AMD64' ) {
   stage( "prepare" ) {
     checkout scm
     sh "docker pull area51/node:latest"
-    sh "docker pull httpd:2.4.29-alpine"
+    sh "docker pull httpd:2.4.41-alpine"
   }
 
   buildStep( 'npm' )
