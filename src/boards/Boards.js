@@ -14,7 +14,7 @@ import '../../css/media-1599.css';
 import '../../css/media-1600.css';
 
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
-import {faSpinner} from '@fortawesome/free-solid-svg-icons'
+import {faSpinner} from '@fortawesome/free-solid-svg-icons/faSpinner'
 
 import BoardRow, {timeRemaining} from './BoardRow.js';
 import ManagedBy from './ManagedBy.js';

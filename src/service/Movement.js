@@ -5,7 +5,7 @@ import Location from '../util/Location.js';
 import Time from '../util/Time.js';
 
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
-import {faTrain} from '@fortawesome/free-solid-svg-icons'
+import {faTrain} from '@fortawesome/free-solid-svg-icons/faTrain'
 
 class Movement extends Component {
     render() {

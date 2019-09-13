@@ -1,8 +1,10 @@
 import React, {Component} from 'react';
 
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
-import {faExclamationCircle, faInfoCircle, faTrain} from '@fortawesome/free-solid-svg-icons'
-import {faLinux} from '@fortawesome/free-brands-svg-icons'
+import {faExclamationCircle} from '@fortawesome/free-solid-svg-icons/faExclamationCircle'
+import {faInfoCircle} from '@fortawesome/free-solid-svg-icons/faInfoCircle'
+import {faTrain} from '@fortawesome/free-solid-svg-icons/faTrain'
+import {faLinux} from '@fortawesome/free-brands-svg-icons/faLinux'
 
 /*
 * Displays informational message

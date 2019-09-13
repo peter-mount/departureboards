@@ -9,7 +9,7 @@ import Time from '../util/Time.js';
 import Via from '../util/Via.js';
 
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faTrain} from "@fortawesome/free-solid-svg-icons";
+import {faTrain} from "@fortawesome/free-solid-svg-icons/faTrain";
 
 /*
  * Handles the Schedule tab

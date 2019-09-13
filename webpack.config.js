@@ -1,7 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
 /*
-const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 
 var plugins = []
 // If we are a production build then this will uglify it and remove the
@@ -17,7 +16,9 @@ if( process.env.environment == 'production' ) {
 */
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
-const TerserPlugin = require('terser-webpack-plugin');
+const BabelMinifyPlugin = require('babel-minify-webpack-plugin');
+//const TerserPlugin = require('terser-webpack-plugin');
+//const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
@@ -25,7 +26,7 @@ const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 console.log("Webpack", process.env.environment, 'dist', __dirname + "/dist");
 
 module.exports = {
-    mode: process.env.environment,
+    mode: 'production', //process.env.environment,
 
     entry: "./build/index.js",
 
@@ -60,10 +61,12 @@ module.exports = {
 
     optimization: {
         minimize: true,
-        //minimizer: [new TerserPlugin()],
-        minimizer: [new TerserPlugin({}), new OptimizeCSSAssetsPlugin({})],
-        //minimizer: [new TerserJSPlugin({}), new OptimizeCSSAssetsPlugin({})],
-        //minimizer: [new OptimizeCSSAssetsPlugin({})],
+        minimizer: [
+            new BabelMinifyPlugin(),
+            //new UglifyJSPlugin(),
+            //new TerserPlugin({}),
+            new OptimizeCSSAssetsPlugin({})
+        ],
 
         // Normal js chunks
         moduleIds: 'hashed',
