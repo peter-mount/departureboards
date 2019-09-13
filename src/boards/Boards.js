@@ -158,7 +158,6 @@ class Boards extends Component {
         if (departures && departures.crs === crs) {
             body = this.renderDepartures(crs, departures);
         } else {
-            this.refresh(crs);
             body = (<div>
                 <FontAwesomeIcon icon={faSpinner} className="fa-pulse fa-3x fa-fw"/>
                 <span className="sr-only">Loading...</span>
