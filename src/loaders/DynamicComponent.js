@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import Spinner from './spinner.svg';
+import '../../css/spinner.css';
 
 class DynamicComponent extends Component {
     constructor(props) {
@@ -7,6 +8,7 @@ class DynamicComponent extends Component {
 
         this.state = {
             Component: null,
+            spinner: false,
         }
     }
 
@@ -24,7 +26,7 @@ class DynamicComponent extends Component {
             if (!spin) {
                 setTimeout(() => {
                     if (t.state.Component === null) {
-                        this.setState({Component: Spinner});
+                        this.setState({Component: null, spinner: true});
                     }
                 }, 1000)
             }
@@ -32,9 +34,16 @@ class DynamicComponent extends Component {
     }
 
     render() {
-        const {Component: Component} = this.state;
+        const {
+            Component: Component,
+            spinner: spinner
+        } = this.state;
 
-        return Component ? <Component/> : <div></div>
+        return Component
+            ? <Component/>
+            : spinner
+                ? <div id="spinner"><Spinner/></div>
+                : <div></div>
     }
 }
 
