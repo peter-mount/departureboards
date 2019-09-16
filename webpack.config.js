@@ -1,6 +1,6 @@
 const path = require('path');
-const webpack = require('webpack');
 /*
+const webpack = require('webpack');
 
 var plugins = []
 // If we are a production build then this will uglify it and remove the
@@ -110,7 +110,6 @@ module.exports = {
                     priority: -10
                 },
                 default: {
-                    name: nameFunc,
                     priority: -20
                 }
             }
