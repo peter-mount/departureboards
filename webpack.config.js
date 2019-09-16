@@ -91,7 +91,8 @@ module.exports = {
             maxAsyncRequests: 5,
             maxInitialRequests: 3,
             automaticNameDelimiter: '-',
-            automaticNameMaxLength: 30,
+            // FIXME this works locally but breaks the docker build, Check but might not be necessary now
+            //automaticNameMaxLength: 30,
             name: true,
             cacheGroups: {
                 a51: {
