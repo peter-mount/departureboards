@@ -87,7 +87,7 @@ module.exports = {
             chunks: 'async',
             minSize: 30000,
             maxSize: 90000,
-            minChunks: 1,
+            minChunks: 2,
             maxAsyncRequests: 5,
             maxInitialRequests: 3,
             automaticNameDelimiter: '-',
