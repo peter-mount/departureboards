@@ -47,8 +47,9 @@ class Boards extends Component {
         clearTimeout(this.flashTimer);
     }
 
-    forceRender(t, departures) {
+    forceRender(t, crs, departures) {
         t.setState({
+            crs: crs,
             departures: departures,
             flashTick: new Date().getSeconds()
         })
@@ -83,7 +84,7 @@ class Boards extends Component {
 
         fetch(url)
             .then(res => res.json())
-            .then(departures => t.forceRender(t, departures))
+            .then(departures => t.forceRender(t, crs, departures))
             .catch(e => {
                 console.error(e);
             });
@@ -140,8 +141,9 @@ class Boards extends Component {
 
         clearTimeout(this.flashTimer);
         if (enableFlash && !config.get('dontFlashExpected')) {
-            const t = this;
-            t.flashTimer = setTimeout(() => t.forceRender(t, t.state.departures), 1000);
+            const t = this,
+                s = t.state;
+            t.flashTimer = setTimeout(() => t.forceRender(t, s.crs, s.departures), 1000);
         }
 
         return <div>{messages}{rows}</div>;
@@ -158,6 +160,10 @@ class Boards extends Component {
         if (departures && departures.crs === crs) {
             body = this.renderDepartures(crs, departures);
         } else {
+            // Wrong crs then force refresh
+            if (departures && departures.crs && departures.crs !== crs) {
+                this.refresh(crs)
+            }
             body = (<div>
                 <FontAwesomeIcon icon={faSpinner} className="fa-pulse fa-3x fa-fw"/>
                 <span className="sr-only">Loading...</span>
