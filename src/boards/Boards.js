@@ -4,6 +4,7 @@ import {withRouter} from 'react-router';
 import EUCookie from 'area51-eucookie';
 import config from 'react-global-configuration';
 
+// Note: if you change these css imports also update Service or check it also needs them
 import '../../css/coach.css';
 import '../../css/ldb.css';
 import '../../css/media-320.css';
