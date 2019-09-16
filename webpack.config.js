@@ -152,7 +152,9 @@ module.exports = {
         colors: true
     },
 
-    devtool: 'source-map',
+    // remove dev-tools mapping. Use source-map for local dev
+    devtool: '',
+    //devtool: 'source-map',
 
     devServer: {
         /*open: 'http://localhost:9000',*/
