@@ -8,7 +8,7 @@ class DynamicComponent extends Component {
 
         this.state = {
             Component: null,
-            spinner: true,
+            spinner: false,
         }
     }
 
@@ -23,7 +23,7 @@ class DynamicComponent extends Component {
             importer().then(module => {
                 this.setState({Component: module.default});
             });
-            if (spin) {
+            if (!spin) {
                 setTimeout(() => {
                     if (t.state.Component === null) {
                         this.setState({Component: null, spinner: true});
