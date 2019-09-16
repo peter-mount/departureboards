@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import DynamicComponent from "./DynamicComponent";
 
-class BoardsLoader extends Component {
+class ReleaseNotesLoader extends Component {
     //
     // Ignore the warning about:
     //
@@ -13,9 +13,9 @@ class BoardsLoader extends Component {
     //
     render() {
         return <DynamicComponent
-            import={() => System.import( /* webpackChunkName: "boards" */ '../boards/Boards')}
+            import={() => System.import( /* webpackChunkName: "releasenotes" */ '../about/ReleaseNotes')}
         />
     }
 }
 
-export default BoardsLoader;
+export default ReleaseNotesLoader;

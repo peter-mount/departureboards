@@ -13,7 +13,7 @@ class ConfigPageLoader extends Component {
     //
     render() {
         return <DynamicComponent
-            import={() => System.import( /* webpackChunkName: "configPage" webpackPrefetch: -100 */ '../config/ConfigPage')}
+            import={() => System.import( /* webpackChunkName: "config" */ '../config/ConfigPage')}
         />
     }
 }

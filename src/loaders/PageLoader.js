@@ -13,7 +13,7 @@ class PageLoader extends Component {
     //
     render() {
         return <DynamicComponent
-            import={() => System.import( /* webpackChunkName: "departureboards" webpackPrefetch: -100 */ '../Departureboards')}
+            import={() => System.import( /* webpackChunkName: "router" */ '../Departureboards')}
             spin={false}
         />
     }

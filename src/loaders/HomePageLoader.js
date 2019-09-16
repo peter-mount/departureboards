@@ -13,7 +13,7 @@ class HomePageLoader extends Component {
     //
     render() {
         return <DynamicComponent
-            import={() => System.import( /* webpackChunkName: "home" webpackPrefetch: -100 */ '../home/HomePage')}
+            import={() => System.import( /* webpackChunkName: "home" */ '../home/HomePage')}
         />
     }
 }

@@ -25,6 +25,14 @@ const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 
 console.log("Webpack", process.env.environment, 'dist', __dirname + "/dist");
 
+const nameFunc = (module, chunks, cacheGroupKey) => {
+    //const moduleFileName = module.identifier().split('/').reduceRight(item => item);
+    //const allChunksNames = chunks.map((item) => item.name).join('~');
+    //console.log( moduleFileName, allChunksNames, cacheGroupKey );
+    return `${cacheGroupKey}`;
+    //return `${cacheGroupKey}-${allChunksNames}-${moduleFileName}`;
+};
+
 module.exports = {
     mode: 'production', //process.env.environment,
 
@@ -73,7 +81,8 @@ module.exports = {
         // Have a single webpack runtime used by all chunks
         runtimeChunk: "single",
         // Name chunks
-        namedChunks: true,
+        //namedChunks: true,
+        chunkIds: "named",
         splitChunks: {
             chunks: 'async',
             minSize: 30000,
@@ -81,18 +90,28 @@ module.exports = {
             minChunks: 1,
             maxAsyncRequests: 5,
             maxInitialRequests: 3,
-            automaticNameDelimiter: '~',
-            //automaticNameMaxLength: 30,
+            automaticNameDelimiter: '-',
+            automaticNameMaxLength: 30,
             name: true,
             cacheGroups: {
-                vendors: {
+                a51: {
+                    test: /[\\/]node_modules[\\/](area51|uktrain).*[\\/]/,
+                    name: nameFunc,
+                    priority: -5
+                },
+                react: {
+                    test: /[\\/]node_modules[\\/]react.*[\\/]/,
+                    name: nameFunc,
+                    priority: -9
+                },
+                ext: {
                     test: /[\\/]node_modules[\\/]/,
+                    name: nameFunc,
                     priority: -10
                 },
                 default: {
-                    minChunks: 2,
-                    priority: -20,
-                    reuseExistingChunk: true
+                    name: nameFunc,
+                    priority: -20
                 }
             }
         }

@@ -13,7 +13,7 @@ class ContactUsLoader extends Component {
     //
     render() {
         return <DynamicComponent
-            import={() => System.import( /* webpackChunkName: "contactUs" webpackPrefetch: -100 */ '../contactUs/ContactUs')}
+            import={() => System.import( /* webpackChunkName: "contact" */ '../contactUs/ContactUs')}
         />
     }
 }

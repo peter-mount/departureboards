@@ -10,6 +10,7 @@ import BoardsLoader from "./loaders/BoardsLoader";
 import ConfigPageLoader from "./loaders/ConfigPageLoader";
 import ContactUsLoader from "./loaders/ContactUsLoader";
 import HomePageLoader from "./loaders/HomePageLoader";
+import ReleaseNotesLoader from "./loaders/ReleaseNotesLoader";
 import ServiceLoader from "./loaders/ServiceLoader";
 
 // Initialise config
@@ -30,6 +31,7 @@ class Departureboards extends Component {
                     <Route component={BoardsLoader} exact path='/departures/:crs'/>
                     <Route component={ServiceLoader} exact path='/service/:rid'/>
                     <Route component={AboutLoader} exact path='/about'/>
+                    <Route component={ReleaseNotesLoader} exact path='/releaseNotes'/>
                     <Route component={ConfigPageLoader} exact path="/configure"/>
                     <Route component={ConfigPageLoader} exact path="/configure/:prev"/>
                     <Route component={ContactUsLoader} exact path="/contactUs"/>
