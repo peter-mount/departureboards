@@ -23,7 +23,6 @@ class Departureboards extends Component {
     }
 
     render() {
-        console.log("Component render");
         return (
             <BrowserRouter>
                 <div>
