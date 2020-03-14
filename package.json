@@ -62,7 +62,7 @@
     "@babel/preset-env": "^7.0.0",
     "@babel/preset-react": "^7.0.0",
     "@fortawesome/free-brands-svg-icons": "^5.10.2",
-    "acorn": "^7.0.0",
+    "acorn": "^7.1.1",
     "ajv": "^6.10.0",
     "ajv-keywords": "^3.4.0",
     "babel-eslint": "^9.0.0",
