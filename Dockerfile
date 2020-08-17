@@ -25,7 +25,7 @@ ARG environment=development
 # Download NPM sources
 FROM area51/node:latest as npm
 
-RUN echo registry=https://nexus.area51.dev/repository/npm/ >~/.npmrc
+RUN echo registry=https://nexus.ceres.area51.dev/repository/npm-group/ >~/.npmrc
 
 WORKDIR /opt/build
 ADD package.json package.json
