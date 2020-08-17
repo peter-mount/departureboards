@@ -59,6 +59,9 @@ class Loading extends Component {
                 case "Accessible":
                     coachToilet = <span className="coach-toilet"><i className="material-icons">accessible</i></span>;
                     break;
+                default:
+                    coachToilet = <span className="coach-toilet">&nbsp;</span>;
+                    break;
             }
 
             coaches.push(<div key={"coach" + coach.coachNumber} className={["ci", icon, load].join(' ')}>
