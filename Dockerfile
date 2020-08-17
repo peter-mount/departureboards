@@ -29,7 +29,7 @@ RUN echo registry=https://nexus.ceres.area51.dev/repository/npm-group/ >~/.npmrc
 
 WORKDIR /opt/build
 ADD package.json package.json
-ADD package-lock.json package-lock.json
+#ADD package-lock.json package-lock.json
 RUN npm install
 
 # ======================================================================
