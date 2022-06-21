@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import {withRouter} from 'react-router';
 //import {PageHeader} from 'react-bootstrap';
-import EUCookie from 'area51-eucookie';
 import config from 'react-global-configuration';
 
 // Note: if you change these css imports also update Service or check it also needs them
@@ -176,7 +175,6 @@ class Boards extends Component {
 
         return (<div>
             <Navigation page="departures"/>
-            <EUCookie/>
             <div className="App-header">
                 <h2>{locName}</h2>
                 <div className="ldbWrapper">

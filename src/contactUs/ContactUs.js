@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 
 import {withRouter} from 'react-router';
-import EUCookie from "area51-eucookie";
 import Navigation from '../Navigation';
 
 class About extends Component {
@@ -9,7 +8,6 @@ class About extends Component {
     render() {
         return (<div>
             <Navigation page="contactUs"/>
-            <EUCookie/>
             <div className="App-header">
                 <h1>Contact Us</h1>
             </div>

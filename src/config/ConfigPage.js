@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import {withRouter} from 'react-router';
 import {Button, Tab, Tabs} from 'react-bootstrap';
-import EUCookie from 'area51-eucookie';
 import Navigation from '../Navigation';
 
 import {getConfig, saveConfig} from './Config.js';
@@ -18,7 +17,6 @@ class ConfigPage extends Component {
 
         return (<div>
             <Navigation page="configure"/>
-            <EUCookie/>
             <div id="configWrapper" className="App-intro">
                 <Tabs
                     defaultActiveKey={1}

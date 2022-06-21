@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 
 import {withRouter} from 'react-router';
-import EUCookie from 'area51-eucookie';
 import Navigation from '../Navigation';
 import {NavItem} from "react-bootstrap";
 
@@ -11,7 +10,6 @@ class ReleaseNotes extends Component {
         const t = this;
         return (<div>
             <Navigation page="releaseNotes"/>
-            <EUCookie/>
             <div className="App-header">
                 <h1>Whats New</h1>
             </div>

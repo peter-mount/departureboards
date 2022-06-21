@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import {withRouter} from 'react-router';
-import EUCookie from 'area51-eucookie';
 import Navigation from '../Navigation';
 import Schedule from './Schedule';
 import config from 'react-global-configuration';
@@ -92,7 +91,6 @@ class Service extends Component {
         if (this.state.hide || !d) {
             return (<div>
                 <Navigation page="service"/>
-                <EUCookie/>
                 <div>
                     <FontAwesomeIcon icon={faSpinner} className="fa-pulse fa-3x fa-fw"/>
                     <span className="sr-only">Loading...</span>
@@ -101,7 +99,6 @@ class Service extends Component {
         } else {
             return (<div>
                 <Navigation page="service"/>
-                <EUCookie/>
                 <div className="App-header">
                     <Schedule service={d}/>
                 </div>
