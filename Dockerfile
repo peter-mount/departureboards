@@ -22,14 +22,38 @@
 ARG environment=development
 
 # ======================================================================
-# Download NPM sources
-FROM area51/node:latest as npm
+# Node JS
+ARG prefix
+FROM ${prefix}debian:11-slim AS base
+ARG aptrepo
+ARG npmrepo
 
-RUN echo registry=https://nexus.ceres.area51.dev/repository/npm-group/ >~/.npmrc
+# Needed post node15 otherwise npm will install at / & thats no longer permitted
+WORKDIR /root
+
+# We need ca-certificates installed first before our local apt proxy defined in the aptrepo build-arg
+RUN if [ ! -z "${aptrepo}" ]; then \
+        apt-get update &&\
+        apt-get install -y ca-certificates &&\
+        sed -i \
+          -e "s|http://deb.debian.org/|${aptrepo}|" \
+          -e "s|http://security.debian.org/|${aptrepo}|" \
+          /etc/apt/sources.list \
+    ;fi &&\
+    if [ ! -z "${npmrepo}" ]; then echo registry=${npmrepo} >~/.npmrc ;fi &&\
+    apt-get update &&\
+    apt-get install -y ca-certificates nodejs npm &&\
+    npm install npm@latest -g &&\
+    chmod -R +rx /root &&\
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* ~/.npmrc
+
+# ======================================================================
+# Download NPM sources
+FROM base as npm
 
 WORKDIR /opt/build
 ADD package.json package.json
-#ADD package-lock.json package-lock.json
+
 RUN npm install
 
 # ======================================================================

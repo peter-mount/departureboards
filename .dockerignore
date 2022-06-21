@@ -1,0 +1,13 @@
+# Exclude everything
+*
+
+# Required for npm
+!package.json
+
+# Required for the build
+!.babelrc
+!webpack.config.js
+!public
+!css
+!src
+

@@ -8,3 +8,5 @@
 build
 npm-debug.log
 /old
+.idea
+*~

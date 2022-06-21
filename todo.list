@@ -1,0 +1,13 @@
+
+To replace as never been public
+
+    "area51-apilock": "^0.1.2",
+    "area51-eucookie": "^0.1.1",
+    "area51-timepagination": "^0.1.1",
+    "uktrain-stationsearch": "^0.1.0"
+
+To update or migrate as known to be deprecated
+
+    "moment": "^2.27.0",
+    "moment-timezone": "^0.5.31",
+
