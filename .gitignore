@@ -1,12 +1,5 @@
-/dist/
-/temp/
-/node_modules/
-/private/
-/nbproject/
-/departureboards/nbproject/private/
-/build/.npmrc
+dist
+node_modules
 build
 npm-debug.log
-/old
 .idea
-*~
